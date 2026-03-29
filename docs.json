@@ -108,6 +108,12 @@
       "vscode"
     ]
   },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_qZKcjfjndNDmU4k5KSfhsiSCjS9yGuVuFLYfqri0YG1",
+      "apiHost": "https://dt.trypost.it"
+    }
+  },
   "footer": {
     "socials": {
       "x": "https://x.com/trypost_it",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Trypost Docs",
+  "name": "TryPost Docs",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -11,58 +11,54 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "getting-started/installation",
+              "getting-started/configuration",
+              "getting-started/first-steps"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Platforms",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "platforms/overview",
+              "platforms/linkedin",
+              "platforms/x-twitter",
+              "platforms/facebook",
+              "platforms/instagram",
+              "platforms/tiktok",
+              "platforms/youtube",
+              "platforms/threads",
+              "platforms/pinterest",
+              "platforms/bluesky",
+              "platforms/mastodon"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Features",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "features/scheduling",
+              "features/workspaces",
+              "features/team"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Self-Hosting",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+              "self-hosting/overview",
+              "self-hosting/requirements",
+              "self-hosting/production",
+              "self-hosting/docker"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Community",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "contributing"
             ]
           }
         ]
@@ -71,14 +67,14 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "GitHub",
+          "href": "https://github.com/trypost-it/trypost",
+          "icon": "github"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Discussions",
+          "href": "https://github.com/trypost-it/trypost/discussions",
+          "icon": "comments"
         }
       ]
     }
@@ -91,32 +87,31 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "https://github.com/trypost-it/trypost/issues"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "GitHub",
+      "href": "https://github.com/trypost-it/trypost"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/trypost_it",
+      "github": "https://github.com/trypost-it"
     }
   }
 }

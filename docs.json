@@ -38,14 +38,6 @@
             ]
           },
           {
-            "group": "Features",
-            "pages": [
-              "features/scheduling",
-              "features/workspaces",
-              "features/team"
-            ]
-          },
-          {
             "group": "Community",
             "pages": [
               "contributing"

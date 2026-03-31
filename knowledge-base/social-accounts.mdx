@@ -6,53 +6,96 @@ icon: "share-nodes"
 
 ## What are social accounts?
 
-Social accounts are the connections between TryPost and your social media profiles. When you connect an account, TryPost can create and publish posts on your behalf.
+Social accounts are the connections between TryPost and your social media profiles or pages. When you connect an account, TryPost gets permission to create and publish posts on your behalf.
 
 ## Supported platforms
 
-| Platform | Account types |
-|----------|--------------|
-| **LinkedIn** | Personal profiles and company pages |
-| **X (Twitter)** | Personal accounts |
-| **Facebook** | Pages |
-| **Instagram** | Business and creator accounts |
-| **TikTok** | Personal accounts |
-| **YouTube** | Channels |
-| **Threads** | Personal accounts |
-| **Pinterest** | Business accounts |
-| **Bluesky** | Personal accounts |
-| **Mastodon** | Accounts on any instance |
+| Platform | Account types | Auth method |
+|----------|--------------|-------------|
+| **LinkedIn** | Personal profiles | OAuth |
+| **LinkedIn Page** | Company pages | OAuth |
+| **X (Twitter)** | Personal accounts | OAuth |
+| **Facebook** | Pages | OAuth |
+| **Instagram** | Business and creator accounts | OAuth (via Facebook) |
+| **TikTok** | Personal accounts | OAuth |
+| **YouTube** | Channels | OAuth (via Google) |
+| **Threads** | Personal accounts | OAuth |
+| **Pinterest** | Business accounts | OAuth |
+| **Bluesky** | Personal accounts | App Password |
+| **Mastodon** | Accounts on any instance | OAuth (per instance) |
 
 ## Connecting an account
 
-Go to **Accounts** in the dashboard and click the platform you want to connect. You'll be redirected to the platform's authorization page where you grant TryPost permission to post on your behalf.
+Go to **Accounts** in the dashboard and click the platform you want to connect. For most platforms, you'll be redirected to their authorization page. Some platforms have extra steps:
+
+- **LinkedIn Page** — After authorizing, you select which company page to connect
+- **Facebook** — After authorizing, you select which page to manage
+- **Instagram** — After authorizing through Facebook, you select which Instagram account to connect
+- **YouTube** — After authorizing with Google, you select which channel to connect
+- **Bluesky** — Enter your handle and an [App Password](https://bsky.app/settings/app-passwords) (not your main password)
+- **Mastodon** — Enter your instance URL first, then authorize on that instance
 
 <Note>
-  Each platform has different requirements and scopes. See the individual [platform guides](/platforms/overview) for details.
+  You can connect multiple accounts per platform. For example, connect both your personal LinkedIn and three company pages.
 </Note>
 
-## Active vs. inactive accounts
+## Active vs. inactive
 
-Each social account can be toggled between **active** and **inactive** states:
+Each social account can be toggled between **active** and **inactive**:
 
-- **Active** — The account is included when creating new posts. Platform entries are created for all active accounts.
+- **Active** — The account is included when creating new posts. New posts will have a platform entry for this account.
 - **Inactive** — The account is excluded from new posts. Existing scheduled posts are not affected.
 
-This is useful when you want to temporarily pause posting to a specific account without disconnecting it.
+Toggle an account's active state from the **Accounts** page or via the [API](/api-reference/endpoint/toggle-social-account).
 
-## Account status
+<Tip>
+  Use inactive mode when you want to temporarily pause posting to a specific account (e.g., during a holiday) without disconnecting it.
+</Tip>
 
-| Status | Description |
-|--------|-------------|
-| **Connected** | The connection is working and TryPost can publish posts |
-| **Token expired** | The authorization token has expired and needs to be reconnected |
-| **Disconnected** | The account has been disconnected |
+## Connection status
 
-## Via the API
+| Status | Description | Action needed |
+|--------|-------------|---------------|
+| **Connected** | Working correctly, TryPost can publish posts | None |
+| **Disconnected** | Authorization was revoked or token expired | Reconnect the account |
+| **Token expired** | Access token expired and couldn't be refreshed | Reconnect the account |
 
-You can list social accounts and toggle their active state via the [API](/api-reference/endpoint/list-social-accounts) or through an AI assistant connected via [MCP](/ai/introduction).
+TryPost runs a **daily check** on all connected accounts to verify their tokens are still valid. If an account is found disconnected, the workspace owner receives a notification (in-app and email).
 
-```bash
-curl -X GET https://app.trypost.it/api/social-accounts \
-  -H "Authorization: Bearer tp_your_api_key"
-```
+### Why accounts get disconnected
+
+- **Token expiration** — Some platforms issue short-lived tokens. TryPost automatically refreshes them, but if the refresh fails (e.g., the refresh token also expired), the account disconnects.
+- **Password change** — Changing your password on the platform may revoke all OAuth tokens.
+- **Permission revoked** — You manually revoked TryPost's access in the platform's settings.
+- **Platform policy** — The platform may revoke tokens for inactivity or policy changes.
+
+## Token security
+
+- Access tokens and refresh tokens are **encrypted at rest** using Laravel's encryption
+- Tokens are **never exposed** in API responses — the `access_token` and `refresh_token` fields are hidden
+- Each account stores its token expiry date and TryPost proactively refreshes tokens before they expire
+
+## Disconnecting an account
+
+Go to **Accounts**, find the account, and click **Disconnect**. This:
+
+- Removes the connection from TryPost
+- Does not affect existing published posts
+- Does not revoke TryPost's access on the platform (you can do that in the platform's settings)
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Can I connect the same account twice?">
+    No. Each social media account can only be connected once per workspace. If you try to connect an account that's already connected, TryPost will update the existing connection.
+  </Accordion>
+  <Accordion title="What happens to scheduled posts if an account disconnects?">
+    Posts scheduled for a disconnected account will fail for that platform when the scheduled time arrives. Other platforms in the same post are not affected. You'll receive a notification about the failure.
+  </Accordion>
+  <Accordion title="Do I need to reconnect accounts periodically?">
+    Usually no. TryPost automatically refreshes tokens. However, some platforms (like TikTok) have shorter token lifetimes and may occasionally require reconnection.
+  </Accordion>
+  <Accordion title="Can I connect accounts from different workspaces to the same social profile?">
+    Yes. Each workspace manages its own connections independently. The same LinkedIn profile can be connected in multiple workspaces.
+  </Accordion>
+</AccordionGroup>

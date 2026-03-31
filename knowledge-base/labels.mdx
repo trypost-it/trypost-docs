@@ -6,38 +6,59 @@ icon: "tag"
 
 ## What are labels?
 
-Labels are color-coded tags that you can assign to posts to organize and categorize your content. Use them to group posts by campaign, topic, client, or any other criteria.
+Labels are color-coded tags that you can assign to posts to organize your content calendar. They make it easy to visually scan, filter, and manage your posts.
 
 ## Creating a label
 
-Create labels from the dashboard or via the API:
+Go to **Labels** in the sidebar or use the API:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| **Name** | Yes | A descriptive name for the label (e.g., "Product Launch", "Blog Content") |
-| **Color** | Yes | A hex color code (e.g., `#4f46e5`). Must match the format `#RRGGBB` |
+| **Name** | Yes | A descriptive name (e.g., "Product Launch", "Blog Content", "Urgent") |
+| **Color** | Yes | A hex color code (e.g., `#4f46e5`). Must be in `#RRGGBB` format |
 
 ## Using labels
 
-Assign labels to posts when creating or editing them. A post can have multiple labels, and the same label can be used across many posts.
+Assign labels to posts when creating or editing them. A post can have **multiple labels**, and the same label can be used across many posts.
 
-Labels appear as colored badges in the post list, making it easy to visually scan and filter your content calendar.
+Labels appear as colored badges in the post list and calendar, making it easy to visually identify different types of content at a glance.
+
+### Filtering by label
+
+In the calendar and post list views, you can filter by label to see only posts tagged with a specific label. This is useful when you want to review all posts for a particular campaign or category.
+
+## Label ideas
+
+| Label | Color | Use case |
+|-------|-------|----------|
+| **Product Launch** | Indigo `#4f46e5` | Posts related to a product launch campaign |
+| **Blog** | Blue `#3b82f6` | Posts promoting blog articles |
+| **Engagement** | Green `#22c55e` | Polls, questions, and community engagement |
+| **Urgent** | Red `#ef4444` | Time-sensitive posts that need immediate review |
+| **Evergreen** | Teal `#14b8a6` | Content that can be reused or rescheduled |
+| **Client: Acme** | Orange `#f97316` | Agency use: posts for a specific client |
 
 ## Managing labels
 
-- **Edit** — Update the name or color of a label at any time. Changes are reflected across all posts that use the label.
-- **Delete** — Remove a label you no longer need. The label is removed from all posts, but the posts themselves are not affected.
+- **Edit** — Update the name or color at any time. Changes are reflected immediately across all posts that use the label.
+- **Delete** — Remove a label. It's removed from all posts, but the posts themselves are not affected or deleted.
 
 ## Via the API
 
-You can manage labels programmatically using the [API](/api-reference/endpoint/list-labels) or through an AI assistant connected via [MCP](/ai/introduction).
+Manage labels and assign them to posts programmatically:
 
 ```bash
+# Create a label
 curl -X POST https://app.trypost.it/api/labels \
   -H "Authorization: Bearer tp_your_api_key" \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Product Launch",
-    "color": "#4f46e5"
-  }'
+  -d '{"name": "Product Launch", "color": "#4f46e5"}'
+
+# Assign labels when updating a post
+curl -X PUT https://app.trypost.it/api/posts/{post_id} \
+  -H "Authorization: Bearer tp_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"label_ids": ["label-uuid-1", "label-uuid-2"]}'
 ```
+
+See the full [Labels API reference](/api-reference/endpoint/list-labels).

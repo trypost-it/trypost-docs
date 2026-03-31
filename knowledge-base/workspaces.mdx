@@ -6,32 +6,100 @@ icon: "building"
 
 ## What are workspaces?
 
-Workspaces are the top-level organizational unit in TryPost. Each workspace has its own social accounts, posts, hashtag groups, labels, and API keys. Use workspaces to separate different brands, clients, or projects.
+Workspaces are the top-level organizational unit in TryPost. Each workspace is a completely isolated environment with its own:
+
+- Social media accounts
+- Posts and calendar
+- Hashtag groups and labels
+- Team members and roles
+- API keys
+
+Nothing is shared between workspaces — they're completely independent.
+
+## Creating a workspace
+
+1. Click on your workspace name in the sidebar
+2. Click **Create Workspace**
+3. Enter a name and set your timezone
+4. Click **Create**
+
+You'll be switched to the new workspace immediately. Connect social accounts and invite team members to get started.
+
+## Switching workspaces
+
+Click on the workspace name in the sidebar to see all your workspaces. Click any workspace to switch to it. The entire dashboard (posts, calendar, accounts, settings) updates to show that workspace's data.
 
 ## Workspace settings
 
-| Field | Description |
-|-------|-------------|
-| **Name** | The workspace name (e.g., "My Brand", "Client A") |
-| **Timezone** | The timezone used for scheduling posts |
+Go to **Settings > Workspace** to manage:
+
+| Setting | Description |
+|---------|-------------|
+| **Name** | The display name (e.g., "My Brand", "Client A") |
+| **Timezone** | Used for scheduling posts. All times in the dashboard are shown in this timezone |
+| **Logo** | Optional workspace logo displayed in the sidebar |
 
 ## Timezone
 
-The workspace timezone determines when scheduled posts are published. When you set a post to publish at "10:00 AM", it uses the workspace's timezone.
+The workspace timezone is critical for scheduling:
+
+- A post scheduled for "10:00 AM" uses the workspace timezone
+- The calendar displays times in the workspace timezone
+- Changing the timezone does not reschedule existing posts — they keep their original UTC time
 
 <Tip>
-  Set your workspace timezone to match your target audience's location for the best engagement.
+  Set your workspace timezone to match your target audience's location. If you're posting for a Brazilian brand, use `America/Sao_Paulo`. For a US audience, use `America/New_York`.
 </Tip>
+
+## Use cases
+
+### Agencies
+Create a workspace for each client to keep everything separate:
+- **Client A** — Their social accounts, content calendar, and team
+- **Client B** — Completely independent from Client A
+- **Your Agency** — Your own brand's accounts
+
+### Multiple brands
+One workspace per brand, even within the same company:
+- **Product A** — Product-focused accounts and content
+- **Company Blog** — Corporate accounts and thought leadership
+
+### Personal vs. business
+Separate your personal and professional presence:
+- **Personal** — Your personal LinkedIn, X, and Instagram
+- **Business** — Company pages and business accounts
 
 ## API key scope
 
-API keys are scoped to a single workspace. When you make an API request or connect an AI assistant via MCP, all operations are performed within the workspace that the API key belongs to.
+API keys belong to a specific workspace. When you authenticate with an API key:
 
-## Via the API
+- All API operations are scoped to that workspace
+- You can only access that workspace's posts, accounts, hashtags, etc.
+- The same applies to MCP connections — the AI assistant only sees one workspace
 
-You can get your workspace details via the [API](/api-reference/endpoint/get-workspace) or through an AI assistant connected via [MCP](/ai/introduction).
+To manage multiple workspaces via API, create a separate API key for each.
 
-```bash
-curl -X GET https://app.trypost.it/api/workspace \
-  -H "Authorization: Bearer tp_your_api_key"
-```
+## Deleting a workspace
+
+Go to **Settings > Workspace** and scroll to the danger zone.
+
+<Warning>
+  Deleting a workspace permanently removes all posts, disconnects all social accounts, and removes all team members. This cannot be undone.
+</Warning>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="How many workspaces can I create?">
+    There's no limit on TryPost Cloud or self-hosted instances.
+  </Accordion>
+  <Accordion title="Can I transfer a workspace to another user?">
+    Not directly. The workspace owner cannot be changed. You would need to create a new workspace under the other user and reconnect the accounts.
+  </Accordion>
+  <Accordion title="Can I move posts between workspaces?">
+    No. Posts belong to a workspace and cannot be moved. You would need to recreate them in the target workspace.
+  </Accordion>
+  <Accordion title="What happens to team members when I delete a workspace?">
+    They lose access to the workspace immediately. Their TryPost accounts and other workspace memberships are not affected.
+  </Accordion>
+</AccordionGroup>

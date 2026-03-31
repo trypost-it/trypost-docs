@@ -6,33 +6,85 @@ icon: "users"
 
 ## Team roles
 
-Each workspace member has a role that determines their permissions:
+Each workspace member has a role that determines what they can do:
 
-| Role | Description |
-|------|-------------|
-| **Owner** | Full access to the workspace. Can manage billing, delete the workspace, and manage all members. Each workspace has exactly one owner. |
-| **Admin** | Can manage posts, social accounts, hashtags, labels, and invite or remove members. Cannot delete the workspace or manage billing. |
-| **Member** | Can create and manage posts, use hashtag groups, and apply labels. Cannot manage social accounts, invites, or workspace settings. |
+| | Owner | Admin | Member |
+|---|:---:|:---:|:---:|
+| Create and edit posts | Yes | Yes | Yes |
+| Use hashtag groups and labels | Yes | Yes | Yes |
+| View the calendar and post list | Yes | Yes | Yes |
+| Manage social accounts | Yes | Yes | No |
+| Create and manage labels | Yes | Yes | No |
+| Create and manage hashtag groups | Yes | Yes | No |
+| Invite and remove members | Yes | Yes | No |
+| Change member roles | Yes | Yes | No |
+| Manage workspace settings | Yes | Yes | No |
+| Manage API keys | Yes | Yes | No |
+| Manage billing | Yes | No | No |
+| Delete workspace | Yes | No | No |
+
+Each workspace has exactly **one owner** — the user who created it. The owner role cannot be transferred.
 
 ## Inviting members
 
-Go to **Settings > Team** and click **Invite Member**. Enter the email address and select a role for the new member.
+1. Go to **Settings > Team**
+2. Click **Invite Member**
+3. Enter the email address
+4. Select a role (Admin or Member)
+5. Click **Send Invite**
 
-The invited person receives an email with a link to join your workspace. If they don't have a TryPost account, they'll be prompted to create one first.
+The invited person receives an email with a link to join. If they don't have a TryPost account, they'll be prompted to create one first.
 
 <Note>
-  Pending invitations can be revoked at any time before they're accepted.
+  Pending invitations can be cancelled at any time before they're accepted.
 </Note>
+
+## Accepting an invite
+
+When you receive an invitation:
+
+1. Click the link in the email
+2. Log in or create a TryPost account
+3. Accept or decline the invitation
+4. If accepted, you're immediately added to the workspace
+
+## Changing roles
+
+Owners and admins can change a member's role at any time from **Settings > Team**. Click on the member's current role to change it.
 
 ## Removing members
 
-Workspace owners and admins can remove members from the workspace. Go to **Settings > Team**, find the member, and click **Remove**.
+Owners and admins can remove members from **Settings > Team**. Removing a member:
 
-Removing a member:
-- Revokes their access to the workspace immediately
-- Does not delete any posts they created
-- Does not affect other workspaces they belong to
+- Revokes their access immediately
+- Does **not** delete posts they created
+- Does **not** affect their TryPost account or other workspace memberships
+
+The removed member receives a notification about the removal.
 
 ## Multiple workspaces
 
-A single user can belong to multiple workspaces with different roles in each. Use the workspace switcher in the sidebar to navigate between them.
+A single TryPost account can belong to multiple workspaces with different roles in each. For example:
+
+- **Owner** of your personal workspace
+- **Admin** of your company workspace
+- **Member** of a client workspace
+
+Use the workspace switcher in the sidebar to navigate between them.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Can I have multiple owners?">
+    No. Each workspace has exactly one owner — the person who created it. Use the Admin role for other team members who need full management access.
+  </Accordion>
+  <Accordion title="Can a member see all posts or only their own?">
+    All members can see all posts in the workspace, regardless of who created them.
+  </Accordion>
+  <Accordion title="What happens when I remove someone who has scheduled posts?">
+    Their scheduled posts remain and will still be published as planned. Only access to the workspace is revoked.
+  </Accordion>
+  <Accordion title="Is there a limit on team members?">
+    No. You can invite as many members as you need.
+  </Accordion>
+</AccordionGroup>

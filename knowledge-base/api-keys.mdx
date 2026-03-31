@@ -6,20 +6,20 @@ icon: "key"
 
 ## What are API keys?
 
-API keys are how you authenticate requests to the TryPost API and MCP server. Every API call requires a valid key passed as a Bearer token in the `Authorization` header.
+API keys authenticate requests to the TryPost REST API and MCP server. Every API call and AI assistant connection requires a valid key.
 
-Keys are scoped to your workspace — any key gives access to that workspace's resources (posts, hashtags, labels, social accounts, etc.).
+Keys are scoped to a **single workspace** — an API key can only access the workspace it was created in.
 
 ## Creating an API key
 
-Go to **Settings > API Keys** in the dashboard and click **Create API Key**.
+Go to **API Keys** in the sidebar and click **Create API Key**.
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| **Name** | Yes | A label to identify the key (e.g., `Production`, `CI/CD`, `MCP`) |
+| **Name** | Yes | A label to identify the key (e.g., `Production`, `CI/CD`, `MCP`, `Cursor`) |
 | **Expiration** | No | Optional expiration date. After this date, the key stops working |
 
-After creation, the full key is shown **once**. Copy it immediately — you won't be able to see it again.
+After creation, the full key is shown **once**. Copy it immediately.
 
 <Warning>
   TryPost stores a hash of your API key, not the key itself. If you lose it, you'll need to create a new one.
@@ -27,54 +27,74 @@ After creation, the full key is shown **once**. Copy it immediately — you won'
 
 ## Key format
 
-All TryPost API keys follow the format:
-
 ```
 tp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-Keys start with `tp_` followed by 48 random characters (51 characters total).
+Keys start with `tp_` followed by 48 random characters (51 characters total). The `tp_` prefix makes it easy to identify TryPost keys in your codebase and avoid committing them accidentally (add `tp_*` to your `.gitignore` patterns).
 
-## Using your API key
+## Where to use your API key
 
-Pass the key as a Bearer token in the `Authorization` header on every API request:
+The same key works for both the REST API and MCP server:
+
+### REST API
+
+Pass the key as a Bearer token in the `Authorization` header:
 
 ```bash
 curl -X GET https://app.trypost.it/api/posts \
   -H "Authorization: Bearer tp_your_api_key"
 ```
 
-The same key works for both the REST API and the MCP server.
+### MCP Server
+
+Use the key in your AI assistant's MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "trypost": {
+      "type": "http",
+      "url": "https://app.trypost.it/mcp/trypost",
+      "headers": {
+        "Authorization": "Bearer tp_your_api_key"
+      }
+    }
+  }
+}
+```
+
+See the [Build with AI](/ai/introduction) section for setup guides for each AI assistant.
 
 ## Expiration
 
 API keys can be created with or without an expiration date:
 
-- **No expiration** — The key remains active until you delete it
-- **With expiration** — The key automatically becomes inactive after the set date. Requests made with an expired key return a `401` error
+- **No expiration** — The key remains active until you manually delete it
+- **With expiration** — The key automatically becomes inactive after the set date. Requests return a `401` error
 
-Expired keys are not deleted — they stay visible in the dashboard so you can track usage history.
+Expired keys are not deleted — they stay visible so you can track usage history. You can delete them when ready.
 
 ## Security best practices
 
 <Steps>
-  <Step title="Use separate keys per environment">
-    Create different keys for production, development, and AI assistants. If a key is compromised, you only need to rotate one.
+  <Step title="Use separate keys per use case">
+    Create different keys for different purposes: `Production API`, `Cursor MCP`, `CI/CD Pipeline`. If one is compromised, you only need to rotate one.
   </Step>
   <Step title="Set expiration for temporary access">
-    If you're sharing a key with a contractor or CI/CD pipeline, set an expiration date so it automatically stops working.
+    If you're sharing a key with a contractor or external tool, set an expiration date.
   </Step>
   <Step title="Never commit keys to source control">
-    Store keys in environment variables or secret managers. Never hardcode them in your codebase.
+    Store keys in environment variables, `.env` files (not committed), or secret managers. Never hardcode them.
   </Step>
   <Step title="Rotate keys periodically">
-    Create a new key, update your integrations, then delete the old one. TryPost tracks `last used at` so you can verify the old key is no longer in use before deleting it.
+    Create a new key, update your integrations, verify the old key's **Last used** timestamp shows no recent activity, then delete it.
   </Step>
 </Steps>
 
 ## Deleting an API key
 
-You can delete an API key at any time from the dashboard. Deletion is **immediate and irreversible** — any application or AI assistant still using the key will start receiving `401` errors.
+You can delete an API key at any time from the dashboard or via the [API](/api-reference/endpoint/delete-api-key). Deletion is **immediate and irreversible** — any application or AI assistant using the key will immediately start receiving `401` errors.
 
 Check the **Last used** column before deleting to make sure the key isn't actively in use.
 
@@ -82,15 +102,21 @@ Check the **Last used** column before deleting to make sure the key isn't active
 
 <AccordionGroup>
   <Accordion title="How many API keys can I create?">
-    There's no limit. Create as many keys as you need for different environments, services, or AI assistants.
+    There's no limit. Create as many as you need.
   </Accordion>
   <Accordion title="Can I see the full key after creation?">
-    No. The full key is only shown once at creation time. TryPost stores a secure hash, not the original key. If you lose it, create a new one.
+    No. The full key is only shown once. TryPost stores a secure hash, not the original key.
   </Accordion>
   <Accordion title="Does the same key work for API and MCP?">
-    Yes. The same API key authenticates both REST API requests and MCP server connections.
+    Yes. One key authenticates both REST API requests and MCP connections. They're the same authentication mechanism.
   </Accordion>
   <Accordion title="What happens if I use an expired key?">
     The API returns a `401 Unauthorized` error. Create a new key to restore access.
+  </Accordion>
+  <Accordion title="Can I use an API key from one workspace in another?">
+    No. Keys are scoped to the workspace where they were created. Create a separate key for each workspace.
+  </Accordion>
+  <Accordion title="Is there a rate limit?">
+    Yes. API requests are throttled to prevent abuse. If you exceed the limit, you'll receive a `429` status code.
   </Accordion>
 </AccordionGroup>

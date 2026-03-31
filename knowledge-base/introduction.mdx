@@ -1,54 +1,68 @@
 ---
 title: "Introduction"
-description: "Learn how to use TryPost's features to manage your social media scheduling"
+description: "Everything you need to know about using TryPost to manage your social media"
 icon: "book"
 ---
 
 ## What is TryPost?
 
-TryPost is an open-source social media scheduling platform. It lets you create, schedule, and publish posts across multiple social networks from a single dashboard.
+TryPost is a social media scheduling platform that lets you create, schedule, and publish posts across 10+ social networks from a single dashboard. It's open-source and available as a managed cloud service or self-hosted on your own infrastructure.
 
-## Key features
+## Core concepts
 
 <Columns cols={2}>
-  <Card title="Multi-platform posting" icon="share-nodes">
-    Publish to LinkedIn, X (Twitter), Facebook, Instagram, TikTok, YouTube, Threads, Pinterest, Bluesky, and Mastodon from one place.
+  <Card title="Posts" icon="pen-to-square" href="/knowledge-base/posts">
+    The content you create and publish. Each post can target multiple platforms with synced or custom content per platform.
   </Card>
-  <Card title="Scheduling" icon="calendar">
-    Schedule posts in advance and let TryPost publish them automatically at the right time.
+  <Card title="Social Accounts" icon="share-nodes" href="/knowledge-base/social-accounts">
+    Your connected social media profiles and pages. Connect once, post everywhere.
   </Card>
-  <Card title="Workspaces" icon="building">
-    Organize your social accounts by brand or client with separate workspaces.
+  <Card title="Workspaces" icon="building" href="/knowledge-base/workspaces">
+    Isolated environments for different brands, clients, or projects. Each workspace has its own accounts, posts, and team.
   </Card>
-  <Card title="API & MCP" icon="code">
-    Automate your workflow with the REST API or connect AI assistants via MCP.
+  <Card title="Team & Roles" icon="users" href="/knowledge-base/team">
+    Invite collaborators with role-based permissions: Owner, Admin, or Member.
   </Card>
 </Columns>
 
-## How it works
+## Content organization
+
+<Columns cols={2}>
+  <Card title="Labels" icon="tag" href="/knowledge-base/labels">
+    Color-coded tags to categorize and filter posts by campaign, topic, or priority.
+  </Card>
+  <Card title="Hashtag Groups" icon="hashtag" href="/knowledge-base/hashtags">
+    Reusable hashtag collections that you can insert into any post with one click.
+  </Card>
+  <Card title="Media" icon="image" href="/knowledge-base/media">
+    Images, videos, and documents. Each platform has specific format requirements and limits.
+  </Card>
+  <Card title="Notifications" icon="bell" href="/knowledge-base/notifications">
+    Stay informed about publishing results, account issues, and team activity via in-app and email alerts.
+  </Card>
+</Columns>
+
+## How publishing works
 
 <Steps>
-  <Step title="Create a workspace">
-    Sign up and create a workspace for your brand or client.
+  <Step title="You schedule a post">
+    Create a post, write content for each platform, and set a date and time. The scheduler runs every minute looking for posts that are due.
   </Step>
-  <Step title="Connect your accounts">
-    Link your social media accounts (LinkedIn, X, Instagram, etc.) to your workspace.
+  <Step title="TryPost publishes to each platform">
+    When the scheduled time arrives, TryPost dispatches a background job for each enabled platform. Each platform is published independently — if one fails, the others still go through.
   </Step>
-  <Step title="Create and schedule posts">
-    Write your content, customize it per platform, and schedule it for the best time.
-  </Step>
-  <Step title="Publish automatically">
-    TryPost publishes your posts at the scheduled time across all selected platforms.
+  <Step title="You get notified">
+    After all platforms finish, you receive a notification (in-app and/or email) with the result: published, partially published, or failed.
   </Step>
 </Steps>
 
-## Next steps
+## Integrations
 
 <Columns cols={2}>
-  <Card title="API reference" icon="terminal" href="/api-reference/introduction">
-    Automate your workflow with the REST API.
+  <Card title="REST API" icon="code" href="/api-reference/introduction">
+    19 endpoints to manage posts, hashtags, labels, accounts, and API keys programmatically.
   </Card>
-  <Card title="Build with AI" icon="microchip-ai" href="/ai/introduction">
-    Connect AI assistants to manage your account.
+  <Card title="MCP Server" icon="microchip-ai" href="/ai/introduction">
+    Connect AI assistants (Claude, Copilot, Cursor, etc.) to manage TryPost with natural language.
   </Card>
 </Columns>

@@ -6,39 +6,97 @@ icon: "pen-to-square"
 
 ## What are posts?
 
-Posts are the core content unit in TryPost. A post represents a piece of content that can be published across one or more social media platforms. Each post contains platform-specific entries that hold the actual content for each connected social account.
-
-## Post statuses
-
-| Status | Description |
-|--------|-------------|
-| **Draft** | The post is being composed and is not yet scheduled |
-| **Scheduled** | The post is set to be published at a specific date and time |
-| **Publishing** | The post is currently being published to the selected platforms |
-| **Published** | The post has been successfully published to all platforms |
-| **Partially published** | The post was published to some platforms but failed on others |
-| **Failed** | The post failed to publish to all platforms |
+Posts are the core content unit in TryPost. A post represents a piece of content that can be published across one or more social media platforms. Each post contains **platform entries** — one for each connected social account — that hold the actual content, media, and publishing status for that platform.
 
 ## Creating a post
 
-When you create a post, TryPost automatically creates a platform entry for each connected social account in your workspace. You can then customize the content for each platform individually or sync the same content across all platforms.
+1. Click **Create Post** or click on a date in the calendar
+2. Write your content
+3. Add media (images or videos) if desired
+4. Select which accounts to post to
+5. Choose to post now or schedule for later
 
-### Synced vs. custom content
+When you create a post, TryPost automatically creates a platform entry for each active social account in your workspace.
 
-- **Synced** — The same content is used across all platforms. Editing one updates all of them.
-- **Custom** — Each platform has its own content. Useful when you want to tailor the message for LinkedIn vs. X vs. Instagram.
+## Synced vs. custom content
+
+By default, posts are **synced** — the same content is shared across all platforms. When you edit one, all others update too.
+
+Switch to **custom** mode to tailor the message for each platform individually. This is useful when:
+
+- LinkedIn needs a professional tone while X needs something casual
+- Instagram requires a different set of hashtags
+- You want to include a link on X but not on Instagram (where links aren't clickable)
+- Character limits differ across platforms
+
+<Tip>
+  Start with synced content for the core message, then switch to custom mode to fine-tune per platform. You don't have to rewrite everything — just adjust what needs to be different.
+</Tip>
+
+## The calendar
+
+The calendar view is the primary way to manage your content schedule:
+
+- **Drag and drop** posts to reschedule them to a different date or time
+- **Click** on any post to view, edit, or delete it
+- **Filter** by social account, status, or label
+- **Switch views** between month, week, or day
 
 ## Scheduling
 
-Set a date and time for your post and TryPost will automatically publish it. The scheduled time is based on your workspace's timezone setting.
+Set a date and time for your post and TryPost will automatically publish it. The scheduled time uses your **workspace timezone** — if your workspace is set to `America/Sao_Paulo`, a post scheduled for 10:00 AM will publish at 10:00 AM BRT.
+
+The scheduler checks for due posts **every minute**. When a post is due:
+
+1. The post status changes to `publishing`
+2. A background job is dispatched for each enabled platform
+3. Each platform publishes independently
+4. When all platforms finish, the post status updates to the final result
 
 <Note>
   Posts can only be scheduled for a future date and time. You cannot schedule a post in the past.
 </Note>
 
+## Publishing flow
+
+Each platform in a post publishes independently. If LinkedIn succeeds but Instagram fails, your post becomes **partially published** — you don't lose the successful publishes because of one failure.
+
+TryPost retries failed platform publishes up to 3 times with a 60-second delay between attempts before marking it as failed.
+
+## Post statuses
+
+| Status | Description |
+|--------|-------------|
+| **Draft** | Being composed, not yet scheduled |
+| **Scheduled** | Waiting to be published at the set date/time |
+| **Publishing** | Currently being sent to platforms |
+| **Published** | Successfully published to all enabled platforms |
+| **Partially published** | Published to some platforms, failed on others |
+| **Failed** | Failed to publish to all platforms |
+
+## Platform entry statuses
+
+Each platform within a post has its own status:
+
+| Status | Description |
+|--------|-------------|
+| **Pending** | Waiting for the post to be published |
+| **Publishing** | Currently being sent to this platform |
+| **Published** | Successfully published with a link to the live post |
+| **Failed** | Failed with an error message explaining why |
+
+When a platform entry fails, TryPost shows the error message from the platform (e.g., "Token expired", "Rate limit exceeded", "Content policy violation").
+
 ## Labels
 
-Assign labels to your posts to organize and categorize them. Labels are color-coded and can be used to filter posts in the dashboard. See [Labels](/knowledge-base/labels) for more.
+Assign labels to posts to organize your content calendar. A post can have multiple labels. Use them for:
+
+- **Campaigns** — Group posts by marketing campaign
+- **Content types** — Separate educational, promotional, and engagement posts
+- **Clients** — Tag posts by client (useful for agencies)
+- **Priority** — Mark urgent or time-sensitive content
+
+See [Labels](/knowledge-base/labels) for more.
 
 ## Platform-specific content
 
@@ -47,10 +105,37 @@ Each platform entry in a post includes:
 | Field | Description |
 |-------|-------------|
 | **Content** | The text content for this platform |
-| **Content type** | The type of content (text, image, video) |
+| **Content type** | The format: `linkedin_post`, `instagram_reel`, `x_post`, etc. |
+| **Media** | Attached images, videos, or documents |
 | **Status** | The publishing status for this specific platform |
 | **Enabled** | Whether this platform is included when publishing |
 
+See [Media](/knowledge-base/media) for supported formats and limits per platform.
+
 ## Deleting posts
 
-You can delete any post at any time. Deleting a post removes it and all its platform entries. Published posts that have already been sent to social platforms cannot be "unpublished" — the content will remain on those platforms.
+You can delete any post at any time. Deleting a post removes it and all its platform entries.
+
+<Warning>
+  Published posts that have already been sent to social platforms cannot be "unpublished" — the content will remain on those platforms. Deleting only removes the post from TryPost.
+</Warning>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Can I edit a post after it's published?">
+    No. Once a post is published, it cannot be edited in TryPost. To make changes, you'll need to edit it directly on the social platform.
+  </Accordion>
+  <Accordion title="What happens if one platform fails?">
+    The other platforms are not affected. The post becomes "partially published" and you'll receive a notification with details about the failure. You can check the error message in the post editor.
+  </Accordion>
+  <Accordion title="Can I publish the same post again?">
+    Not directly. You would need to create a new post with the same content.
+  </Accordion>
+  <Accordion title="What timezone is used for scheduling?">
+    The workspace timezone. You can change it in **Settings > Workspace**.
+  </Accordion>
+  <Accordion title="How quickly are scheduled posts published?">
+    The scheduler runs every minute. A post scheduled for 10:00 AM will typically be published between 10:00 and 10:01 AM.
+  </Accordion>
+</AccordionGroup>

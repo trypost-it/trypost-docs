@@ -1,0 +1,45 @@
+---
+title: "Hashtags"
+description: "Create and manage reusable hashtag groups for your social media posts."
+icon: "hashtag"
+---
+
+## What are hashtag groups?
+
+Hashtag groups are reusable collections of hashtags that you can quickly insert into your posts. Instead of typing the same hashtags every time, create a group once and reuse it across all your content.
+
+## Creating a hashtag group
+
+Go to your workspace settings or use the post editor to create a new hashtag group:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| **Name** | Yes | A descriptive name for the group (e.g., "Tech Stack", "Product Launch") |
+| **Hashtags** | Yes | The hashtags as a single string (e.g., `#tech #ai #startup #saas`) |
+
+## Using hashtag groups
+
+When composing a post, you can insert any hashtag group into the content with a single click. The hashtags are appended to your post content.
+
+<Tip>
+  Create different hashtag groups for different topics or campaigns. This keeps your hashtags organized and makes it easy to maintain consistent tagging across posts.
+</Tip>
+
+## Managing hashtag groups
+
+- **Edit** — Update the name or hashtags at any time. Changes don't affect posts that already used the group.
+- **Delete** — Remove a hashtag group you no longer need. Existing posts are not affected.
+
+## Via the API
+
+You can manage hashtag groups programmatically using the [API](/api-reference/endpoint/list-hashtags) or through an AI assistant connected via [MCP](/ai/introduction).
+
+```bash
+curl -X POST https://app.trypost.it/api/hashtags \
+  -H "Authorization: Bearer tp_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "SaaS Marketing",
+    "hashtags": "#saas #marketing #growth #startup #b2b"
+  }'
+```

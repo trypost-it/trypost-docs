@@ -1,0 +1,60 @@
+---
+title: "List API keys"
+api: "GET /api-keys"
+description: "List all API keys for the current workspace."
+---
+
+## Response
+
+Returns all API keys for the workspace.
+
+<ResponseField name="data" type="array">
+  <Expandable>
+    <ResponseField name="id" type="string">
+      The API key ID.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The API key name.
+    </ResponseField>
+    <ResponseField name="key_hint" type="string">
+      A partial hint of the key for identification.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      The key status: `active` or `expired`.
+    </ResponseField>
+    <ResponseField name="last_used_at" type="string">
+      The last time this key was used. Null if never used.
+    </ResponseField>
+    <ResponseField name="expires_at" type="string">
+      The expiration date. Null if the key does not expire.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      The creation timestamp.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+```bash
+curl -X GET https://app.trypost.it/api/api-keys \
+  -H "Authorization: Bearer tp_your_api_key"
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "data": [
+    {
+      "id": "f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f9a0b1c",
+      "name": "Production",
+      "key_hint": "tp_abc1234567890...",
+      "status": "active",
+      "last_used_at": "2025-01-14 12:00:00",
+      "expires_at": null,
+      "created_at": "2025-01-01 00:00:00"
+    }
+  ]
+}
+```
+</ResponseExample>

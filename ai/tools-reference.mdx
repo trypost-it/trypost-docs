@@ -1,0 +1,54 @@
+---
+title: "Tools reference"
+description: "Complete reference of all TryPost MCP tools available to your AI assistant"
+---
+
+This page lists every tool available through the TryPost MCP server. Your AI assistant can call any of these tools to manage your TryPost account.
+
+## Posts
+
+| Tool | Description |
+|------|-------------|
+| **ListPosts** | List all posts for the current workspace. Returns posts with their platform-specific content, social accounts, labels, status, and scheduled date. Paginated with 50 posts per page. |
+| **GetPost** | Get a specific post by ID with all its platform content, media attachments, and assigned labels. |
+| **CreatePost** | Create a new draft post in the current workspace. A post platform entry is automatically created for each connected social account. Optionally set a scheduled date. |
+| **DeletePost** | Delete a post by ID. Removes the post and all its platform entries. |
+
+## Hashtags
+
+| Tool | Description |
+|------|-------------|
+| **ListHashtags** | List all hashtag groups for the current workspace. Returns each group's name and hashtags string. |
+| **CreateHashtag** | Create a new hashtag group with a name and hashtag string. Hashtags are stored as a single string (e.g., "#tech #ai #startup"). |
+| **UpdateHashtag** | Update a hashtag group's name or hashtags string. |
+| **DeleteHashtag** | Delete a hashtag group by ID. |
+
+## Labels
+
+| Tool | Description |
+|------|-------------|
+| **ListLabels** | List all labels for the current workspace. Returns each label's name and hex color code. |
+| **CreateLabel** | Create a new label with a name and hex color code (e.g., `#FF5733`). Labels are used to categorize and organize posts. |
+| **UpdateLabel** | Update a label's name or color. |
+| **DeleteLabel** | Delete a label by ID. |
+
+## Social Accounts
+
+| Tool | Description |
+|------|-------------|
+| **ListSocialAccounts** | List all connected social accounts for the current workspace. Returns each account's platform, display name, username, active status, and connection status. |
+| **ToggleSocialAccount** | Toggle a social account between active and inactive states. Inactive accounts won't have platform entries created for new posts. |
+
+## Workspace
+
+| Tool | Description |
+|------|-------------|
+| **GetWorkspace** | Get the current workspace details including name and timezone. |
+
+## API Keys
+
+| Tool | Description |
+|------|-------------|
+| **ListApiKeys** | List all API keys for the current workspace. Returns each key's name, status, expiration date, and last used timestamp. |
+| **CreateApiKey** | Create a new API key. Returns the plain text token which is only shown once and cannot be retrieved later. Optionally set an expiration date. |
+| **DeleteApiKey** | Delete an API key by ID. Any integrations using this key will immediately stop working. |

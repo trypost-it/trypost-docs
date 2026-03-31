@@ -1,0 +1,66 @@
+---
+title: "OpenCode"
+description: "Connect TryPost to OpenCode for AI-powered social media management from the terminal"
+icon: "terminal"
+---
+
+[OpenCode](https://github.com/opencode-ai/opencode) is an open-source AI coding assistant that runs in your terminal. You can connect it to TryPost's MCP server to manage your social media scheduling with natural language.
+
+## Prerequisites
+
+- OpenCode installed
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Open the configuration file">
+    Edit your OpenCode configuration at `.opencode.json` in your project root (or `~/.opencode.json` for global config):
+
+    ```json
+    {
+      "mcpServers": {
+        "trypost": {
+          "type": "sse",
+          "url": "https://app.trypost.it/mcp/trypost",
+          "headers": {
+            "Authorization": "Bearer tp_your_api_key_here"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+  </Step>
+  <Step title="Restart OpenCode">
+    Close and reopen OpenCode to load the new MCP configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Ask OpenCode to interact with your TryPost account:
+
+    ```
+    List all my TryPost social accounts
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  OpenCode currently supports `stdio` and `sse` transports. The `sse` transport is used for remote HTTP servers.
+</Tip>
+
+## Example prompts
+
+```
+Create a post for tomorrow at 9am
+```
+
+```
+Show me all my hashtag groups
+```
+
+```
+Create a label called "Newsletter" with color #8b5cf6
+```

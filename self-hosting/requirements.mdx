@@ -39,10 +39,10 @@ This guide covers the requirements for self-hosting TryPost.
 Recommended `php.ini` settings:
 
 ```ini
-upload_max_filesize = 100M
-post_max_size = 100M
-memory_limit = 256M
-max_execution_time = 300
+upload_max_filesize = 2G
+post_max_size = 2G
+memory_limit = 512M
+max_execution_time = 600
 ```
 
 ## Supported Operating Systems
@@ -57,12 +57,17 @@ TryPost can run on any OS that supports the required software:
 
 ## Cloud Providers
 
-TryPost works well on:
+TryPost works well on any cloud provider. We recommend [Hetzner Cloud](https://hetzner.cloud/?ref=V4djx1Vt7Mm7) for the best price-to-performance ratio.
+
+<Tip>
+  Get **20 EUR free credits** on [Hetzner Cloud](https://hetzner.cloud/?ref=V4djx1Vt7Mm7) — enough to run TryPost for several months on a CX22 instance (2 vCPUs, 4 GB RAM). *This is a referral link — it helps support TryPost development at no extra cost to you.*
+</Tip>
+
+Other supported providers:
 
 - DigitalOcean Droplets
 - AWS EC2
 - Google Cloud Compute
-- Hetzner Cloud
 - Linode
 - Vultr
 

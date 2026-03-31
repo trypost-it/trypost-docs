@@ -1,0 +1,56 @@
+---
+title: "Posts"
+description: "Create, schedule, and manage social media posts across multiple platforms."
+icon: "pen-to-square"
+---
+
+## What are posts?
+
+Posts are the core content unit in TryPost. A post represents a piece of content that can be published across one or more social media platforms. Each post contains platform-specific entries that hold the actual content for each connected social account.
+
+## Post statuses
+
+| Status | Description |
+|--------|-------------|
+| **Draft** | The post is being composed and is not yet scheduled |
+| **Scheduled** | The post is set to be published at a specific date and time |
+| **Publishing** | The post is currently being published to the selected platforms |
+| **Published** | The post has been successfully published to all platforms |
+| **Partially published** | The post was published to some platforms but failed on others |
+| **Failed** | The post failed to publish to all platforms |
+
+## Creating a post
+
+When you create a post, TryPost automatically creates a platform entry for each connected social account in your workspace. You can then customize the content for each platform individually or sync the same content across all platforms.
+
+### Synced vs. custom content
+
+- **Synced** — The same content is used across all platforms. Editing one updates all of them.
+- **Custom** — Each platform has its own content. Useful when you want to tailor the message for LinkedIn vs. X vs. Instagram.
+
+## Scheduling
+
+Set a date and time for your post and TryPost will automatically publish it. The scheduled time is based on your workspace's timezone setting.
+
+<Note>
+  Posts can only be scheduled for a future date and time. You cannot schedule a post in the past.
+</Note>
+
+## Labels
+
+Assign labels to your posts to organize and categorize them. Labels are color-coded and can be used to filter posts in the dashboard. See [Labels](/knowledge-base/labels) for more.
+
+## Platform-specific content
+
+Each platform entry in a post includes:
+
+| Field | Description |
+|-------|-------------|
+| **Content** | The text content for this platform |
+| **Content type** | The type of content (text, image, video) |
+| **Status** | The publishing status for this specific platform |
+| **Enabled** | Whether this platform is included when publishing |
+
+## Deleting posts
+
+You can delete any post at any time. Deleting a post removes it and all its platform entries. Published posts that have already been sent to social platforms cannot be "unpublished" — the content will remain on those platforms.

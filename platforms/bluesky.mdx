@@ -5,51 +5,24 @@ description: Connect your Bluesky account to TryPost
 
 # Bluesky
 
-Connect your Bluesky account to TryPost.
+TryPost supports posting to Bluesky.
 
-## No Developer App Required
+## Connect your account
 
-Bluesky uses App Passwords instead of OAuth, so you don't need to create a developer app.
-
-## Create an App Password
-
-1. Log in to [Bluesky](https://bsky.app/)
-2. Go to **Settings** > **App Passwords**
-3. Click **Add App Password**
-4. Give it a name (e.g., "TryPost")
-5. Copy the generated password
-
-<Warning>
-Save this password securely. You won't be able to see it again.
-</Warning>
-
-## Connect Your Account
-
-1. In TryPost, go to **Accounts**
+1. Go to **Accounts** in the TryPost dashboard
 2. Click **Connect Bluesky**
-3. Enter your Bluesky handle (e.g., `yourname.bsky.social`)
-4. Enter the App Password you created
-5. Click **Connect**
-6. You're ready to post!
+3. Enter your Bluesky handle and an **App Password**
 
-## Environment Variables
+<Note>
+  Bluesky doesn't use OAuth. You need to create an [App Password](https://bsky.app/settings/app-passwords) in your Bluesky settings. Do not use your main password.
+</Note>
 
-No environment variables are required for Bluesky. Each user connects with their own app password.
+## Supported content types
 
-## Supported Features
+| Type | Description |
+|------|-------------|
+| **Post** | Text with up to 4 optional images |
 
-- Text posts
-- Image posts (up to 4 images)
-- Link cards
-- Mentions
-- Hashtags
+## Self-hosting setup
 
-## Custom PDS
-
-If you're using a custom Personal Data Server (PDS), you can enter the full handle including your domain.
-
-## Security
-
-- App Passwords have limited permissions compared to your main password
-- You can revoke an App Password at any time from Bluesky settings
-- TryPost stores the app password securely encrypted
+No API credentials or environment variables are required for Bluesky. It works out of the box on any self-hosted instance.

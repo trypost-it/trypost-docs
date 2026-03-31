@@ -1,0 +1,64 @@
+---
+title: "Cursor"
+description: "Connect TryPost to Cursor for AI-powered social media management in your editor"
+icon: "arrow-pointer"
+---
+
+[Cursor](https://cursor.com) is an AI-powered code editor. You can connect it to TryPost's MCP server to manage your social media scheduling directly from the editor.
+
+## Prerequisites
+
+- Cursor editor installed
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Create the MCP configuration file">
+    In your project root, create or edit `.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "trypost": {
+          "type": "http",
+          "url": "https://app.trypost.it/mcp/trypost",
+          "headers": {
+            "Authorization": "Bearer tp_your_api_key_here"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+  </Step>
+  <Step title="Restart Cursor">
+    Restart Cursor to load the new MCP configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Open the AI chat panel and ask:
+
+    ```
+    List all my TryPost social accounts
+    ```
+  </Step>
+</Steps>
+
+## Example prompts
+
+Use Cursor's AI chat or inline editing to interact with TryPost:
+
+```
+Create a new post for all my connected accounts
+```
+
+```
+Show me all my hashtag groups
+```
+
+```
+What workspace am I connected to?
+```

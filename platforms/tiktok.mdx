@@ -5,64 +5,31 @@ description: Connect your TikTok account to TryPost
 
 # TikTok
 
-Connect your TikTok account to TryPost.
+TryPost supports posting videos to TikTok.
 
-## Create a TikTok Developer App
+## Connect your account
 
-1. Go to [TikTok Developers](https://developers.tiktok.com/)
-2. Log in and go to **Manage Apps**
-3. Click **Create App**
-4. Select **Content Posting API** as your use case
-5. Fill in the app details
-
-## Configure Your App
-
-1. In your app settings, add the redirect URL:
-   - `https://your-domain.com/accounts/tiktok/callback`
-2. Request the required scopes:
-   - `user.info.basic`
-   - `video.upload`
-   - `video.publish`
-3. Submit your app for review
-
-<Note>
-TikTok requires app approval before you can use the API in production.
-</Note>
-
-## Get Your Credentials
-
-1. Go to your app's **Manage** page
-2. Note your **Client Key** and **Client Secret**
-
-## Environment Variables
-
-Add to your `.env` file:
-
-```env
-TIKTOK_CLIENT_ID=your_client_key
-TIKTOK_CLIENT_SECRET=your_client_secret
-TIKTOK_CLIENT_REDIRECT="${APP_URL}/accounts/tiktok/callback"
-```
-
-## Connect Your Account
-
-1. In TryPost, go to **Accounts**
+1. Go to **Accounts** in the TryPost dashboard
 2. Click **Connect TikTok**
-3. Log in and authorize the app
-4. You're ready to post!
+3. Authorize TryPost on TikTok
 
-## Supported Features
+## Supported content types
 
-- Video posts
-- Captions with hashtags
+| Type | Aspect ratio | Description |
+|------|-------------|-------------|
+| **Video** | 9:16 | Short or long-form video (required) |
 
-## Requirements
+## Self-hosting setup
 
-- Videos must be between 1 second and 10 minutes
-- Supported formats: MP4, WebM
-- Maximum file size varies by account type
+<Accordion title="Configure TikTok API credentials">
+  1. Go to [TikTok Developers](https://developers.tiktok.com/) and create an app
+  2. Enable **Content Posting API**
+  3. Set the redirect URL to `{APP_URL}/accounts/tiktok/callback`
+  4. Add to your `.env`:
 
-## Limitations
-
-- Images cannot be posted directly (TikTok is video-only)
-- Some features require a verified business account
+  ```env
+  TIKTOK_CLIENT_ID=your_client_key
+  TIKTOK_CLIENT_SECRET=your_client_secret
+  TIKTOK_CLIENT_REDIRECT="${APP_URL}/accounts/tiktok/callback"
+  ```
+</Accordion>

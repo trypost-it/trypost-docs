@@ -1,0 +1,80 @@
+---
+title: "Introduction"
+description: "Connect AI coding assistants to your TryPost account using the Model Context Protocol"
+---
+
+TryPost provides a built-in [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that lets AI coding assistants manage your social media scheduling directly. Your AI assistant can create posts, manage hashtags, organize labels, and more — all through natural language.
+
+## What is MCP?
+
+MCP is an open protocol that connects AI assistants to external tools and data sources. Instead of copying and pasting API calls, your AI assistant can interact with TryPost directly.
+
+## Available tools
+
+TryPost exposes 18 tools across 6 categories:
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Posts** | List, Get, Create, Delete | List and inspect posts, create new draft posts |
+| **Hashtags** | List, Create, Update, Delete | Manage reusable hashtag groups |
+| **Labels** | List, Create, Update, Delete | Manage color-coded labels for organizing posts |
+| **Social Accounts** | List, Toggle | View connected accounts and toggle active/inactive |
+| **Workspace** | Get | Get current workspace details |
+| **API Keys** | List, Create, Delete | Manage API keys |
+
+## How it works
+
+<Steps>
+  <Step title="Get your API key">
+    Create an API key from the [TryPost dashboard](https://app.trypost.it).
+  </Step>
+  <Step title="Configure your AI assistant">
+    Add the TryPost MCP server to your assistant's configuration using the server URL and your API key.
+  </Step>
+  <Step title="Start using natural language">
+    Ask your assistant to manage your TryPost account. For example: "Create a new post for LinkedIn" or "List all my scheduled posts."
+  </Step>
+</Steps>
+
+## Server URL
+
+```
+https://app.trypost.it/mcp/trypost
+```
+
+Authentication uses the same API keys as the REST API, passed as a Bearer token.
+
+## Next steps
+
+<Columns cols={3}>
+  <Card title="Claude Code" icon="terminal" href="/ai/claude-code">
+    CLI assistant by Anthropic.
+  </Card>
+  <Card title="Claude Desktop" icon="message-bot" href="/ai/claude-desktop">
+    Desktop app by Anthropic.
+  </Card>
+  <Card title="Cursor" icon="arrow-pointer" href="/ai/cursor">
+    AI-powered code editor.
+  </Card>
+  <Card title="Windsurf" icon="water" href="/ai/windsurf">
+    Editor with Cascade AI.
+  </Card>
+  <Card title="VS Code" icon="code" href="/ai/vs-code">
+    VS Code with MCP extensions.
+  </Card>
+  <Card title="GitHub Copilot" icon="github" href="/ai/github-copilot">
+    Copilot agent mode.
+  </Card>
+  <Card title="Gemini CLI" icon="terminal" href="/ai/gemini-cli">
+    CLI assistant by Google.
+  </Card>
+  <Card title="OpenCode" icon="terminal" href="/ai/opencode">
+    Open-source CLI assistant.
+  </Card>
+  <Card title="Codex" icon="terminal" href="/ai/codex">
+    CLI agent by OpenAI.
+  </Card>
+  <Card title="Antigravity" icon="terminal" href="/ai/antigravity">
+    AI agent by Google.
+  </Card>
+</Columns>

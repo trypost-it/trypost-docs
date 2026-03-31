@@ -1,0 +1,52 @@
+---
+title: "Create API key"
+api: "POST /api-keys"
+description: "Create a new API key. Returns the plain text token which is only shown once."
+---
+
+## Request
+
+<ParamField body="name" type="string" required>
+  The API key name. Maximum 255 characters.
+</ParamField>
+
+<ParamField body="expires_at" type="string">
+  Optional expiration date. Must be a future date. Format: `Y-m-d` or `Y-m-d H:i:s`.
+</ParamField>
+
+## Response
+
+Returns the created API key **with the plain text token**. The token is only shown once and cannot be retrieved later.
+
+<Warning>
+  Copy the `plain_token` immediately after creation. TryPost stores a hash of your API key, not the key itself. If you lose it, you'll need to create a new one.
+</Warning>
+
+<RequestExample>
+```bash
+curl -X POST https://app.trypost.it/api/api-keys \
+  -H "Authorization: Bearer tp_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "CI/CD Pipeline",
+    "expires_at": "2025-12-31"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json
+{
+  "token": {
+    "id": "a7b8c9d0-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "CI/CD Pipeline",
+    "key_hint": "tp_xyz9876543210...",
+    "status": "active",
+    "last_used_at": null,
+    "expires_at": "2025-12-31 00:00:00",
+    "created_at": "2025-01-14 12:00:00"
+  },
+  "plain_token": "tp_xyz9876543210abcdef1234567890abcdef1234567890ab"
+}
+```
+</ResponseExample>

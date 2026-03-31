@@ -1,0 +1,73 @@
+---
+title: "GitHub Copilot"
+description: "Connect TryPost to GitHub Copilot in VS Code for AI-powered social media management"
+icon: "github"
+---
+
+[GitHub Copilot](https://github.com/features/copilot) supports MCP servers in agent mode, allowing you to connect TryPost directly to your VS Code workflow.
+
+## Prerequisites
+
+- VS Code with GitHub Copilot extension installed
+- Copilot agent mode enabled
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Create the MCP configuration file">
+    In your project root, create or edit `.vscode/mcp.json`:
+
+    ```json
+    {
+      "servers": {
+        "trypost": {
+          "type": "http",
+          "url": "https://app.trypost.it/mcp/trypost",
+          "headers": {
+            "Authorization": "Bearer tp_your_api_key_here"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+  </Step>
+  <Step title="Reload VS Code">
+    Reload the window or restart VS Code to load the MCP configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Open Copilot Chat in agent mode and ask:
+
+    ```
+    List all my TryPost posts
+    ```
+
+    You should see Copilot use the TryPost tools to fetch your data.
+  </Step>
+</Steps>
+
+<Tip>
+  VS Code uses `"servers"` as the top-level key (not `"mcpServers"`). This is different from most other MCP clients.
+</Tip>
+
+## Global configuration
+
+To make TryPost available across all projects, use the command palette and run **MCP: Open User Configuration** to add the server to your user-level settings.
+
+## Example prompts
+
+```
+Create a new post scheduled for tomorrow
+```
+
+```
+Show me all my hashtag groups
+```
+
+```
+What social accounts are connected to my workspace?
+```

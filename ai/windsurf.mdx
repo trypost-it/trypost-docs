@@ -1,0 +1,63 @@
+---
+title: "Windsurf"
+description: "Connect TryPost to Windsurf for AI-powered social media management with Cascade"
+icon: "water"
+---
+
+[Windsurf](https://windsurf.com) is an AI-powered editor with Cascade, a deep context-aware AI assistant. You can connect it to TryPost's MCP server to manage your social media scheduling.
+
+## Prerequisites
+
+- Windsurf editor installed
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Open the MCP configuration file">
+    Edit the Windsurf MCP configuration at `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "trypost": {
+          "serverUrl": "https://app.trypost.it/mcp/trypost",
+          "headers": {
+            "Authorization": "Bearer tp_your_api_key_here"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+  </Step>
+  <Step title="Restart Windsurf">
+    Restart Windsurf to load the new configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Open Cascade and ask:
+
+    ```
+    List all my TryPost posts
+    ```
+  </Step>
+</Steps>
+
+## Example prompts
+
+Use Cascade to interact with TryPost:
+
+```
+Create a hashtag group called "Product Launch" with #launch #newproduct #announcement
+```
+
+```
+Show me all my connected social accounts
+```
+
+```
+Create a label called "Blog" with color #3b82f6
+```

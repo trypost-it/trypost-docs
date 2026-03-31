@@ -1,0 +1,87 @@
+---
+title: "Introduction"
+description: "The TryPost API lets you manage social media posts, hashtags, labels, and more with a simple REST API."
+---
+
+## Base URL
+
+The TryPost API is available at:
+
+```
+https://app.trypost.it/api
+```
+
+For self-hosted instances, the base URL is your `APP_URL` followed by `/api` (e.g., `https://trypost.yourdomain.com/api`).
+
+## Authentication
+
+All API requests require a Bearer token in the `Authorization` header. You can create API keys from the [TryPost dashboard](https://app.trypost.it).
+
+```bash
+Authorization: Bearer tp_your_api_key
+```
+
+<Warning>
+  Keep your API key secret. Do not expose it in client-side code or public repositories.
+</Warning>
+
+## Key format
+
+All TryPost API keys follow the format:
+
+```
+tp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Keys start with `tp_` followed by 48 random characters (51 characters total).
+
+## Rate limiting
+
+API requests are throttled to prevent abuse. When you exceed the limit, the API returns a `429` status code with a `Retry-After` header indicating how many seconds to wait.
+
+## Errors
+
+The API uses conventional HTTP status codes. All error responses include a `message` field.
+
+| Status | Description |
+|--------|-------------|
+| `200` | Success |
+| `201` | Created |
+| `204` | No content (successful deletion) |
+| `401` | Missing or invalid API key |
+| `402` | Active subscription required |
+| `404` | Resource not found |
+| `422` | Validation error |
+| `429` | Rate limit exceeded |
+
+```json
+{
+  "message": "The name field is required."
+}
+```
+
+## Pagination
+
+The **List posts** endpoint returns paginated results (15 per page). The response includes pagination metadata:
+
+```json
+{
+  "data": [...],
+  "links": {
+    "first": "https://app.trypost.it/api/posts?page=1",
+    "last": "https://app.trypost.it/api/posts?page=5",
+    "prev": null,
+    "next": "https://app.trypost.it/api/posts?page=2"
+  },
+  "meta": {
+    "current_page": 1,
+    "last_page": 5,
+    "per_page": 15,
+    "total": 72
+  }
+}
+```
+
+Use the `page` query parameter to navigate between pages.
+
+Other list endpoints (hashtags, labels, social accounts, API keys) return all items without pagination.

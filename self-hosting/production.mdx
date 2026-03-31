@@ -39,7 +39,14 @@ composer install --optimize-autoloader --no-dev
 
 ## Queue Worker
 
-TryPost uses queues for background processing. Use Supervisor to keep the queue worker running.
+TryPost uses queues for critical background processing:
+
+- **Publishing posts** to social platforms at scheduled times
+- **Sending notifications** (email and in-app)
+- **Verifying social account connections**
+- **Processing analytics events**
+
+Without a running queue worker, scheduled posts will not be published. Use Supervisor to keep the queue worker running.
 
 ### Install Supervisor
 
@@ -124,7 +131,7 @@ server {
         deny all;
     }
 
-    client_max_body_size 100M;
+    client_max_body_size 2G;
 }
 ```
 
@@ -137,7 +144,9 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
 ```
 
-## Scheduled Tasks
+## Scheduled Tasks (Cron)
+
+TryPost uses Laravel's task scheduler for recurring jobs like dispatching scheduled posts and cleaning up expired tokens. The scheduler **must** run every minute or scheduled posts won't be published on time.
 
 Add the Laravel scheduler to cron:
 
@@ -151,6 +160,51 @@ Add this line:
 * * * * * cd /var/www/trypost && php artisan schedule:run >> /dev/null 2>&1
 ```
 
+<Warning>
+  This is required. Without the cron job, scheduled posts will not be published automatically.
+</Warning>
+
+## WebSocket Server (Reverb)
+
+TryPost uses [Laravel Reverb](https://laravel.com/docs/reverb) for real-time updates in the dashboard (live post status changes, notifications). Add a Supervisor config to keep it running:
+
+Create `/etc/supervisor/conf.d/trypost-reverb.conf`:
+
+```ini
+[program:trypost-reverb]
+process_name=%(program_name)s
+command=php /var/www/trypost/artisan reverb:start --host=0.0.0.0 --port=8080
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/trypost/storage/logs/reverb.log
+```
+
+Then reload Supervisor:
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start trypost-reverb
+```
+
+<Note>
+  In production, proxy WebSocket connections through Nginx with SSL. Add this to your Nginx config:
+
+  ```nginx
+  location /app {
+      proxy_pass http://127.0.0.1:8080;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+      proxy_set_header Host $host;
+  }
+  ```
+</Note>
+
 ## File Permissions
 
 Set correct permissions:
@@ -162,13 +216,28 @@ sudo chmod -R 775 /var/www/trypost/storage
 sudo chmod -R 775 /var/www/trypost/bootstrap/cache
 ```
 
+## Checklist
+
+Make sure all of these are running in production:
+
+| Service | Command | Purpose |
+|---------|---------|---------|
+| **Horizon** | `php artisan horizon` | Processes queues (post publishing, notifications) |
+| **Reverb** | `php artisan reverb:start` | Real-time WebSocket updates |
+| **Scheduler** | `php artisan schedule:run` (cron) | Dispatches scheduled posts |
+
+<Warning>
+  If any of these services are not running, TryPost will not function correctly. Scheduled posts won't publish, notifications won't send, and the dashboard won't update in real time.
+</Warning>
+
 ## Monitoring
 
 Consider setting up monitoring for:
 
 - Server health (CPU, memory, disk)
-- Application errors (Laravel logs)
+- Application errors (Laravel logs in `storage/logs/`)
 - Queue status (Horizon dashboard at `/horizon`)
+- WebSocket connections (Reverb logs in `storage/logs/reverb.log`)
 
 ## Backups
 

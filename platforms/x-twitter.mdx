@@ -5,58 +5,31 @@ description: Connect your X (formerly Twitter) account to TryPost
 
 # X (Twitter)
 
-Connect your X (formerly Twitter) account to TryPost.
+TryPost supports posting to X (formerly Twitter) accounts.
 
-## Create an X Developer App
+## Connect your account
 
-1. Go to the [X Developer Portal](https://developer.twitter.com/)
-2. Sign up for a developer account if you haven't already
-3. Create a new project and app
-4. Select the appropriate access level (Free tier works for basic posting)
-
-## Configure OAuth 2.0
-
-1. Go to your app's **Settings**
-2. Under **User authentication settings**, click **Set up**
-3. Configure:
-   - **App permissions**: Read and Write
-   - **Type of App**: Web App
-   - **Callback URL**: `https://your-domain.com/accounts/x/callback`
-   - **Website URL**: Your domain
-4. Save your **Client ID** and **Client Secret**
-
-## Environment Variables
-
-Add to your `.env` file:
-
-```env
-X_CLIENT_ID=your_client_id
-X_CLIENT_SECRET=your_client_secret
-X_CLIENT_REDIRECT="${APP_URL}/accounts/x/callback"
-```
-
-## Connect Your Account
-
-1. In TryPost, go to **Accounts**
+1. Go to **Accounts** in the TryPost dashboard
 2. Click **Connect X**
-3. Authorize the app on X
-4. You're ready to post!
+3. Authorize TryPost on X
 
-## Supported Features
+## Supported content types
 
-- Text posts (tweets)
-- Image posts (up to 4 images)
-- Video posts
-- Threads (multiple connected tweets)
+| Type | Description |
+|------|-------------|
+| **Post** | Text with up to 4 images or 1 video |
 
-## Rate Limits
+## Self-hosting setup
 
-X has rate limits depending on your access level:
+<Accordion title="Configure X API credentials">
+  1. Go to [X Developer Portal](https://developer.twitter.com/) and create a project/app
+  2. Enable **OAuth 2.0** in your app settings
+  3. Set the redirect URL to `{APP_URL}/accounts/x/callback`
+  4. Add to your `.env`:
 
-| Tier | Posts per month |
-|------|-----------------|
-| Free | 1,500 |
-| Basic | 3,000 |
-| Pro | 300,000 |
-
-Consider upgrading your X developer tier if you need higher limits.
+  ```env
+  X_CLIENT_ID=your_client_id
+  X_CLIENT_SECRET=your_client_secret
+  X_CLIENT_REDIRECT="${APP_URL}/accounts/x/callback"
+  ```
+</Accordion>

@@ -1,0 +1,43 @@
+---
+title: "Labels"
+description: "Organize and categorize your posts with color-coded labels."
+icon: "tag"
+---
+
+## What are labels?
+
+Labels are color-coded tags that you can assign to posts to organize and categorize your content. Use them to group posts by campaign, topic, client, or any other criteria.
+
+## Creating a label
+
+Create labels from the dashboard or via the API:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| **Name** | Yes | A descriptive name for the label (e.g., "Product Launch", "Blog Content") |
+| **Color** | Yes | A hex color code (e.g., `#4f46e5`). Must match the format `#RRGGBB` |
+
+## Using labels
+
+Assign labels to posts when creating or editing them. A post can have multiple labels, and the same label can be used across many posts.
+
+Labels appear as colored badges in the post list, making it easy to visually scan and filter your content calendar.
+
+## Managing labels
+
+- **Edit** — Update the name or color of a label at any time. Changes are reflected across all posts that use the label.
+- **Delete** — Remove a label you no longer need. The label is removed from all posts, but the posts themselves are not affected.
+
+## Via the API
+
+You can manage labels programmatically using the [API](/api-reference/endpoint/list-labels) or through an AI assistant connected via [MCP](/ai/introduction).
+
+```bash
+curl -X POST https://app.trypost.it/api/labels \
+  -H "Authorization: Bearer tp_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Product Launch",
+    "color": "#4f46e5"
+  }'
+```

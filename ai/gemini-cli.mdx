@@ -1,0 +1,67 @@
+---
+title: "Gemini CLI"
+description: "Connect TryPost to Gemini CLI for AI-powered social media management from the terminal"
+icon: "terminal"
+---
+
+[Gemini CLI](https://github.com/google-gemini/gemini-cli) is Google's command-line AI assistant. You can connect it to TryPost's MCP server to manage your social media scheduling with natural language.
+
+## Prerequisites
+
+- Gemini CLI installed
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Open the settings file">
+    Edit your Gemini CLI settings at `~/.gemini/settings.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "trypost": {
+          "httpUrl": "https://app.trypost.it/mcp/trypost",
+          "headers": {
+            "Authorization": "Bearer tp_your_api_key_here"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+
+    For project-level configuration, create `.gemini/settings.json` in your project root instead.
+  </Step>
+  <Step title="Restart Gemini CLI">
+    Close and reopen Gemini CLI to load the new configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Ask Gemini to interact with your TryPost account:
+
+    ```
+    List all my TryPost posts
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Gemini CLI uses `"httpUrl"` for HTTP streaming servers (not `"url"`). The `"url"` field is used for SSE transport only.
+</Tip>
+
+## Example prompts
+
+```
+Create a new hashtag group called "Growth Hacking"
+```
+
+```
+What workspace am I connected to?
+```
+
+```
+Show me all my labels
+```

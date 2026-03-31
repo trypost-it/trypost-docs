@@ -1,0 +1,56 @@
+---
+title: "Claude Desktop"
+description: "Connect TryPost to the Claude Desktop app for AI-powered social media management"
+icon: "message-bot"
+---
+
+[Claude Desktop](https://claude.ai/download) is Anthropic's desktop application for chatting with Claude. You can connect it to TryPost's MCP server to manage your social media scheduling through conversation.
+
+## Prerequisites
+
+- Claude Desktop installed
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Open integrations settings">
+    In Claude Desktop, go to **Settings** > **Integrations** and click **Add custom connector**.
+  </Step>
+  <Step title="Add the TryPost server">
+    Enter the following server URL:
+
+    ```
+    https://app.trypost.it/mcp/trypost
+    ```
+
+    When prompted for authentication, provide your API key as a Bearer token.
+  </Step>
+  <Step title="Verify the connection">
+    Start a new conversation and ask Claude to interact with your TryPost account:
+
+    ```
+    List all my scheduled posts
+    ```
+
+    You should see Claude use the TryPost tools to fetch your posts.
+  </Step>
+</Steps>
+
+## Example prompts
+
+```
+Show me all my connected social media accounts
+```
+
+```
+Create a new hashtag group called "Content Marketing"
+```
+
+```
+What posts do I have scheduled for this week?
+```
+
+```
+Create a label called "Urgent" with a red color
+```

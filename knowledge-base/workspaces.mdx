@@ -1,0 +1,37 @@
+---
+title: "Workspaces"
+description: "Organize your social media accounts and content with workspaces."
+icon: "building"
+---
+
+## What are workspaces?
+
+Workspaces are the top-level organizational unit in TryPost. Each workspace has its own social accounts, posts, hashtag groups, labels, and API keys. Use workspaces to separate different brands, clients, or projects.
+
+## Workspace settings
+
+| Field | Description |
+|-------|-------------|
+| **Name** | The workspace name (e.g., "My Brand", "Client A") |
+| **Timezone** | The timezone used for scheduling posts |
+
+## Timezone
+
+The workspace timezone determines when scheduled posts are published. When you set a post to publish at "10:00 AM", it uses the workspace's timezone.
+
+<Tip>
+  Set your workspace timezone to match your target audience's location for the best engagement.
+</Tip>
+
+## API key scope
+
+API keys are scoped to a single workspace. When you make an API request or connect an AI assistant via MCP, all operations are performed within the workspace that the API key belongs to.
+
+## Via the API
+
+You can get your workspace details via the [API](/api-reference/endpoint/get-workspace) or through an AI assistant connected via [MCP](/ai/introduction).
+
+```bash
+curl -X GET https://app.trypost.it/api/workspace \
+  -H "Authorization: Bearer tp_your_api_key"
+```

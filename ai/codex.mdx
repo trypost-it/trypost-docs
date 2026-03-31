@@ -1,0 +1,65 @@
+---
+title: "OpenAI Codex"
+description: "Connect TryPost to OpenAI Codex CLI for AI-powered social media management"
+icon: "terminal"
+---
+
+[OpenAI Codex](https://github.com/openai/codex) is OpenAI's CLI agent for software development. You can connect it to TryPost's MCP server to manage your social media scheduling with natural language.
+
+## Prerequisites
+
+- Codex CLI installed (`npm install -g @openai/codex`)
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Set your API key as an environment variable">
+    Add your TryPost API key to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
+
+    ```bash
+    export TRYPOST_API_KEY="tp_your_api_key_here"
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+  </Step>
+  <Step title="Open the configuration file">
+    Edit `~/.codex/config.toml` and add the TryPost server:
+
+    ```toml
+    [mcp_servers.trypost]
+    url = "https://app.trypost.it/mcp/trypost"
+    bearer_token_env_var = "TRYPOST_API_KEY"
+    ```
+  </Step>
+  <Step title="Restart Codex">
+    Close and reopen Codex to load the new configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Ask Codex to interact with your TryPost account:
+
+    ```
+    List all my TryPost posts
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Codex uses TOML for configuration (not JSON). It provides `bearer_token_env_var` to securely reference API keys from environment variables instead of hardcoding them in the config file.
+</Tip>
+
+## Example prompts
+
+```
+Create a new draft post for all my social accounts
+```
+
+```
+Show me all my hashtag groups
+```
+
+```
+Create a label called "Campaign" with color #f59e0b
+```

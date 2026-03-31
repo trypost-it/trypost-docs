@@ -1,0 +1,42 @@
+---
+title: "Notifications"
+description: "Stay informed about post publishing, account issues, and team activity."
+icon: "bell"
+---
+
+## What are notifications?
+
+TryPost sends notifications to keep you informed about important events — like when a post is published, when a social account disconnects, or when a team member joins your workspace.
+
+## Notification types
+
+| Type | Description |
+|------|-------------|
+| **Post published** | A scheduled post was successfully published to all platforms |
+| **Post failed** | A post failed to publish to one or more platforms |
+| **Post partially published** | A post was published to some platforms but failed on others |
+| **Account disconnected** | A connected social account lost its authorization |
+| **Invite received** | You received an invitation to join a workspace |
+| **Member joined** | A new member accepted an invitation and joined your workspace |
+| **Member removed** | A member was removed from your workspace |
+
+## Notification channels
+
+You can receive notifications through two channels:
+
+| Channel | Description |
+|---------|-------------|
+| **In-app** | Notifications appear in the notification bell inside TryPost |
+| **Email** | Notifications are sent to your email address |
+
+## Notification preferences
+
+Go to **Settings > Notifications** to control which notifications you receive and through which channels. You can enable or disable each notification type independently for each channel.
+
+<Tip>
+  At minimum, keep **Post failed** and **Account disconnected** notifications enabled so you can quickly react to issues.
+</Tip>
+
+## Email configuration
+
+Email notifications require a working mail configuration. TryPost uses [SendKit](https://sendkit.dev?utm_source=trypost&utm_medium=docs&utm_campaign=notifications) as the default mailer with a free plan of 3,000 emails/month — more than enough for notification emails. See the [Configuration guide](/self-hosting/configuration) for setup details.

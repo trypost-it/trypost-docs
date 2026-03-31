@@ -1,14 +1,36 @@
 ---
-title: Self-Hosting
-description: Deploy TryPost on your own infrastructure
+title: "Self-Hosting"
+description: "Deploy TryPost on your own infrastructure"
 ---
 
-# Self-Hosting
+TryPost is open-source and can be self-hosted on your own server. This section covers everything you need to install, configure, and run TryPost in production.
 
-Deploy TryPost on your own infrastructure.
+<Note>
+  Don't want to manage infrastructure? Use [TryPost Cloud](https://app.trypost.it/register) — no setup required, free to get started.
+</Note>
 
-Choose your deployment method:
+## Deployment options
 
-- [Requirements](/self-hosting/requirements) - Server requirements and supported platforms
-- [Production Setup](/self-hosting/production) - Deploy to a production server
-- [Docker](/self-hosting/docker) - Deploy using Docker and Laravel Sail
+<Columns cols={2}>
+  <Card title="Manual Installation" icon="terminal" href="/self-hosting/installation">
+    Step-by-step guide to install TryPost on a server.
+  </Card>
+  <Card title="Docker" icon="docker" href="/self-hosting/docker">
+    Deploy with Docker and Laravel Sail.
+  </Card>
+</Columns>
+
+## Configuration & production
+
+<Columns cols={2}>
+  <Card title="Configuration" icon="gear" href="/self-hosting/configuration">
+    Environment variables, database, mail, storage, and more.
+  </Card>
+  <Card title="Production Setup" icon="globe" href="/self-hosting/production">
+    Nginx, SSL, queue workers, cron jobs, and WebSockets.
+  </Card>
+</Columns>
+
+## Server requirements
+
+See [Requirements](/self-hosting/requirements) for the full list of software and hardware requirements.

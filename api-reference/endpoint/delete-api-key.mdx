@@ -1,0 +1,22 @@
+---
+title: "Delete API key"
+api: "DELETE /api-keys/{apiToken}"
+description: "Delete an API key by ID. This action is immediate and irreversible."
+---
+
+## Request
+
+<ParamField path="apiToken" type="string" required>
+  The API key ID to delete.
+</ParamField>
+
+## Response
+
+Returns `204 No Content` on success. Any application still using this key will immediately start receiving `401` errors.
+
+<RequestExample>
+```bash
+curl -X DELETE https://app.trypost.it/api/api-keys/f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f9a0b1c \
+  -H "Authorization: Bearer tp_your_api_key"
+```
+</RequestExample>

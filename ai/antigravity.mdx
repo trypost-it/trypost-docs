@@ -1,0 +1,65 @@
+---
+title: "Antigravity"
+description: "Connect TryPost to Google Antigravity for AI-powered social media management"
+icon: "terminal"
+---
+
+[Antigravity](https://antigravity.google) is Google's AI coding agent. You can connect it to TryPost's MCP server to manage your social media scheduling with natural language.
+
+## Prerequisites
+
+- Antigravity installed
+- A TryPost API key
+
+## Setup
+
+<Steps>
+  <Step title="Open the MCP configuration file">
+    Edit your Antigravity MCP configuration file and add the TryPost server:
+
+    ```json
+    {
+      "mcpServers": {
+        "trypost": {
+          "serverUrl": "https://app.trypost.it/mcp/trypost",
+          "headers": {
+            "Authorization": "Bearer tp_your_api_key_here"
+          }
+        }
+      }
+    }
+    ```
+
+    <Note>
+      Replace `tp_your_api_key_here` with your actual API key from the [TryPost dashboard](https://app.trypost.it).
+    </Note>
+  </Step>
+  <Step title="Restart Antigravity">
+    Restart Antigravity to load the new MCP configuration.
+  </Step>
+  <Step title="Verify the connection">
+    Ask Antigravity to interact with your TryPost account:
+
+    ```
+    List all my TryPost social accounts
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Antigravity uses `"serverUrl"` for remote MCP connections (not `"url"`). This is the same format used by Windsurf.
+</Tip>
+
+## Example prompts
+
+```
+Create a new post scheduled for Friday at 2pm
+```
+
+```
+Show me all labels in my workspace
+```
+
+```
+Create a hashtag group called "Social Media" with #socialmedia #content #marketing
+```

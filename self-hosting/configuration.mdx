@@ -1,0 +1,319 @@
+---
+title: Configuration
+description: Configure TryPost environment variables
+---
+
+# Configuration
+
+TryPost is configured through environment variables in the `.env` file.
+
+## Basic Configuration
+
+```env
+APP_NAME="TryPost"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+```
+
+| Variable | Description |
+|----------|-------------|
+| `APP_NAME` | Your application name |
+| `APP_ENV` | Environment: `local`, `staging`, `production` |
+| `APP_DEBUG` | Enable debug mode (set to `false` in production) |
+| `APP_URL` | Your application URL |
+
+## Self-Hosted Mode
+
+```env
+SELF_HOSTED=true
+```
+
+When `SELF_HOSTED=true`, TryPost runs without any payment or subscription requirements. This is the default for self-hosted installations.
+
+**What changes in self-hosted mode:**
+
+- No Stripe configuration required
+- No subscription or payment checks
+- Unlimited workspaces per user
+- All features available without restrictions
+
+<Note>
+If you're running TryPost as a SaaS with payments, set `SELF_HOSTED=false` and configure Stripe.
+</Note>
+
+## Database
+
+TryPost supports PostgreSQL and MySQL.
+
+### PostgreSQL (recommended)
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=trypost
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+```
+
+### MySQL
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=trypost
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
+
+## Redis
+
+Redis is required for queues and caching.
+
+```env
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+```
+
+## File Storage
+
+TryPost supports local storage and S3-compatible cloud storage.
+
+### Local Storage (default)
+
+```env
+FILESYSTEM_DISK=local
+```
+
+### AWS S3
+
+```env
+FILESYSTEM_DISK=s3
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=your_bucket
+AWS_URL=https://your-bucket.s3.amazonaws.com
+```
+
+### Cloudflare R2
+
+```env
+FILESYSTEM_DISK=r2
+R2_ACCESS_KEY_ID=your_key
+R2_SECRET_ACCESS_KEY=your_secret
+R2_ENDPOINT=https://your-account.r2.cloudflarestorage.com
+R2_REGION=auto
+R2_BUCKET=your_bucket
+R2_URL=https://your-custom-domain.com
+```
+
+### Other S3-Compatible Storage
+
+Any S3-compatible storage (MinIO, DigitalOcean Spaces, etc.) can be used with the `s3` disk configuration.
+
+## Mail
+
+TryPost sends transactional emails for post notifications, team invites, account alerts, and authentication (email verification, password reset). A working mail configuration is required.
+
+### SendKit (default)
+
+TryPost uses [SendKit](https://sendkit.dev?utm_source=trypost&utm_medium=docs&utm_campaign=self-hosted) as the default mailer — no extra configuration needed.
+
+<Tip>
+  [SendKit](https://sendkit.dev?utm_source=trypost&utm_medium=docs&utm_campaign=self-hosted) offers a **free plan with 3,000 emails/month**, which is more than enough for a self-hosted TryPost instance to handle post notifications, team invites, and account alerts.
+</Tip>
+
+```env
+MAIL_MAILER=sendkit
+SENDKIT_API_KEY=sk_your_sendkit_api_key
+MAIL_FROM_ADDRESS="notifications@yourdomain.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+### SMTP
+
+If you prefer to use your own SMTP server:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="notifications@yourdomain.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+### Emails sent by TryPost
+
+| Email | When it's sent |
+|-------|---------------|
+| **Post published** | A scheduled post was successfully published |
+| **Post failed** | A post failed to publish on one or more platforms |
+| **Account disconnected** | A social account lost its authorization and needs reconnection |
+| **Connections check** | Multiple accounts in a workspace were found disconnected |
+| **Workspace invite** | A team member is invited to join a workspace |
+| **Email verification** | A new user needs to verify their email address |
+| **Password reset** | A user requests a password reset |
+
+## WebSockets (Reverb)
+
+TryPost uses [Laravel Reverb](https://laravel.com/docs/reverb) for real-time updates (live post status, notifications).
+
+```env
+REVERB_APP_ID=1001
+REVERB_APP_KEY=your-reverb-key
+REVERB_APP_SECRET=your-reverb-secret
+REVERB_HOST="localhost"
+REVERB_PORT=8080
+REVERB_SCHEME=http
+
+VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+VITE_REVERB_HOST="${REVERB_HOST}"
+VITE_REVERB_PORT="${REVERB_PORT}"
+VITE_REVERB_SCHEME="${REVERB_SCHEME}"
+```
+
+| Variable | Description |
+|----------|-------------|
+| `REVERB_APP_ID` | Unique application ID |
+| `REVERB_APP_KEY` | Application key for client connections |
+| `REVERB_APP_SECRET` | Secret key for server-side authentication |
+| `REVERB_HOST` | WebSocket server host |
+| `REVERB_PORT` | WebSocket server port |
+| `REVERB_SCHEME` | Protocol: `http` or `https` |
+
+<Note>
+  In production, set `REVERB_SCHEME=https` and use a reverse proxy to handle SSL termination for WebSocket connections.
+</Note>
+
+## Social Platforms
+
+Each social platform requires API credentials from its developer portal. See each [platform's documentation](/platforms/overview) for step-by-step setup.
+
+<Note>
+  **Bluesky** and **Mastodon** don't require API credentials — they work out of the box.
+</Note>
+
+### All platform credentials
+
+```env
+# LinkedIn (https://developer.linkedin.com)
+LINKEDIN_CLIENT_ID=
+LINKEDIN_CLIENT_SECRET=
+LINKEDIN_CLIENT_REDIRECT="${APP_URL}/accounts/linkedin/callback"
+LINKEDIN_PAGE_CLIENT_REDIRECT="${APP_URL}/accounts/linkedin-page/callback"
+
+# X / Twitter (https://developer.twitter.com)
+X_CLIENT_ID=
+X_CLIENT_SECRET=
+X_CLIENT_REDIRECT="${APP_URL}/accounts/x/callback"
+
+# Facebook (https://developers.facebook.com)
+FACEBOOK_CLIENT_ID=
+FACEBOOK_CLIENT_SECRET=
+FACEBOOK_CLIENT_REDIRECT="${APP_URL}/accounts/facebook/callback"
+
+# Instagram (https://developers.facebook.com)
+INSTAGRAM_CLIENT_ID=
+INSTAGRAM_CLIENT_SECRET=
+INSTAGRAM_CLIENT_REDIRECT="${APP_URL}/accounts/instagram/callback"
+
+# Threads (https://developers.facebook.com)
+THREADS_CLIENT_ID=
+THREADS_CLIENT_SECRET=
+THREADS_CLIENT_REDIRECT="${APP_URL}/accounts/threads/callback"
+
+# TikTok (https://developers.tiktok.com)
+TIKTOK_CLIENT_ID=
+TIKTOK_CLIENT_SECRET=
+TIKTOK_CLIENT_REDIRECT="${APP_URL}/accounts/tiktok/callback"
+
+# Google / YouTube (https://console.cloud.google.com)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_REDIRECT="${APP_URL}/accounts/youtube/callback"
+
+# Pinterest (https://developers.pinterest.com)
+PINTEREST_CLIENT_ID=
+PINTEREST_CLIENT_SECRET=
+PINTEREST_CLIENT_REDIRECT="${APP_URL}/accounts/pinterest/callback"
+```
+
+### Enabling/disabling platforms
+
+You can selectively enable or disable platforms without removing their credentials. This is useful when API credentials are pending approval or temporarily revoked.
+
+```env
+TRYPOST_LINKEDIN_ENABLED=true
+TRYPOST_LINKEDIN_PAGE_ENABLED=true
+TRYPOST_X_ENABLED=true
+TRYPOST_TIKTOK_ENABLED=true
+TRYPOST_YOUTUBE_ENABLED=true
+TRYPOST_FACEBOOK_ENABLED=true
+TRYPOST_INSTAGRAM_ENABLED=true
+TRYPOST_THREADS_ENABLED=true
+TRYPOST_PINTEREST_ENABLED=true
+TRYPOST_BLUESKY_ENABLED=true
+TRYPOST_MASTODON_ENABLED=true
+```
+
+Set any platform to `false` to hide it from the UI. All platforms are enabled by default.
+
+## Google Login
+
+TryPost supports sign in with Google. This uses the same Google OAuth credentials as the YouTube integration, but with a separate callback URL.
+
+```env
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_AUTH_CALLBACK="${APP_URL}/auth/google/callback"
+```
+
+In the [Google Cloud Console](https://console.cloud.google.com), add both callback URLs to your OAuth 2.0 client:
+- `https://your-domain.com/accounts/youtube/callback` (YouTube connection)
+- `https://your-domain.com/auth/google/callback` (Google login)
+
+## Analytics (optional)
+
+### PostHog
+
+```env
+POSTHOG_API_KEY=phc_your_key
+POSTHOG_HOST=https://us.i.posthog.com
+
+VITE_POSTHOG_API_KEY="${POSTHOG_API_KEY}"
+VITE_POSTHOG_HOST="${POSTHOG_HOST}"
+```
+
+### Google Tag Manager
+
+```env
+GTM_ID=GTM-XXXXXXX
+```
+
+Both are optional and only needed if you want to track usage analytics.
+
+## Horizon (Queue Dashboard)
+
+[Laravel Horizon](https://laravel.com/docs/horizon) provides a dashboard to monitor your queues. Access it at `/horizon`.
+
+```env
+HORIZON_ALLOWED_EMAILS=admin@example.com,dev@example.com
+```
+
+| Variable | Description |
+|----------|-------------|
+| `HORIZON_ALLOWED_EMAILS` | Comma-separated list of emails allowed to access Horizon in production |
+
+If not set, Horizon dashboard will be inaccessible in non-local environments.
+
+## Next Steps
+
+- [Connect your social accounts](/platforms/overview)
+- [Create your first post](/getting-started/quickstart)

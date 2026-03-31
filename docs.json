@@ -9,17 +9,16 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "anchors": [
       {
-        "tab": "Documentation",
+        "anchor": "Documentation",
+        "icon": "book-open",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
               "index",
-              "getting-started/installation",
-              "getting-started/configuration",
-              "getting-started/first-steps"
+              "getting-started/quickstart"
             ]
           },
           {
@@ -47,18 +46,161 @@
             ]
           },
           {
-            "group": "Self-Hosting",
+            "group": "Community",
+            "pages": [
+              "contributing"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "API Reference",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Posts",
+            "pages": [
+              "api-reference/endpoint/list-posts",
+              "api-reference/endpoint/get-post",
+              "api-reference/endpoint/create-post",
+              "api-reference/endpoint/update-post",
+              "api-reference/endpoint/delete-post"
+            ]
+          },
+          {
+            "group": "Workspace",
+            "pages": [
+              "api-reference/endpoint/get-workspace"
+            ]
+          },
+          {
+            "group": "Hashtags",
+            "pages": [
+              "api-reference/endpoint/list-hashtags",
+              "api-reference/endpoint/create-hashtag",
+              "api-reference/endpoint/update-hashtag",
+              "api-reference/endpoint/delete-hashtag"
+            ]
+          },
+          {
+            "group": "Labels",
+            "pages": [
+              "api-reference/endpoint/list-labels",
+              "api-reference/endpoint/create-label",
+              "api-reference/endpoint/update-label",
+              "api-reference/endpoint/delete-label"
+            ]
+          },
+          {
+            "group": "Social Accounts",
+            "pages": [
+              "api-reference/endpoint/list-social-accounts",
+              "api-reference/endpoint/toggle-social-account"
+            ]
+          },
+          {
+            "group": "API Keys",
+            "pages": [
+              "api-reference/endpoint/list-api-keys",
+              "api-reference/endpoint/create-api-key",
+              "api-reference/endpoint/delete-api-key"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Build with AI",
+        "icon": "microchip-ai",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "ai/introduction",
+              "ai/tools-reference"
+            ]
+          },
+          {
+            "group": "Setup Guides",
+            "pages": [
+              "ai/claude-code",
+              "ai/claude-desktop",
+              "ai/cursor",
+              "ai/windsurf",
+              "ai/vs-code",
+              "ai/github-copilot",
+              "ai/gemini-cli",
+              "ai/opencode",
+              "ai/codex",
+              "ai/antigravity"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Knowledge Base",
+        "icon": "book",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "knowledge-base/introduction"
+            ]
+          },
+          {
+            "group": "Content",
+            "pages": [
+              "knowledge-base/posts",
+              "knowledge-base/media",
+              "knowledge-base/hashtags",
+              "knowledge-base/labels"
+            ]
+          },
+          {
+            "group": "Accounts",
+            "pages": [
+              "knowledge-base/social-accounts",
+              "knowledge-base/workspaces",
+              "knowledge-base/team"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "knowledge-base/api-keys",
+              "knowledge-base/notifications"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Self-Hosting",
+        "icon": "server",
+        "groups": [
+          {
+            "group": "Getting Started",
             "pages": [
               "self-hosting/overview",
-              "self-hosting/requirements",
-              "self-hosting/production",
+              "self-hosting/requirements"
+            ]
+          },
+          {
+            "group": "Installation",
+            "pages": [
+              "self-hosting/installation",
               "self-hosting/docker"
             ]
           },
           {
-            "group": "Community",
+            "group": "Configuration",
             "pages": [
-              "contributing"
+              "self-hosting/configuration",
+              "self-hosting/production"
             ]
           }
         ]
@@ -86,14 +228,14 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "https://github.com/trypost-it/trypost/issues"
+        "label": "Discord",
+        "href": "https://trypost.it/discord"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "GitHub",
-      "href": "https://github.com/trypost-it/trypost"
+      "label": "Sign up on Cloud",
+      "href": "https://app.trypost.it/register"
     }
   },
   "contextual": {

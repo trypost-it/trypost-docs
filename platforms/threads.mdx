@@ -5,55 +5,31 @@ description: Connect your Threads account to TryPost
 
 # Threads
 
-Connect your Threads account to TryPost.
+TryPost supports posting to Threads.
 
-## Requirements
+## Connect your account
 
-- Threads account linked to Instagram
-- Meta Developer App
-- Instagram Business or Creator account
-
-## Create a Meta App
-
-If you haven't already, follow the [Facebook setup guide](/platforms/facebook) to create a Meta app.
-
-## Configure Threads API
-
-1. In your Meta app dashboard, add the **Threads API** product
-2. Configure the required permissions
-
-## Configure Permissions
-
-Request these permissions in **App Review**:
-
-- `threads_basic` - Basic account info
-- `threads_content_publish` - To publish content
-
-## Environment Variables
-
-Add to your `.env` file:
-
-```env
-THREADS_CLIENT_ID=your_app_id
-THREADS_CLIENT_SECRET=your_app_secret
-THREADS_CLIENT_REDIRECT="${APP_URL}/accounts/threads/callback"
-```
-
-## Connect Your Account
-
-1. In TryPost, go to **Accounts**
+1. Go to **Accounts** in the TryPost dashboard
 2. Click **Connect Threads**
-3. Log in and authorize the app
-4. You're ready to post!
+3. Authorize TryPost on Threads
 
-## Supported Features
+## Supported content types
 
-- Text posts
-- Image posts
-- Video posts
-- Link posts
+| Type | Description |
+|------|-------------|
+| **Post** | Text with up to 10 optional images |
 
-## Limitations
+## Self-hosting setup
 
-- Account must be linked to Instagram
-- Some features may require app review approval
+<Accordion title="Configure Threads API credentials">
+  1. Go to [Meta for Developers](https://developers.facebook.com/) and create an app
+  2. Add the **Threads** product
+  3. Set the redirect URL to `{APP_URL}/accounts/threads/callback`
+  4. Add to your `.env`:
+
+  ```env
+  THREADS_CLIENT_ID=your_app_id
+  THREADS_CLIENT_SECRET=your_app_secret
+  THREADS_CLIENT_REDIRECT="${APP_URL}/accounts/threads/callback"
+  ```
+</Accordion>

@@ -5,61 +5,39 @@ description: Connect your Instagram Business or Creator account to TryPost
 
 # Instagram
 
-Connect your Instagram Business or Creator account to TryPost.
+TryPost supports posting to Instagram Business and Creator accounts.
 
-## Requirements
+<Note>
+  Personal Instagram accounts are not supported. You need a **Business** or **Creator** account connected to a Facebook page.
+</Note>
 
-- Instagram Business or Creator account (not personal)
-- Facebook Page connected to your Instagram account
-- Meta Developer App
+## Connect your account
 
-## Create a Meta App
+1. Go to **Accounts** in the TryPost dashboard
+2. Click **Connect Instagram**
+3. Authorize TryPost through Facebook
+4. Select the Instagram account to connect
 
-If you haven't already, follow the [Facebook setup guide](/platforms/facebook) to create a Meta app.
+## Supported content types
 
-## Configure Instagram API
+| Type | Aspect ratio | Media | Description |
+|------|-------------|-------|-------------|
+| **Feed** | 1:1 | Up to 10 images or 1 video | Main feed post |
+| **Reel** | 9:16 | 1 video (required) | Short-form vertical video |
+| **Story** | 9:16 | 1 image or video (required) | Temporary content (24 hours) |
 
-1. In your Meta app dashboard, add the **Instagram Graph API** product
-2. Go to **Instagram** > **Basic Display** or **Instagram Graph API**
+## Self-hosting setup
 
-## Configure Permissions
+<Accordion title="Configure Instagram API credentials">
+  1. Go to [Meta for Developers](https://developers.facebook.com/) and create an app
+  2. Add the **Instagram** product
+  3. Set the redirect URL to `{APP_URL}/accounts/instagram/callback`
+  4. Request permissions: `instagram_basic`, `instagram_content_publish`
+  5. Add to your `.env`:
 
-Request these permissions in **App Review**:
-
-- `instagram_basic` - Basic account info
-- `instagram_content_publish` - To publish content
-- `pages_show_list` - To access linked Facebook page
-
-## Environment Variables
-
-Add to your `.env` file:
-
-```env
-INSTAGRAM_CLIENT_ID=your_app_id
-INSTAGRAM_CLIENT_SECRET=your_app_secret
-INSTAGRAM_CLIENT_REDIRECT="${APP_URL}/accounts/instagram/callback"
-```
-
-## Connect Your Account
-
-1. Make sure your Instagram account is:
-   - Set to Business or Creator account
-   - Connected to a Facebook Page
-2. In TryPost, go to **Accounts**
-3. Click **Connect Instagram**
-4. Log in with Facebook and authorize
-5. Select your Instagram account
-6. You're ready to post!
-
-## Supported Features
-
-- Image posts
-- Carousel posts (multiple images)
-- Video posts (Reels)
-- Captions with hashtags
-
-## Limitations
-
-- Personal accounts cannot be connected (Instagram API limitation)
-- Stories are not supported via API
-- Direct messages are not supported
+  ```env
+  INSTAGRAM_CLIENT_ID=your_app_id
+  INSTAGRAM_CLIENT_SECRET=your_app_secret
+  INSTAGRAM_CLIENT_REDIRECT="${APP_URL}/accounts/instagram/callback"
+  ```
+</Accordion>

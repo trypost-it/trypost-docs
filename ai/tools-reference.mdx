@@ -41,9 +41,9 @@ MCP accepts every member of the workspace, not only admins (the [REST API](/api-
 
 | Who | Can call |
 |-----|----------|
-| **Any member** | Every read tool, posts, notes, media, labels, signatures, ideas and idea stages, analytics, content types, TikTok creator info, Pinterest boards, Discord channels, free slots |
-| **Members who publish directly** (owner, admins, and members who do not need approval) | `approve-post-tool`, `reject-post-tool`, `set-post-recurrence-tool`, `reorder-queue-tool`, `move-post-to-slot-tool`, every repurpose tool |
-| **Admins** (and the account owner) | `update-posting-schedule-tool`, `generate-posting-schedule-tool`, `copy-posting-schedule-tool`, every webhook tool, every API key tool |
+| **Any member** | Every Posts tool except approve, reject and set recurrence (including notes and media); ideas and idea stages; analytics; labels; signatures; `list-social-accounts-tool`, `get-posting-schedule-tool`, `list-free-slots-tool`, Pinterest boards, Discord channels, TikTok creator info; `get-workspace-tool`; `list-content-types-tool` |
+| **Members who publish directly** (owner, admins, and members who do not need approval) | `approve-post-tool`, `reject-post-tool`, `set-post-recurrence-tool`, `reorder-queue-tool`, `move-post-to-slot-tool`, every repurpose tool (reads included) |
+| **Admins** (and the account owner) | `update-posting-schedule-tool`, `generate-posting-schedule-tool`, `copy-posting-schedule-tool`, every webhook tool and every API key tool (reads included) |
 
 A refused call returns a tool error such as `This action is unauthorized.` Items from another workspace answer as not found (`Post not found.`, `Repurpose not found.`, …). See [Members and permissions](/knowledge-base/settings/members-and-permissions).
 
@@ -102,7 +102,7 @@ Every `media[]` item gives exactly one of:
 
 Optional per item: `alt` (images), and `meta` with `alt_text` (max 2000), `user_tags` (Instagram feed images, up to 20 `{username, x, y}`) and `cover_offset_ms` (video cover frame, where `supports_video_cover`). A PDF must be the only attachment. The first item is the cover of a carousel.
 
-Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF when the server can convert them), MP4 and MOV videos, and PDF. Server ceilings on Cloud: **10 MB** and 67 megapixels per image, **1 GB** per video, **100 MB** per PDF. Each network's own, usually smaller, limits apply when the post is scheduled or published. The signed upload URL works once and expires after 15 minutes. More in [Media uploads](/api-reference/guides/media-uploads).
+Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF when the server can convert them), MP4 and MOV videos, and PDF. Server ceilings by default: **10 MB** and 67 megapixels per image, **1 GB** per video, **100 MB** per PDF. Each network's own, usually smaller, limits apply when the post is scheduled or published. The signed upload URL works once and expires after 15 minutes. More in [Media uploads](/api-reference/guides/media-uploads).
 
 ### Per-platform `meta`
 

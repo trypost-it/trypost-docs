@@ -96,7 +96,7 @@ See [Members and permissions](/knowledge-base/settings/members-and-permissions) 
     The connection is bound to a workspace you are no longer a member of. Reconnect and pick a workspace you belong to.
   </Accordion>
   <Accordion title="Server shows as “Failed to connect”">
-    Run the connection probe your assistant exposes (for example `claude mcp list` or `devin mcp list`). The HTTP status from the probe tells you which case you're in: `402` → see above; `401` → re-authenticate; `403` → use OAuth (not an API key); anything else → open an issue on [GitHub](https://github.com/trypostit/trypost/issues).
+    Run the connection probe your assistant exposes (for example `claude mcp list` or `devin mcp list`). The HTTP status from the probe tells you which case you're in: `402` → see above; `401` → re-authenticate; `403` → see the two 403 entries above (use OAuth, not an API key; or reconnect to a workspace you belong to); anything else → open an issue on [GitHub](https://github.com/trypostit/trypost/issues).
   </Accordion>
   <Accordion title="Browser doesn't open during sign-in">
     Some clients print the authorize URL to the terminal instead of launching the browser when running over SSH or inside a container. Copy the URL into a local browser, complete the flow, and the assistant will pick up the callback automatically. If the callback port is blocked, use a client that can finish OAuth locally, or drive TryPost through the [REST API](/api-reference/introduction) with an API key.
@@ -105,7 +105,7 @@ See [Members and permissions](/knowledge-base/settings/members-and-permissions) 
 
 ## Next steps
 
-Every Build with AI page is linked here — the tools reference plus all 16 setup guides.
+Every Build with AI page is linked here — the tools reference plus all 18 setup guides.
 
 <CardGroup cols={3}>
   <Card title="Tools reference" icon="wrench" href="/ai/tools-reference">

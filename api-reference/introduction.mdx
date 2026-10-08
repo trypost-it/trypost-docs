@@ -66,13 +66,13 @@ On TryPost Cloud the workspace's account needs an active subscription or trial. 
 
 ## AI features
 
-AI writing and image tools are part of the web app only. The API has no AI endpoint, and creating a post through the API never calls AI.
+AI writing and image tools are part of the web app only. The API has no AI endpoint, and creating a post through the API never calls AI. A repurpose may shorten a caption that is too long for a destination with AI (see [Create repurpose](/api-reference/repurposes/create-repurpose)).
 
 ## Rate limits
 
 Each workspace can make **60 requests per minute**. All keys of a workspace share that budget. Responses carry `X-RateLimit-Limit` and `X-RateLimit-Remaining`.
 
-Four calls that reach a network directly also count against a second limit of **60 requests per minute per user**, shared by the four of them and by all your workspaces: [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards), [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board), [List Discord channels](/api-reference/social-accounts/list-discord-channels) and [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info).
+Four calls that reach a network directly also count against a second limit of **60 requests per minute per user**, shared by the four of them, by all your workspaces, and by the same lookups in the app (channel and board pickers): [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards), [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board), [List Discord channels](/api-reference/social-accounts/list-discord-channels) and [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info).
 
 Over the limit, the API answers `429` with a `Retry-After` header (seconds to wait):
 
@@ -137,7 +137,7 @@ A single resource comes back as a plain object, with no `data` wrapper:
 
 Lists are paginated (see below). A few responses have their own shape, documented on their page: [List content types](/api-reference/platform/list-content-types) returns `{ "platforms": [...] }`, [List idea stages](/api-reference/idea-stages/list-idea-stages) a plain array, [List repurpose source formats](/api-reference/repurposes/list-repurpose-source-formats) `{ "data": [...] }`, [Create posts in batch](/api-reference/posts/create-posts-in-batch) `{ "posts": [...] }`, and [Create API key](/api-reference/api-keys/create-api-key) `{ "token": {...}, "plain_token": "..." }`.
 
-Posts, notes, ideas, labels, signatures and the workspace give their timestamps as `Y-m-d H:i:s` in UTC (`2026-10-12 14:00:00`). API keys, webhooks, webhook logs, repurposes, uploads, free queue slots and channel post performance use ISO 8601. In requests, send dates as ISO 8601 with an offset or `Z` (`2026-10-12T14:00:00Z`).
+Posts, notes, ideas, idea stages, labels, signatures and the workspace give their timestamps as `Y-m-d H:i:s` in UTC (`2026-10-12 14:00:00`). API keys, webhooks, webhook logs, repurposes, uploads, free queue slots and channel post performance use ISO 8601. In analytics, top posts use `Y-m-d H:i:s`; publication analytics and coverage use ISO 8601. In requests, send dates as ISO 8601 with an offset or `Z` (`2026-10-12T14:00:00Z`).
 
 ## Pagination
 
@@ -172,7 +172,9 @@ The server sets the page size; there is no `per_page` parameter. Read it from `m
     "total": 72,
     "links": [
       { "url": "https://app.trypost.it/api/posts?page=1", "label": "&laquo; Previous", "page": 1, "active": false },
+      { "url": "https://app.trypost.it/api/posts?page=1", "label": "1", "page": 1, "active": false },
       { "url": "https://app.trypost.it/api/posts?page=2", "label": "2", "page": 2, "active": true },
+      { "url": "https://app.trypost.it/api/posts?page=3", "label": "3", "page": 3, "active": false },
       { "url": "https://app.trypost.it/api/posts?page=3", "label": "Next &raquo;", "page": 3, "active": false }
     ]
   }

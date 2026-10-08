@@ -94,7 +94,7 @@
         ],
         "summary": "List posts",
         "operationId": "listPosts",
-        "description": "Lists the workspace's posts, latest scheduled first, with their destinations and labels. Pending approval requests of other members are included (API keys belong to admins, who can approve). Page size is set by the server: read `meta.per_page`.",
+        "description": "Lists the workspace's posts: posts without a time first, then by scheduled time, latest first, with their destinations and labels. Pending approval requests of other members are included (API keys belong to admins, who can approve). Page size is set by the server: read `meta.per_page`.",
         "parameters": [
           {
             "name": "channels[]",
@@ -102,7 +102,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only posts on these social accounts. Values that are not UUIDs are ignored.",
+            "description": "Only posts on these social accounts. Values that are not UUIDs are ignored. When no value is a UUID, the filter is not applied.",
             "schema": {
               "type": "array",
               "items": {
@@ -117,7 +117,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only posts with any of these labels. Values that are not UUIDs are ignored.",
+            "description": "Only posts with any of these labels. Values that are not UUIDs are ignored. When no value is a UUID, the filter is not applied.",
             "schema": {
               "type": "array",
               "items": {
@@ -263,7 +263,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/posts?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/posts",
                     "per_page": 25,
                     "to": 1,
@@ -371,7 +390,7 @@
                       "null"
                     ],
                     "format": "date-time",
-                    "description": "When to publish, for `status: scheduled`. Any date string; must be in the future and before `2038-01-19`. Cannot be combined with `queue`."
+                    "description": "When to publish, for `status: scheduled`. Any date string; must be in the future and before `2038-01-19`. Cannot be combined with `queue`. Required with `status: scheduled` unless `queue` or `queue_slot` is sent."
                   },
                   "queue": {
                     "type": [
@@ -753,7 +772,14 @@
                           "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
                           "platform": "x",
                           "content_type": "x_post",
-                          "meta": {},
+                          "meta": {
+                            "thread_replies": [
+                              {
+                                "text": "2/ Replies publish under the first post.",
+                                "media": []
+                              }
+                            ]
+                          },
                           "status": "pending",
                           "enabled": true,
                           "platform_url": null,
@@ -850,7 +876,7 @@
                             "has_posting_schedule": true,
                             "timezone": "UTC",
                             "posting_goal": 5,
-                            "max_content_length": 500,
+                            "max_content_length": 800,
                             "long_posts": false,
                             "verified_badge": null
                           }
@@ -1023,7 +1049,7 @@
         ],
         "summary": "Update post",
         "operationId": "updatePost",
-        "description": "Updates a post. Only the fields you send change. The social account is fixed (`social_account_id` is refused).\n\nSend the destination's format and settings either as top-level `content_type` and `meta` (the post has one destination), or as `platforms[]` with the destination `id`. `meta` is merged with the stored settings: send `null` for a key to clear it; `thread_replies` replaces the whole list. `media` replaces the post's media; `label_ids` replaces its labels.\n\n`status: publishing` publishes the post now; `scheduled` schedules it at `scheduled_at`, in the queue (`queue`), or keeps its future `scheduled_at`; `draft` unschedules it. When scheduling or publishing, the content type must fit the media and the required settings must be present.\n\nPosts that are publishing, published, partially published or failed cannot be edited: the request returns `422` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
+        "description": "Updates a post. Only the fields you send change. The social account is fixed (`social_account_id` is refused).\n\nSend the destination's format and settings either as top-level `content_type` and `meta` (the post has one destination), or as `platforms[]` with the destination `id`. `meta` is merged with the stored settings: send `null` for a key to clear it (string, list and object settings; boolean settings cannot be cleared, so send `true` or `false`); `thread_replies` replaces the whole list. `media` replaces the post's media; `label_ids` replaces its labels.\n\n`status: publishing` publishes the post now; `scheduled` schedules it at `scheduled_at`, in the queue (`queue`), or keeps its future `scheduled_at`; `draft` unschedules it (it is no longer published; the last `scheduled_at` stays on the draft). When scheduling or publishing, the content type must fit the media and the required settings must be present.\n\nPosts that are publishing, published, partially published or failed cannot be edited: the request returns `422` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`\n\nPosts with several destinations (created before each channel got its own post) cannot be queued; `platforms` there lists the destinations to keep, and the rest are turned off. On this endpoint an invalid body may answer `422` before the `404` check of a post of another workspace.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1073,7 +1099,7 @@
                   },
                   "platforms": {
                     "type": "array",
-                    "description": "Alternative to top-level `content_type` / `meta`.",
+                    "description": "Alternative to top-level `content_type` / `meta`. On a post with several destinations, the destinations not listed are turned off.",
                     "items": {
                       "type": "object",
                       "required": [
@@ -1100,7 +1126,7 @@
                       "null"
                     ],
                     "format": "date-time",
-                    "description": "With `status: scheduled`: required unless `queue` is sent or the post already has a future time; must be in the future. Cannot be combined with `queue`."
+                    "description": "With `status: scheduled`: required unless `queue` is sent or the post already has a future time; must be in the future and before `2038-01-19`. Cannot be combined with `queue`."
                   },
                   "queue": {
                     "type": [
@@ -1112,7 +1138,7 @@
                       "top",
                       null
                     ],
-                    "description": "Queue position, only with `status: scheduled`. `next` takes the channel's first free slot; `top` takes its first slot and moves the queued posts behind it to the next gap. The channel must have posting times (`has_posting_schedule`). Cannot be combined with `scheduled_at`."
+                    "description": "Queue position, only with `status: scheduled`. `next` takes the channel's first free slot; `top` takes its first slot and moves the queued posts behind it to the next gap. The channel must have posting times (`has_posting_schedule`). Cannot be combined with `scheduled_at`. Refused on posts with several destinations."
                   },
                   "label_ids": {
                     "type": "array",
@@ -1553,7 +1579,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/notes?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/notes",
                     "per_page": 25,
                     "to": 1,
@@ -1668,7 +1713,7 @@
         ],
         "summary": "Update post note",
         "operationId": "updatePostNote",
-        "description": "Changes a note's text. Only the note's author can edit it (`403` otherwise). A note of another post returns `404`.",
+        "description": "Changes a note's text. Only the note's author can edit it (`403` with `This action is unauthorized.` otherwise). A note of another post returns `404`.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1740,7 +1785,7 @@
         ],
         "summary": "Delete post note",
         "operationId": "deletePostNote",
-        "description": "Deletes a note. Only the note's author can delete it (`403` otherwise). A note of another post returns `404`.",
+        "description": "Deletes a note. Only the note's author can delete it (`403` with `This action is unauthorized.` otherwise). A note of another post returns `404`.",
         "responses": {
           "204": {
             "description": "Deleted."
@@ -1837,12 +1882,18 @@
                   ],
                   "status": "scheduled",
                   "schedule_mode": "custom",
-                  "scheduled_at": "2026-10-12 14:00:00",
+                  "scheduled_at": "2026-10-13 15:00:00",
                   "published_at": null,
-                  "approval_requested_by": null,
-                  "approval_requested_at": null,
-                  "approved_by": null,
-                  "approved_at": null,
+                  "approval_requested_by": {
+                    "id": "9b4f5a6b-7c8d-4e9f-8a0b-1c2d3e4f5a6b",
+                    "name": "Bruno Lima"
+                  },
+                  "approval_requested_at": "2026-10-08 12:00:00",
+                  "approved_by": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "approved_at": "2026-10-08 13:30:00",
                   "recurrence": null,
                   "origin": "trypost",
                   "platforms": [
@@ -1891,7 +1942,7 @@
                     }
                   ],
                   "created_at": "2026-10-08 13:20:11",
-                  "updated_at": "2026-10-08 13:20:11"
+                  "updated_at": "2026-10-08 13:30:00"
                 }
               }
             }
@@ -1966,8 +2017,8 @@
                     }
                   ],
                   "status": "draft",
-                  "schedule_mode": "custom",
-                  "scheduled_at": null,
+                  "schedule_mode": null,
+                  "scheduled_at": "2026-10-12 14:00:00",
                   "published_at": null,
                   "approval_requested_by": null,
                   "approval_requested_at": null,
@@ -2353,7 +2404,7 @@
         ],
         "summary": "Upload media",
         "operationId": "uploadPostMedia",
-        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.` Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
+        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most about 67 megapixels, 8192 × 8192 pixels in total), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.` Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` On Pinterest and TikTok the content type is chosen again from the post's media, as on create.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2503,7 +2554,7 @@
         ],
         "summary": "Attach media from upload",
         "operationId": "attachMediaFromUpload",
-        "description": "Appends a file uploaded earlier (`POST /uploads` or a signed upload URL) to the post's media. The token is spent by this post. An unknown or expired token fails with `422` on `upload_token`: `This upload expired. Add the file again.` A type the post's channel does not accept fails with `422`. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
+        "description": "Appends a file uploaded earlier (`POST /uploads` or a signed upload URL) to the post's media. The token is spent by this post. An unknown or expired token fails with `422` on `upload_token`: `This upload expired. Add the file again.` A type the post's channel does not accept fails with `422`. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` On Pinterest and TikTok the content type is chosen again from the post's media, as on create.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2664,7 +2715,7 @@
         ],
         "summary": "Attach media from URL",
         "operationId": "attachMediaFromUrl",
-        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Posts that are publishing, published, partially published or failed cannot take media: when a file was downloaded, the request fails with `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most about 67 megapixels, 8192 × 8192 pixels in total), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). On Pinterest and TikTok the content type is chosen again from the post's media, as on create.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2891,7 +2942,7 @@
         ],
         "summary": "Create upload",
         "operationId": "createUpload",
-        "description": "Uploads one file as `multipart/form-data` without a post and returns an `upload_token`. Pass it as a media item (`media[].upload_token`) to `POST /posts`, `POST /posts/batch` or `PUT /posts/{post}`, or to `POST /posts/{post}/media/from-upload`, before `expires_at`. A token is spent by the first post that takes it; to put the same file on another post, pass that post's `media[].id`. Unused uploads are deleted after 24 hours. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Uploads one file as `multipart/form-data` without a post and returns an `upload_token`. Pass it as a media item (`media[].upload_token`) to `POST /posts`, `POST /posts/batch` or `PUT /posts/{post}`, or to `POST /posts/{post}/media/from-upload`, before `expires_at`. A token is spent by the first post that takes it; to put the same file on another post, pass that post's `media[].id`. Unused uploads are deleted after 24 hours. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most about 67 megapixels, 8192 × 8192 pixels in total), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
         "requestBody": {
           "required": true,
           "content": {
@@ -2958,7 +3009,7 @@
         "summary": "Upload to signed URL",
         "operationId": "uploadToSignedUrl",
         "security": [],
-        "description": "Receives a file at a one-time signed URL issued by the MCP `request-media-upload-tool`. No API key: the signature authorizes the request. Send the file as `multipart/form-data` in the `media` field, for example `curl -F media=@launch.jpg \"<upload_url>\"`. The URL works once, until it expires (15 minutes by default); a second upload to it returns `409`. The returned `upload_token` is then used as a media item, like a token from `POST /uploads`. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Receives a file at a one-time signed URL issued by the MCP `request-media-upload-tool`. No API key: the signature authorizes the request. Send the file as `multipart/form-data` in the `media` field, for example `curl -F media=@launch.jpg \"<upload_url>\"`. The URL works once, until it expires (15 minutes by default); a second upload to it returns `409`. The returned `upload_token` is then used as a media item, like a token from `POST /uploads`. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most about 67 megapixels, 8192 × 8192 pixels in total), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A file the server cannot read returns `422` with only `message`: `Unable to read uploaded file.`",
         "parameters": [
           {
             "name": "token",
@@ -3051,12 +3102,25 @@
               }
             }
           },
-          "409": {
-            "description": "This URL was already used.",
+          "404": {
+            "description": "The workspace of this URL no longer exists.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "This URL was already used. The body has an empty `message`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                },
+                "example": {
+                  "message": ""
                 }
               }
             }
@@ -3166,7 +3230,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/social-accounts?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/social-accounts",
                     "per_page": 25,
                     "to": 2,
@@ -3203,7 +3286,7 @@
         ],
         "summary": "List Pinterest boards",
         "operationId": "listPinterestBoards",
-        "description": "Lists the boards of a Pinterest account, read live from Pinterest. Use a board `id` as `meta.board_id` on a Pinterest destination. `truncated` is `true` when TryPost could not read every page of boards from Pinterest. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
+        "description": "Lists the boards of a Pinterest account, read live from Pinterest. Use a board `id` as `meta.board_id` on a Pinterest destination. `truncated` is `true` when TryPost could not read every page of boards from Pinterest. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints and with the same user's channel lookups in the TryPost app.",
         "responses": {
           "200": {
             "description": "The account's boards.",
@@ -3237,14 +3320,25 @@
             }
           },
           "401": {
-            "description": "Missing or invalid API key, or the Pinterest connection expired (the message then says so: reconnect the account in the app).",
+            "description": "Missing or invalid API key, or the Pinterest connection expired (body: Pinterest's message, or `Access token has expired or been revoked`). Reconnect the account in the app.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorBody"
                 },
-                "example": {
-                  "message": "Token not found."
+                "examples": {
+                  "invalid_key": {
+                    "summary": "Invalid API key",
+                    "value": {
+                      "message": "Token not found."
+                    }
+                  },
+                  "pinterest_expired": {
+                    "summary": "Pinterest connection expired",
+                    "value": {
+                      "message": "Access token has expired or been revoked"
+                    }
+                  }
                 }
               }
             }
@@ -3312,6 +3406,19 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Pinterest could not be reached (timeout), or another token refresh of this account was running.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                },
+                "example": {
+                  "message": "Server Error"
+                }
+              }
+            }
           }
         }
       },
@@ -3321,7 +3428,7 @@
         ],
         "summary": "Create Pinterest board",
         "operationId": "createPinterestBoard",
-        "description": "Creates a board on a Pinterest account. The name is trimmed. When Pinterest refuses (expired connection, permission, limit or any other error), the request returns `422` with the reason on `name`. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
+        "description": "Creates a board on a Pinterest account. The name is trimmed. When Pinterest refuses (expired connection, permission, limit or any other error), the request returns `422` with the reason on `name`. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints and with the same user's channel lookups in the TryPost app.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3401,7 +3508,7 @@
         ],
         "summary": "List Discord channels",
         "operationId": "listDiscordChannels",
-        "description": "Lists the channels of a Discord account's server that TryPost's bot can post in, read live from Discord. Use a channel `id` as `meta.channel_id` on a Discord destination. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
+        "description": "Lists the channels of a Discord account's server that TryPost's bot can post in, read from Discord and kept for 5 minutes per server. Use a channel `id` as `meta.channel_id` on a Discord destination. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints and with the same user's channel lookups in the TryPost app.",
         "responses": {
           "200": {
             "description": "The server's channels.",
@@ -3473,6 +3580,19 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Discord could not be reached (timeout).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                },
+                "example": {
+                  "message": "Server Error"
+                }
+              }
+            }
           }
         }
       }
@@ -3489,7 +3609,7 @@
         ],
         "summary": "Get TikTok creator info",
         "operationId": "getTikTokCreatorInfo",
-        "description": "Reads what TikTok allows this creator to publish now: the privacy levels to offer as `meta.privacy_level`, whether comments, duets and stitches are off, and the longest video allowed. A creator TikTok does not let post right now comes back with `can_post: false`. Answers are kept for 5 minutes. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
+        "description": "Reads what TikTok allows this creator to publish now: the privacy levels to offer as `meta.privacy_level`, whether comments, duets and stitches are off, and the longest video allowed. A creator TikTok does not let post right now comes back with `can_post: false`. Successful answers are kept for 5 minutes. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints and with the same user's channel lookups in the TryPost app.",
         "responses": {
           "200": {
             "description": "The creator's publishing options.",
@@ -3554,13 +3674,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorBody"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/RateLimitErrorBody"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorBody"
+                    }
+                  ]
                 }
               }
             }
           },
           "502": {
-            "description": "TikTok answered with an error.",
+            "description": "TikTok answered with an error, or a refresh of this account's TikTok token is already running (`A TikTok token refresh is already in progress.`).",
             "content": {
               "application/json": {
                 "schema": {
@@ -3581,6 +3708,19 @@
                 },
                 "example": {
                   "message": "TikTok didn't answer. Try again in a moment."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The TikTok connection could not be refreshed (for example, no refresh token). Reconnect the account in the app.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                },
+                "example": {
+                  "message": "Server Error"
                 }
               }
             }
@@ -3686,7 +3826,7 @@
         ],
         "summary": "Update posting schedule",
         "operationId": "updatePostingSchedule",
-        "description": "Replaces the channel's time zone, posting goal and posting times. Send all seven days, or `posting_schedule: null` to remove every posting time. Every field is written: omitting `posting_goal` or `posting_schedule` clears it like `null`, so send the current values to keep them (read them with `GET /channels/{account}/posting-schedule`). Without posting times, the channel's queued posts become custom-time posts at their current time. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A time zone change first gives each queued post the slot at the same local time in the new zone, then the first free slots. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
+        "description": "Replaces the channel's time zone, posting goal and posting times. Send all seven days, or `posting_schedule: null` to remove every posting time. Every field is written: omitting `posting_goal` or `posting_schedule` clears it like `null`, so send the current values to keep them (read them with `GET /channels/{account}/posting-schedule`). Without posting times, the channel's queued posts become custom-time posts at their current time. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A time zone change first gives each queued post the slot at the same local time in the new zone, then the first free slots; queue requests pending approval follow the same rule. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3875,7 +4015,7 @@
         ],
         "summary": "Generate posting schedule",
         "operationId": "generatePostingSchedule",
-        "description": "Replaces the channel's posting times with `goal` times a week at the hours that usually work best on its network (minutes are randomized), and stores `goal` as the posting goal. Without `goal`, the channel's current goal is used, else 3. The time zone does not change. `mode` is required but has no effect today: both values generate the same schedule. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
+        "description": "Replaces the channel's posting times with `goal` times a week at the hours that usually work best on its network (minutes are randomized), and stores `goal` as the posting goal. Without `goal`, the channel's current goal is used, else 3. The time zone does not change. Every day ends up enabled. `mode` is required but has no effect today: both values generate the same schedule. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3934,39 +4074,40 @@
                       "day": 1,
                       "enabled": true,
                       "times": [
-                        "09:00"
+                        "18:51"
                       ]
                     },
                     {
                       "day": 2,
                       "enabled": true,
                       "times": [
-                        "09:00",
-                        "15:00"
+                        "09:14"
                       ]
                     },
                     {
                       "day": 3,
                       "enabled": true,
                       "times": [
-                        "12:00"
+                        "12:37"
                       ]
                     },
                     {
                       "day": 4,
                       "enabled": true,
                       "times": [
-                        "09:00"
+                        "15:02"
                       ]
                     },
                     {
                       "day": 5,
                       "enabled": true,
-                      "times": []
+                      "times": [
+                        "09:40"
+                      ]
                     },
                     {
                       "day": 6,
-                      "enabled": false,
+                      "enabled": true,
                       "times": []
                     }
                   ]
@@ -4010,7 +4151,7 @@
         ],
         "summary": "Copy posting schedule",
         "operationId": "copyPostingSchedule",
-        "description": "Copies the posting times of another channel of the workspace onto this one. The time zone and posting goal of this channel stay. A source without posting times returns `422` on `from`. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
+        "description": "Copies the posting times of another channel of the workspace onto this one. The time zone and posting goal of this channel stay. A source whose `posting_schedule` is `null` returns `422` on `from`. A source with an empty schedule is copied as is, which removes this channel's posting times. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
         "requestBody": {
           "required": true,
           "content": {
@@ -4217,7 +4358,8 @@
                     "items": {
                       "type": "string",
                       "format": "uuid"
-                    }
+                    },
+                    "minItems": 1
                   }
                 }
               },
@@ -4432,7 +4574,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only ideas in these stages. Values that are not UUIDs are ignored.",
+            "description": "Only ideas in these stages. Values that are not UUIDs are ignored. Must be sent as a list (`stages[]=…`); a single value without `[]` returns `422`.",
             "schema": {
               "type": "array",
               "items": {
@@ -4445,7 +4587,7 @@
             "name": "unassigned",
             "in": "query",
             "required": false,
-            "description": "Also (or only) ideas without a stage.",
+            "description": "Also (or only) ideas without a stage. `true`, `1`, `yes` or `on` turn it on; any other value is off.",
             "schema": {
               "type": "boolean"
             }
@@ -4456,7 +4598,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only ideas with any of these labels. Values that are not UUIDs are ignored.",
+            "description": "Only ideas with any of these labels. Values that are not UUIDs are ignored. Must be sent as a list (`stages[]=…`); a single value without `[]` returns `422`.",
             "schema": {
               "type": "array",
               "items": {
@@ -4469,7 +4611,7 @@
             "name": "untagged",
             "in": "query",
             "required": false,
-            "description": "Also (or only) ideas without labels.",
+            "description": "Also (or only) ideas without labels. `true`, `1`, `yes` or `on` turn it on; any other value is off.",
             "schema": {
               "type": "boolean"
             }
@@ -4553,7 +4695,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/ideas?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/ideas",
                     "per_page": 25,
                     "to": 1,
@@ -4571,6 +4732,9 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
@@ -4732,7 +4896,8 @@
                     "items": {
                       "type": "string",
                       "format": "uuid"
-                    }
+                    },
+                    "minItems": 1
                   }
                 }
               },
@@ -5110,7 +5275,8 @@
                       "type": "string",
                       "format": "uuid"
                     },
-                    "description": "Full order of the target stage, including the moved idea."
+                    "description": "Full order of the target stage, including the moved idea.",
+                    "minItems": 1
                   }
                 }
               },
@@ -5331,7 +5497,8 @@
                     "items": {
                       "type": "string",
                       "format": "uuid"
-                    }
+                    },
+                    "minItems": 1
                   }
                 }
               },
@@ -5503,7 +5670,7 @@
         ],
         "summary": "Get workspace analytics",
         "operationId": "getWorkspaceAnalytics",
-        "description": "Returns the analytics report of the workspace for a date range, compared with the previous range of the same length: summary, followers, posts per bucket, top posts, per-channel performance and collection coverage. Days are calendar days in the API key user's time zone (Settings → Preferences) and weekly buckets start on that user's start of week. A custom range is clamped to the days that have data (`bounds`). The report reads analytics TryPost has already collected from the networks, not live data. LinkedIn, LinkedIn pages, Telegram, Discord and Google Business are not included.",
+        "description": "Returns the analytics report of the workspace for a date range, compared with the previous range of the same length: summary, followers, posts per bucket, top posts, per-channel performance and collection coverage. Days are calendar days in the API key user's time zone (Settings → Preferences) and weekly buckets start on that user's start of week. With `custom` (or `start`/`end` without `range`), the dates are clamped to the days with data in scope (`bounds`; for a channel, that channel's). When there is no data yet, the dates are ignored and the last 30 days are returned. A missing `end` defaults to the last day with data, and a missing `start` to 29 days before `end`. Read `range` (or `filters.start`/`filters.end`) in the response for the days actually used. The report reads analytics TryPost has already collected from the networks, not live data. LinkedIn, LinkedIn pages, Telegram, Discord and Google Business are not included.",
         "parameters": [
           {
             "name": "range",
@@ -5851,12 +6018,12 @@
                   "coverage": [
                     {
                       "social_account_id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
-                      "collector": "publications",
+                      "collector": "publication_backfill",
                       "status": "complete",
-                      "target_since": "2026-04-11 00:00:00",
-                      "oldest_reached_at": "2026-04-11 09:12:00",
-                      "high_watermark_at": "2026-10-08 06:00:00",
-                      "last_success_at": "2026-10-08 06:00:00",
+                      "target_since": "2026-04-11T00:00:00.000000Z",
+                      "oldest_reached_at": "2026-04-11T09:12:00.000000Z",
+                      "high_watermark_at": "2026-10-08T06:00:00.000000Z",
+                      "last_success_at": "2026-10-08T06:00:00.000000Z",
                       "last_error_category": null
                     }
                   ]
@@ -5894,7 +6061,7 @@
         ],
         "summary": "Get publication analytics",
         "operationId": "getPublicationAnalytics",
-        "description": "Returns the latest saved analytics of one publication: a post published through TryPost or found on a connected channel. Take the id from `top_posts` in `GET /analytics` or from `GET /channels/{account}/insights/publications`. A publication deleted on the network, of another workspace or of a network without analytics returns `404`.",
+        "description": "Returns the latest saved analytics of one publication: a post published through TryPost or found on a connected channel. Take the id from `top_posts` in `GET /analytics` or from `GET /channels/{account}/insights/publications`. A publication deleted on the network or no longer available, of another workspace or of a network without analytics returns `404`.",
         "responses": {
           "200": {
             "description": "The publication's analytics.",
@@ -5985,7 +6152,7 @@
         ],
         "summary": "Get channel insights",
         "operationId": "getChannelInsights",
-        "description": "Returns the insights of one channel for a date range: the metrics it reports, the summary and the metric series for the range and the previous range. Days are calendar days in the API key user's time zone. Labels, untagged and types narrow the post metrics; followers stay account-wide. Channels on LinkedIn, LinkedIn pages, Telegram, Discord and Google Business have no insights and return `404`.",
+        "description": "Returns the insights of one channel for a date range: the metrics it reports, the summary and the metric series for the range and the previous range. Days are calendar days in the API key user's time zone. Labels, untagged and types narrow the post metrics; followers stay account-wide. Channels on LinkedIn, LinkedIn pages, Telegram, Discord and Google Business have no insights and return `404`. With `custom` (or `start`/`end` without `range`), the dates are clamped to the days with data in scope (`bounds`; for a channel, that channel's). When there is no data yet, the dates are ignored and the last 30 days are returned. A missing `end` defaults to the last day with data, and a missing `start` to 29 days before `end`. Read `range` (or `filters.start`/`filters.end`) in the response for the days actually used.",
         "parameters": [
           {
             "name": "range",
@@ -6029,7 +6196,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only posts with any of these labels (labels of this workspace).",
+            "description": "Only posts with any of these labels (labels of this workspace). Unknown or deleted labels return `422`.",
             "schema": {
               "type": "array",
               "items": {
@@ -6042,9 +6209,13 @@
             "name": "untagged",
             "in": "query",
             "required": false,
-            "description": "Also (or only) posts without labels. Posts made outside TryPost have no labels.",
+            "description": "Also (or only) posts without labels. Posts made outside TryPost have no labels. Send `1` or `0`; `true` and `false` are rejected with `422`.",
             "schema": {
-              "type": "boolean"
+              "type": "string",
+              "enum": [
+                "1",
+                "0"
+              ]
             }
           },
           {
@@ -6261,7 +6432,7 @@
                       ]
                     },
                     "posts": {
-                      "resolution": "daily",
+                      "resolution": "weekly",
                       "accounts": [
                         {
                           "social_account_key": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
@@ -6275,8 +6446,8 @@
                       ],
                       "buckets": [
                         {
-                          "start": "2026-10-02",
-                          "end": "2026-10-02",
+                          "start": "2026-09-28",
+                          "end": "2026-10-04",
                           "accounts": {
                             "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54": 3
                           },
@@ -6413,24 +6584,22 @@
                     "coverage": [
                       {
                         "social_account_id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
-                        "collector": "publications",
+                        "collector": "publication_backfill",
                         "status": "complete",
-                        "target_since": "2026-04-11 00:00:00",
-                        "oldest_reached_at": "2026-04-11 09:12:00",
-                        "high_watermark_at": "2026-10-08 06:00:00",
-                        "last_success_at": "2026-10-08 06:00:00",
+                        "target_since": "2026-04-11T00:00:00.000000Z",
+                        "oldest_reached_at": "2026-04-11T09:12:00.000000Z",
+                        "high_watermark_at": "2026-10-08T06:00:00.000000Z",
+                        "last_success_at": "2026-10-08T06:00:00.000000Z",
                         "last_error_category": null
                       }
                     ]
                   },
                   "metric_series": {
-                    "resolution": "weekly",
+                    "resolution": "daily",
                     "metrics": [
                       "posts",
                       "followers",
                       "net_followers",
-                      "reactions",
-                      "comments",
                       "views",
                       "impressions"
                     ],
@@ -6445,30 +6614,26 @@
                     "current": [
                       {
                         "start": "2026-09-09",
-                        "end": "2026-09-13",
+                        "end": "2026-09-09",
                         "values": {
-                          "posts": 3,
+                          "posts": 1,
                           "followers": 12160,
-                          "net_followers": 40,
-                          "reactions": 310,
-                          "comments": 22,
-                          "views": 7100,
-                          "impressions": 8800
+                          "net_followers": 4,
+                          "views": 2300,
+                          "impressions": 2900
                         }
                       }
                     ],
                     "previous": [
                       {
                         "start": "2026-08-10",
-                        "end": "2026-08-14",
+                        "end": "2026-08-10",
                         "values": {
-                          "posts": 2,
+                          "posts": 0,
                           "followers": 11900,
-                          "net_followers": 25,
-                          "reactions": 240,
-                          "comments": 19,
-                          "views": 6020,
-                          "impressions": 7310
+                          "net_followers": 3,
+                          "views": 0,
+                          "impressions": 0
                         }
                       }
                     ],
@@ -6477,8 +6642,6 @@
                         "posts": 18,
                         "followers": 12480,
                         "net_followers": 320,
-                        "reactions": 2140,
-                        "comments": 188,
                         "views": 48210,
                         "impressions": 61300
                       },
@@ -6486,8 +6649,6 @@
                         "posts": 15,
                         "followers": 12160,
                         "net_followers": 250,
-                        "reactions": 1890,
-                        "comments": 205,
                         "views": 39900,
                         "impressions": 52010
                       }
@@ -6506,13 +6667,7 @@
                           "rate": 1.4
                         }
                       ],
-                      "latest": {
-                        "month": "2026-10",
-                        "start": "2026-10-01",
-                        "end": "2026-10-08",
-                        "followers": 12480,
-                        "rate": 1.4
-                      },
+                      "latest": 1.4,
                       "previous": null
                     }
                   }
@@ -6553,7 +6708,7 @@
         ],
         "summary": "List channel post performance",
         "operationId": "listChannelPostPerformance",
-        "description": "Ranks the channel's posts of the range (made in TryPost or not) by one metric, best first, and returns the top 50 a page at a time. Page size is set by the server: read `meta.per_page`. The response also carries the `filters` the server applied. Posts without the metric come last. Same time zone, filters and `404` rule as `GET /channels/{account}/insights`.",
+        "description": "Ranks the channel's posts of the range (made in TryPost or not) by one metric, best first, and returns the top 50 a page at a time. Page size is set by the server: read `meta.per_page`. The response also carries the `filters` the server applied. Posts without the metric come last. Same time zone, filters, range clamping and `404` rule as `GET /channels/{account}/insights`.",
         "parameters": [
           {
             "name": "range",
@@ -6597,7 +6752,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only posts with any of these labels (labels of this workspace).",
+            "description": "Only posts with any of these labels (labels of this workspace). Unknown or deleted labels return `422`.",
             "schema": {
               "type": "array",
               "items": {
@@ -6610,9 +6765,13 @@
             "name": "untagged",
             "in": "query",
             "required": false,
-            "description": "Also (or only) posts without labels. Posts made outside TryPost have no labels.",
+            "description": "Also (or only) posts without labels. Posts made outside TryPost have no labels. Send `1` or `0`; `true` and `false` are rejected with `422`.",
             "schema": {
-              "type": "boolean"
+              "type": "string",
+              "enum": [
+                "1",
+                "0"
+              ]
             }
           },
           {
@@ -6737,7 +6896,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/channels/9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54/insights/publications?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/channels/9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54/insights/publications",
                     "per_page": 25,
                     "to": 1,
@@ -6840,7 +7018,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/labels?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/labels",
                     "per_page": 25,
                     "to": 1,
@@ -7107,7 +7304,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/signatures?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/signatures",
                     "per_page": 25,
                     "to": 1,
@@ -7415,7 +7631,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/api-keys?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/api-keys",
                     "per_page": 25,
                     "to": 1,
@@ -7629,7 +7864,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/webhooks?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/webhooks",
                     "per_page": 25,
                     "to": 1,
@@ -7659,7 +7913,7 @@
         ],
         "summary": "Create webhook",
         "operationId": "createWebhook",
-        "description": "Creates an enabled webhook that sends the chosen post events to your endpoint. The response includes the `signing_secret`. Endpoints on private or local addresses are refused: `422` with `This endpoint is not allowed.` on `endpoint`.\n\nEach delivery is a JSON `POST` with the body `{id, type, data, created_at}` and the header `X-Webhook-Signature`: the hex HMAC-SHA256 of the raw body, keyed with the webhook's `signing_secret`. Compare it with your own HMAC of the body before trusting it. A delivery that does not get a 2xx answer within 10 seconds is retried twice, a minute apart. Redirects are not followed.",
+        "description": "Creates an enabled webhook that sends the chosen post events to your endpoint. The response includes the `signing_secret`. The endpoint must be a public `http` or `https` URL: other schemes and private or local addresses are refused with `422` `This endpoint is not allowed.` on `endpoint`.\n\nEach delivery is a JSON `POST` with the body `{id, type, data, created_at}` and the header `X-Webhook-Signature`: the hex HMAC-SHA256 of the raw body, keyed with the webhook's `signing_secret`. Compare it with your own HMAC of the body before trusting it. A delivery that does not get a 2xx answer within 10 seconds is retried twice, a minute apart. Redirects are not followed.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7801,7 +8055,7 @@
         ],
         "summary": "Update webhook",
         "operationId": "updateWebhook",
-        "description": "Changes only the fields you send. `status` takes `enabled` or `disabled` (`paused` is set only by TryPost). Enabling a disabled or paused webhook resets `consecutive_failures` and `paused_at`. A new endpoint on a private or local address returns `422` on `endpoint`. The signing secret is not included in the response.",
+        "description": "Changes only the fields you send. `status` takes `enabled` or `disabled` (`paused` is set only by TryPost). Enabling a disabled or paused webhook resets `consecutive_failures` and `paused_at`. A new endpoint that is not a public `http` or `https` URL returns `422` on `endpoint`. The signing secret is not included in the response.",
         "requestBody": {
           "required": false,
           "content": {
@@ -8022,7 +8276,7 @@
                               "display_name": "TryPost",
                               "display_username": "trypostit",
                               "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
-                              "meta": {},
+                              "meta": [],
                               "social_account": {
                                 "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
                                 "platform": "x",
@@ -8053,7 +8307,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/webhooks/9b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e/logs?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/webhooks/9b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e/logs",
                     "per_page": 25,
                     "to": 1,
@@ -8413,7 +8686,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/repurposes?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/repurposes",
                     "per_page": 25,
                     "to": 1,
@@ -8443,7 +8735,7 @@
         ],
         "summary": "Create repurpose",
         "operationId": "createRepurpose",
-        "description": "Creates a repurpose as a draft: it does nothing until you activate it. A source account that already feeds a repurpose of the same format returns `422` on `source_social_account_id`; a destination that is the source returns `422` on that destination's `social_account_id`.",
+        "description": "Creates a repurpose as a draft: it does nothing until you activate it. A source account that already feeds a repurpose of the same format returns `422` on `source_social_account_id`; a destination that is the source returns `422` on that destination's `social_account_id`. Each new video's caption is fitted to every destination: hashtags past the network's cap are dropped, and a caption longer than the account's limit is shortened (with AI when available, otherwise cut at a word).",
         "requestBody": {
           "required": true,
           "content": {
@@ -8657,7 +8949,6 @@
                       "video",
                       "story"
                     ],
-                    "default": "reel",
                     "description": "Which videos of the source to repurpose. See `GET /repurpose-source-formats`."
                   },
                   "publish_mode": {
@@ -8665,8 +8956,7 @@
                     "enum": [
                       "publish",
                       "draft"
-                    ],
-                    "default": "publish"
+                    ]
                   },
                   "destinations": {
                     "type": "array",
@@ -8816,7 +9106,7 @@
                   "next_poll_at": null,
                   "last_error": null,
                   "created_at": "2026-09-30T18:00:00+00:00",
-                  "updated_at": "2026-10-08T13:45:00+00:00"
+                  "updated_at": "2026-10-08T15:15:00+00:00"
                 }
               }
             }
@@ -8888,7 +9178,7 @@
                   "next_poll_at": "2026-10-08T14:00:00+00:00",
                   "last_error": null,
                   "created_at": "2026-09-30T18:00:00+00:00",
-                  "updated_at": "2026-10-08T13:45:00+00:00"
+                  "updated_at": "2026-10-08T14:30:00+00:00"
                 }
               }
             }
@@ -8960,7 +9250,7 @@
                   "next_poll_at": "2026-10-08T14:00:00+00:00",
                   "last_error": null,
                   "created_at": "2026-09-30T18:00:00+00:00",
-                  "updated_at": "2026-10-08T13:45:00+00:00"
+                  "updated_at": "2026-10-08T14:45:00+00:00"
                 }
               }
             }
@@ -9032,7 +9322,7 @@
                   "next_poll_at": null,
                   "last_error": null,
                   "created_at": "2026-09-30T18:00:00+00:00",
-                  "updated_at": "2026-10-08T13:45:00+00:00"
+                  "updated_at": "2026-10-08T15:00:00+00:00"
                 }
               }
             }
@@ -9141,7 +9431,26 @@
                     "current_page": 1,
                     "from": 1,
                     "last_page": 1,
-                    "links": [],
+                    "links": [
+                      {
+                        "url": null,
+                        "label": "&laquo; Previous",
+                        "page": null,
+                        "active": false
+                      },
+                      {
+                        "url": "https://app.trypost.it/api/repurposes/9a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d/items?page=1",
+                        "label": "1",
+                        "page": 1,
+                        "active": true
+                      },
+                      {
+                        "url": null,
+                        "label": "Next &raquo;",
+                        "page": null,
+                        "active": false
+                      }
+                    ],
                     "path": "https://app.trypost.it/api/repurposes/9a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d/items",
                     "per_page": 25,
                     "to": 1,
@@ -9533,10 +9842,7 @@
             "description": "Whether the channel has posting times. Queueing a post (`queue`) needs them."
           },
           "timezone": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": "string",
             "description": "IANA time zone of the channel. Queue slots and recurrence follow it."
           },
           "posting_goal": {
@@ -9558,7 +9864,14 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "enum": [
+              "blue",
+              "business",
+              "government",
+              null
+            ],
+            "description": "X checkmark; `null` on other networks or unverified accounts. A badge alone does not mean long posts: read `long_posts`."
           }
         }
       },
@@ -9665,12 +9978,17 @@
             "description": "Public URL of the file."
           },
           "type": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "enum": [
               "image",
               "video",
-              "document"
-            ]
+              "document",
+              null
+            ],
+            "description": "`null` on older items stored without a type."
           },
           "mime_type": {
             "type": [
@@ -9693,6 +10011,28 @@
           },
           "meta": {
             "$ref": "#/components/schemas/MediaItemMeta"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "ai",
+              "unsplash",
+              "google_drive",
+              "google_photos",
+              "canva",
+              null
+            ],
+            "description": "Where the file came from in the app. Present only on items added from one of these sources."
+          },
+          "source_meta": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Details from that source. Present only when the source gave any."
           }
         },
         "examples": [
@@ -10061,7 +10401,7 @@
               null
             ],
             "default": "22",
-            "description": "YouTube category: 1 Film & Animation, 2 Autos & Vehicles, 10 Music, 15 Pets & Animals, 17 Sports, 19 Travel & Events, 20 Gaming, 22 People & Blogs, 23 Comedy, 24 Entertainment, 25 News & Politics, 26 Howto & Style, 27 Education, 28 Science & Technology, 29 Nonprofits & Activism."
+            "description": "YouTube category: 1 Film & Animation, 2 Autos & Vehicles, 10 Music, 15 Pets & Animals, 17 Sports, 19 Travel & Events, 20 Gaming, 22 People & Blogs, 23 Comedy, 24 Entertainment, 25 News & Politics, 26 Howto & Style, 27 Education, 28 Science & Technology, 29 Nonprofits & Activism. An integer id is accepted and stored as a string."
           },
           "privacy_status": {
             "type": [
@@ -10307,7 +10647,7 @@
         "properties": {}
       },
       "PlatformMeta": {
-        "description": "Per-network settings of one destination. Pick the shape of the destination's network. Keys without a rule are dropped. Every known key is validated whatever the network, but only the keys of the destination's network are used when publishing. On update, `meta` is merged with the stored settings: send `null` for a key to clear it; `thread_replies` replaces the whole list. Required to schedule or publish: TikTok `privacy_level`, Pinterest `board_id`, Discord `channel_id`, Google Business `event` on `EVENT`/`OFFER`, YouTube a title (`title` or the first line of the text). `GET /content-types` lists them per network as `required_meta`.",
+        "description": "Per-network settings of one destination. Pick the shape of the destination's network. Keys without a rule are dropped. Every known key is validated whatever the network, but only the keys of the destination's network are used when publishing. On update, `meta` is merged with the stored settings: send `null` for a key to clear it (string, list and object settings; boolean settings cannot be cleared, so send `true` or `false`); `thread_replies` replaces the whole list. Required to schedule or publish: TikTok `privacy_level`, Pinterest `board_id`, Discord `channel_id`, Google Business `event` on `EVENT`/`OFFER`, YouTube a title (`title` or the first line of the text). `GET /content-types` lists the unconditional ones (TikTok, Pinterest, Discord) per network as `required_meta`.",
         "anyOf": [
           {
             "$ref": "#/components/schemas/PlatformMetaX"
@@ -10439,7 +10779,15 @@
             ]
           },
           "social_account": {
-            "$ref": "#/components/schemas/SocialAccount"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SocialAccount"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The account, or `null` once it was removed (the `display_*` fields keep its name)."
           }
         }
       },
@@ -10755,13 +11103,15 @@
         "description": "Saved analytics of one publication: the latest daily snapshot collected from the network.",
         "properties": {
           "available": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Always `true` on `GET /analytics/publications/{publication}`."
           },
           "reason": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Always `null` on `GET /analytics/publications/{publication}`."
           },
           "publication": {
             "type": "object",
@@ -10798,7 +11148,8 @@
                   "available",
                   "deleted",
                   "unavailable"
-                ]
+                ],
+                "description": "Always `available` on `GET /analytics/publications/{publication}`."
               },
               "provider_published_at": {
                 "type": [
@@ -10944,7 +11295,10 @@
             }
           },
           "metrics": {
-            "type": "object",
+            "type": [
+              "object",
+              "array"
+            ],
             "description": "Metrics the network reports for this publication, keyed by metric. An empty array `[]` when no snapshot has been collected yet. Keys (`reactions`, `comments`, `views`, `impressions`, `reach`, `engagement_rate`, ...). Each value is an object.",
             "additionalProperties": {
               "type": "object",
@@ -10988,7 +11342,8 @@
                   "format": "date-time"
                 }
               }
-            }
+            },
+            "maxItems": 0
           }
         }
       },
@@ -11305,7 +11660,7 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 6,
-            "description": "Day of the week: `0` is Sunday, `6` is Saturday."
+            "description": "Day of the week: `0` is Sunday, `6` is Saturday. Send a JSON integer, not a string."
           },
           "enabled": {
             "type": "boolean",
@@ -11583,7 +11938,7 @@
                   "string",
                   "null"
                 ],
-                "description": "When the network published it (UTC)."
+                "description": "When the network published it, UTC, `Y-m-d H:i:s`."
               },
               "permalink": {
                 "type": [
@@ -11673,7 +12028,7 @@
           },
           "followers": {
             "type": "object",
-            "description": "Followers at the end of the range. Unlike the other metrics, `change` is the difference in followers, not a percent.",
+            "description": "Followers at the end of the range. Unlike the other metrics, `change` is the difference in followers, not a percent. `value` is `null` when a connected channel in scope has no follower count for the range yet.",
             "properties": {
               "value": {
                 "type": [
@@ -11736,7 +12091,8 @@
                 "type": [
                   "integer",
                   "null"
-                ]
+                ],
+                "description": "`null` when a connected channel in scope has no follower count for the range yet."
               },
               "accounts": {
                 "type": "array",
@@ -11843,7 +12199,8 @@
                       }
                     }
                   ]
-                }
+                },
+                "description": "Channels with at least one post in the range."
               },
               "buckets": {
                 "type": "array",
@@ -11893,7 +12250,7 @@
           },
           "performance": {
             "type": "array",
-            "description": "One row per channel with each metric compared with the previous range.",
+            "description": "One row per channel with at least one post in the range, with each metric compared with the previous range.",
             "items": {
               "allOf": [
                 {
@@ -11951,7 +12308,7 @@
           },
           "coverage": {
             "type": "array",
-            "description": "How far back analytics have been collected for each connected channel.",
+            "description": "How far back analytics have been collected for each connected channel. Each channel can have one row per collector.",
             "items": {
               "type": "object",
               "properties": {
@@ -11960,34 +12317,54 @@
                   "format": "uuid"
                 },
                 "collector": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "publication_backfill",
+                    "publication_discovery"
+                  ]
                 },
                 "status": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "running",
+                    "complete",
+                    "partial",
+                    "provider_limited",
+                    "failed"
+                  ]
                 },
                 "target_since": {
                   "type": [
                     "string",
                     "null"
-                  ]
+                  ],
+                  "format": "date-time",
+                  "description": "ISO 8601, UTC, with microseconds (`2026-04-11T00:00:00.000000Z`)."
                 },
                 "oldest_reached_at": {
                   "type": [
                     "string",
                     "null"
-                  ]
+                  ],
+                  "format": "date-time",
+                  "description": "ISO 8601, UTC, with microseconds (`2026-04-11T00:00:00.000000Z`)."
                 },
                 "high_watermark_at": {
                   "type": [
                     "string",
                     "null"
-                  ]
+                  ],
+                  "format": "date-time",
+                  "description": "ISO 8601, UTC, with microseconds (`2026-04-11T00:00:00.000000Z`)."
                 },
                 "last_success_at": {
                   "type": [
                     "string",
                     "null"
-                  ]
+                  ],
+                  "format": "date-time",
+                  "description": "ISO 8601, UTC, with microseconds (`2026-04-11T00:00:00.000000Z`)."
                 },
                 "last_error_category": {
                   "type": [
@@ -12075,14 +12452,23 @@
                 "type": "string",
                 "enum": [
                   "daily",
-                  "weekly",
-                  "monthly"
-                ]
+                  "weekly"
+                ],
+                "description": "Daily up to 92 days, weekly beyond (weeks start on the API key user's start of week)."
               },
               "metrics": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "posts",
+                    "followers",
+                    "net_followers",
+                    "reach",
+                    "views",
+                    "impressions",
+                    "profile_visits"
+                  ]
                 }
               },
               "range": {
@@ -12171,7 +12557,7 @@
                   "object",
                   "null"
                 ],
-                "description": "Monthly follower growth rate for the last 12 months. Ignores the range and the post filters. `null` when the channel does not report followers.",
+                "description": "Monthly follower growth rate for the last 12 months. Ignores the range and the post filters. `null` until TryPost has at least two daily follower counts for the channel.",
                 "properties": {
                   "range": {
                     "$ref": "#/components/schemas/AnalyticsDateRange"
@@ -12212,15 +12598,17 @@
                   },
                   "latest": {
                     "type": [
-                      "object",
+                      "number",
                       "null"
-                    ]
+                    ],
+                    "description": "Latest non-null monthly growth rate, in percent."
                   },
                   "previous": {
                     "type": [
-                      "object",
+                      "number",
                       "null"
-                    ]
+                    ],
+                    "description": "Previous non-null monthly growth rate, in percent."
                   }
                 }
               }
@@ -12498,7 +12886,7 @@
           "post.failed",
           "post.deleted"
         ],
-        "description": "- `post.created`: a post was created.\n- `post.scheduled`: a post was scheduled.\n- `post.unscheduled`: a scheduled post went back to draft or to pending approval.\n- `post.published`: every destination was published.\n- `post.partially_published`: some destinations were published and others failed.\n- `post.failed`: publishing failed.\n- `post.deleted`: a post was deleted. Its `data` is only `{id, workspace_id}`."
+        "description": "- `post.created`: a post was created. Its `data.status` is the status it was created with (`draft`, `scheduled`, `publishing` or `pending_approval`).\n- `post.scheduled`: an existing post was scheduled (for example a draft scheduled, or a request approved). A post created already scheduled sends only `post.created`.\n- `post.unscheduled`: a scheduled post went back to draft or to pending approval.\n- `post.published`: every destination was published.\n- `post.partially_published`: some destinations were published and others failed.\n- `post.failed`: publishing failed.\n- `post.deleted`: a post was deleted. Not sent for posts imported from the network or removed by disconnecting their channel. Its `data` is only `{id, workspace_id}`."
       },
       "Webhook": {
         "type": "object",
@@ -12657,7 +13045,7 @@
                 "$ref": "#/components/schemas/PlatformMeta"
               }
             ],
-            "description": "Per-network settings, with the same rules as a post's `platforms[].meta` (thread reply media by `url` is refused). On an active repurpose, the settings a network needs to publish (TikTok `privacy_level`, Pinterest `board_id`, Discord `channel_id`) are required."
+            "description": "Per-network settings, with the same rules as a post's `platforms[].meta` (thread reply media by `url` is refused). On an active repurpose, the settings a network needs to publish are required, as on a scheduled post (for example TikTok `privacy_level`, Pinterest `board_id`, Discord `channel_id`, and a valid YouTube `description`)."
           }
         }
       },
@@ -12677,12 +13065,15 @@
             "description": "Instagram or Facebook account watched for new videos. `null` when that account was removed."
           },
           "source_account": {
-            "allOf": [
+            "oneOf": [
               {
                 "$ref": "#/components/schemas/SocialAccount"
+              },
+              {
+                "type": "null"
               }
             ],
-            "description": "The source account. Only in `GET /repurposes`."
+            "description": "The source account, `null` when it was removed. Returned by `GET /repurposes` (and by `PUT` on an active repurpose)."
           },
           "source_format": {
             "type": "string",
@@ -12769,7 +13160,7 @@
           },
           "published_items_count": {
             "type": "integer",
-            "description": "Videos repurposed so far. Only in `GET /repurposes`."
+            "description": "Items with status `published`. Items saved as drafts (`drafted`) are not counted. Only in `GET /repurposes`."
           },
           "created_at": {
             "type": "string",
@@ -13128,7 +13519,7 @@
         }
       },
       "Forbidden": {
-        "description": "The request is not allowed. API keys work only for workspace admins (the account owner or a member marked as admin): otherwise every request returns `Insufficient workspace permissions.`. Other bodies: `Workspace access denied.` (the key's user left the workspace) and `Personal access token required.` (an MCP OAuth token was sent).",
+        "description": "The request is not allowed. API keys work only for workspace admins (the account owner or a member marked as admin): otherwise every request returns `Insufficient workspace permissions.`. Other bodies: `Workspace access denied.` (the key's user left the workspace) and `Personal access token required.` (an MCP OAuth token was sent) and `This action is unauthorized.` (the note belongs to another member).",
         "content": {
           "application/json": {
             "schema": {

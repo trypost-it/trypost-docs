@@ -101,7 +101,7 @@ Each destination carries its network's settings in `meta`. A draft can be saved 
 | YouTube | A title: `title`, or the first line of the text | Up to 100 characters, without `<` or `>` |
 | Google Business | `event` with `title`, `start_date` and `end_date` when `topic_type` is `EVENT` or `OFFER`; a `call_to_action` needs a `url` unless its `action_type` is `NONE` or `CALL` | — |
 
-Every other setting is optional: link previews, AI labels, YouTube privacy and category, Mastodon content warnings, Threads topics, and more. The full list per network is under `platforms[].meta` on [Create post](/api-reference/posts/create-post). Keys a network does not know are dropped.
+Every other setting is optional: link previews, AI labels, YouTube privacy and category, Mastodon content warnings, Threads topics, and more. The full list per network is under `platforms[].meta` on [Create post](/api-reference/posts/create-post). Keys TryPost does not know are dropped; settings of another network are accepted but not used.
 
 ## 3. Create the post
 
@@ -165,7 +165,7 @@ The response is `{ "posts": [...] }`, one post per destination. A validation err
 
 | `status` | Result |
 |---|---|
-| `draft` | Saved and editable. On an update, unschedules a scheduled post |
+| `draft` | Saved and editable. On an update, unschedules a scheduled post (its last `scheduled_at` stays on the draft) |
 | `scheduled` | Published at `scheduled_at`, or in the channel's queue with `queue` / `queue_slot` |
 | `publishing` | Published now |
 
@@ -194,7 +194,7 @@ When the channel has posting times (`has_posting_schedule: true`), send `queue` 
 }
 ```
 
-To take one exact slot, send `queue_slot` with an instant from [List free queue slots](/api-reference/channels/list-free-queue-slots). It works on [Create post](/api-reference/posts/create-post) only, and fails with `422` when the slot has been taken in the meantime. `queue` cannot be combined with `scheduled_at` or `queue_slot`. When you send `queue_slot`, it sets the time and any `scheduled_at` is ignored.
+To take one exact slot, send `queue_slot` with an instant from [List free queue slots](/api-reference/channels/list-free-queue-slots). It works on [Create post](/api-reference/posts/create-post) only, and fails with `422` when the slot has been taken in the meantime. `queue` cannot be combined with `scheduled_at` or `queue_slot`. When you send `queue_slot`, it sets the time; do not send `scheduled_at` with it.
 
 A queued post keeps its slot. To change the order, use [Reorder queue](/api-reference/channels/reorder-queue) or [Move post to queue slot](/api-reference/channels/move-post-to-queue-slot); to change the times, [Update posting schedule](/api-reference/channels/update-posting-schedule) (it replaces the whole schedule: send the `timezone` (required) and the current `posting_goal` and `posting_schedule` to keep them, since omitted values are cleared). To repeat a scheduled post, see [Set post recurrence](/api-reference/recurrence/set-post-recurrence).
 
@@ -254,9 +254,9 @@ If publishing stops halfway, replies already live are kept, and a retry continue
 
 ## Content limits
 
-Limits are checked when a post is scheduled or published. Drafts can go over them.
+Network limits are checked when a post is scheduled or published; drafts can go over them. The 25000-character ceiling applies to every post, drafts included.
 
-- **Text per account.** The text must fit the destination account's `max_content_length`, measured on the text the network receives. An X account with long posts takes 25000 characters; other X accounts take 280. Every post has a hard ceiling of 25000 characters. An emoji counts as one character.
+- **Text per account.** The text must fit the destination account's `max_content_length`, measured on the text the network receives. An X account with long posts takes 25000 characters; other X accounts take 280. An emoji counts as one character.
 - **Instagram hashtags.** Instagram takes at most **5** hashtags per post.
 - **Stories are captionless.** `instagram_story` and `facebook_story` send no text, so their text is neither published nor measured, and the hashtag cap does not apply.
 - **Media.** Each content type has its own media count, size, duration and aspect ratio rules, listed by [List content types](/api-reference/platform/list-content-types) and on each network's page, for example [Instagram](/platforms/instagram), [X](/platforms/x-twitter) or [TikTok](/platforms/tiktok).
@@ -267,7 +267,7 @@ Limits are checked when a post is scheduled or published. Drafts can go over the
 
 ## Editing, deleting and errors
 
-- [Update post](/api-reference/posts/update-post) changes only the fields you send. The channel is fixed; to post elsewhere, create a new post. Send the destination's settings as top-level `content_type` and `meta`, or as `platforms[]` with the destination `id`. `meta` is merged with the stored settings; send `null` for a key to clear it.
+- [Update post](/api-reference/posts/update-post) changes only the fields you send. The channel is fixed; to post elsewhere, create a new post. Send the destination's settings as top-level `content_type` and `meta`, or as `platforms[]` with the destination `id`. `meta` is merged with the stored settings; send `null` for a key to clear it. Boolean settings cannot be cleared: send `true` or `false`.
 - Posts that are `publishing`, `published`, `partially_published` or `failed` cannot be edited or deleted: the API answers `422`.
 - [Delete post](/api-reference/posts/delete-post) removes the post from TryPost only. It never deletes anything already published on a network.
 - Validation errors are keyed by field. Errors on a destination's settings, text, or media fit may be reported under `destinations.0.…` (for example `destinations.0.meta.board_id`) even when you sent `platforms`.

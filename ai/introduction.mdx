@@ -87,19 +87,19 @@ See [Members and permissions](/knowledge-base/settings/members-and-permissions) 
     Your OAuth grant is valid and the config is correct — the account behind it just doesn't have an active subscription. Open [app.trypost.it](https://app.trypost.it), pick a plan, then reconnect the MCP server. Self-hosted instances skip this check.
   </Accordion>
   <Accordion title="HTTP 401 — Unauthenticated">
-    The OAuth session expired and refresh failed, or the access token is missing/malformed/revoked. Re-run the assistant's connect flow to sign in again.
+    The OAuth session expired and refresh failed, the access token is missing, malformed or revoked (removing you from the workspace revokes it), or the workspace it was bound to was deleted (`No workspace selected.`). Re-run the assistant's connect flow to sign in again.
   </Accordion>
   <Accordion title="HTTP 403 — MCP OAuth authorization required">
-    The request used a Personal Access Token (API key) or an OAuth token without the `mcp:use` scope. Remove any `Authorization: Bearer …` API key from the MCP config and connect with OAuth instead. For scripts and CI, call the [REST API](/api-reference/introduction) with an API key — not the MCP endpoint.
+    The request used a Personal Access Token (API key) or an OAuth token without the `mcp:use` scope. Remove any `Authorization: Bearer …` API key from the MCP config and connect with OAuth instead. For scripts and CI, call the [REST API](/api-reference/introduction) with an API key (workspace admins only) — not the MCP endpoint.
   </Accordion>
   <Accordion title="HTTP 403 — Workspace access denied">
-    The connection is bound to a workspace you are no longer a member of. Reconnect and pick a workspace you belong to.
+    The connection is bound to a workspace you can no longer access. Reconnect and pick a workspace you belong to.
   </Accordion>
   <Accordion title="Server shows as “Failed to connect”">
     Run the connection probe your assistant exposes (for example `claude mcp list` or `devin mcp list`). The HTTP status from the probe tells you which case you're in: `402` → see above; `401` → re-authenticate; `403` → see the two 403 entries above (use OAuth, not an API key; or reconnect to a workspace you belong to); anything else → open an issue on [GitHub](https://github.com/trypostit/trypost/issues).
   </Accordion>
   <Accordion title="Browser doesn't open during sign-in">
-    Some clients print the authorize URL to the terminal instead of launching the browser when running over SSH or inside a container. Copy the URL into a local browser, complete the flow, and the assistant will pick up the callback automatically. If the callback port is blocked, use a client that can finish OAuth locally, or drive TryPost through the [REST API](/api-reference/introduction) with an API key.
+    Some clients print the authorize URL to the terminal instead of launching the browser when running over SSH or inside a container. Copy the URL into a local browser, complete the flow, and the assistant will pick up the callback automatically. If the callback port is blocked, use a client that can finish OAuth locally, or drive TryPost through the [REST API](/api-reference/introduction) with an API key (workspace admins only).
   </Accordion>
 </AccordionGroup>
 

@@ -105,6 +105,8 @@ Once authorized, Devin can:
 | **Accounts** | List connected social accounts, set posting times, manage the queue, resolve Pinterest boards and Discord channels |
 | **Workspace** | Read the current workspace, manage ideas, signatures, labels, webhooks, repurposes, and API keys; read analytics |
 
+Some of these depend on your permissions in the workspace (approving needs direct publishing; posting times, webhooks and API keys need an admin). See [Permissions](/ai/introduction#permissions).
+
 Pinterest needs a `board_id`, Discord needs a `channel_id`, and TikTok needs a `privacy_level` before you publish. Ask Devin to list boards or channels first. Details and tool names: [Tools reference](/ai/tools-reference).
 
 On Cloud, the same custom server is available in web sessions and in sessions started from [Slack](https://docs.devin.ai/integrations/slack) or [Microsoft Teams](https://docs.devin.ai/integrations/microsoft-teams).
@@ -281,7 +283,7 @@ Example: `https://trypost.yourdomain.com/mcp/trypost`.
     Cloud TryPost is already public. A self-hosted URL must be reachable from the internet over HTTPS. `localhost` works only for CLI and Desktop.
   </Accordion>
   <Accordion title="Browser does not open during CLI sign-in">
-    Over SSH or inside a container, `devin mcp login` prints the authorize URL instead of opening a browser. Copy it into a local browser, complete **Allow**, and the CLI picks up the callback. If the loopback port is blocked, finish OAuth on a machine that can receive the callback, or use the [REST API](/api-reference/introduction) with an API key.
+    Over SSH or inside a container, `devin mcp login` prints the authorize URL instead of opening a browser. Copy it into a local browser, complete **Allow**, and the CLI picks up the callback. If the loopback port is blocked, finish OAuth on a machine that can receive the callback, or use the [REST API](/api-reference/introduction) with an API key (workspace admins only).
   </Accordion>
   <Accordion title="Enterprise team blocked the server">
     A Devin admin can disable MCP, require it to be turned on in team settings, or allowlist only certain servers. Cascade on Enterprise is off until an admin enables it. If TryPost never connects on a Teams / Enterprise plan, ask an admin to allow a custom HTTP server at `https://app.trypost.it/mcp/trypost` (or your `{APP_URL}/mcp/trypost`).

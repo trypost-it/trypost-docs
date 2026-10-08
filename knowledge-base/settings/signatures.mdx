@@ -1,57 +1,36 @@
 ---
 title: "Signatures"
-description: "Reusable text blocks — hashtags, links, calls-to-action — that you can append to any post."
-icon: "hashtag"
+description: "Save text you add to posts often — hashtags, links, a sign-off — and append it from the composer."
+icon: "signature"
 ---
 
-## What are signatures?
+A signature is reusable text to append to your posts: a set of hashtags, a link to your newsletter, a sign-off. Signatures belong to the workspace, so every member sees and uses the same list.
 
-Signatures are reusable text blocks you can append to a post with one click — hashtag sets, a link to your newsletter, a call-to-action, anything you'd otherwise retype every time. Create a signature once and reuse it across posts.
+Every member of the workspace can create, edit and delete signatures. Find them in **Settings → Signatures**.
 
-## Creating a signature
+## Create a signature
 
-Go to **Signatures** in the sidebar or use the API:
+Click **New signature**, give it a **Name** (for example "Marketing" or "Brand sign-off") and its **Content**, then **Create signature**.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| **Name** | Yes | A descriptive name (e.g., "SaaS hashtags", "Newsletter CTA", "Product launch") |
-| **Content** | Yes | The text appended to the post (e.g., `#saas #marketing #growth` or `🔗 Subscribe: trypost.it/news`) |
+You can also create one without leaving the composer: open the signatures picker and add a new one there.
 
-<Tip>
-  Keep one signature per intent — one for hashtags, one for the newsletter CTA, one for the conference plug. You can apply more than one to the same post.
-</Tip>
+## Use a signature
 
-## Using signatures
+In the [composer](/knowledge-base/publish/composer), click the **Signatures** button in the editor toolbar, search, and click a signature. Its content is appended at the end of the text, after a blank line. You can add more than one.
 
-When composing a post, click the signatures icon to see your list. Click any signature to append its content to the post.
+When you customize the post for each network, the signature goes into the network you are editing.
 
-You can apply multiple signatures to a single post — they're appended in the order you click them.
+The text is copied into the post. Editing or deleting the signature later does not change posts that already used it.
 
-## Managing signatures
+## Edit or delete
 
-- **Edit** — Update the name or content at any time. Existing posts that already inserted the signature aren't affected — the text was copied at insertion time.
-- **Delete** — Remove a signature you no longer need. Existing posts are not affected.
+Use **Edit signature** to change its name or content, and **Delete signature** to remove it after a confirmation.
 
-## Best practices
+## Via the API and MCP
 
-- **One intent per signature** — A hashtag pack and a newsletter CTA belong in separate signatures so you can mix and match.
-- **Platform awareness** — LinkedIn performs well with 3–5 hashtags, X with 1–2, Instagram with up to 30. Consider creating platform-specific signatures.
-- **Refresh regularly** — Trending tags and CTAs change. Review your signatures periodically.
-
-## Via the API
-
-Manage signatures programmatically:
-
-```bash
-# Create a signature
-curl -X POST https://app.trypost.it/api/signatures \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "SaaS hashtags", "content": "#saas #marketing #growth #startup #b2b"}'
-
-# List all signatures
-curl -X GET https://app.trypost.it/api/signatures \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-See the full [Signatures API reference](/api-reference/endpoint/list-signatures).
+| Task | REST | MCP |
+|------|------|-----|
+| List | [List signatures](/api-reference/signatures/list-signatures) | `list-signatures-tool` |
+| Create | [Create signature](/api-reference/signatures/create-signature) | `create-signature-tool` |
+| Update | [Update signature](/api-reference/signatures/update-signature) | `update-signature-tool` |
+| Delete | [Delete signature](/api-reference/signatures/delete-signature) | `delete-signature-tool` |

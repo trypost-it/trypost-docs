@@ -1,101 +1,69 @@
 ---
-title: "Plans & billing"
-description: "How TryPost Cloud pricing, plans, and billing work."
+title: "Plans and billing"
+description: "TryPost Cloud plans, how your subscription starts, and how to change plan, update your card or cancel."
 icon: "credit-card"
 ---
 
 <Note>
-  Everything on this page applies to **TryPost Cloud**. Self-hosted instances skip subscription checks entirely (set `SELF_HOSTED=true` in `.env`).
+  This page is about TryPost Cloud. A self-hosted TryPost has no plans or billing: every feature is available and there is no workspace limit.
 </Note>
 
-## The plans
+## Plans
 
-TryPost Cloud has two flat plans. Both include every feature — the difference is how many [workspaces](/knowledge-base/workspaces) you can run. There are no per-seat fees and no AI credit cap.
+Both plans have the same features. The difference is how many workspaces you get, and you can switch plans whenever you like.
 
-| | **Socials** | **Workspaces** |
-|---|---|---|
-| Best for | Creators and small brands | Agencies and larger businesses |
-| Monthly | **$19 / month** | **$99 / month** |
-| Yearly | **$15.83 / month** billed yearly (**$190 / year**, 2 months free) | **$82.50 / month** billed yearly (**$990 / year**, 2 months free) |
-| Workspaces | 1 | Unlimited |
-| Social accounts | Unlimited, including several on the same network | Unlimited, including several on the same network |
-| Team members | Unlimited | Unlimited |
-| Included | Calendar, Copilot, MCP, REST API, analytics, [repurpose](/knowledge-base/repurposes), signatures, labels | Same |
+| Plan | Monthly | Yearly | Workspaces |
+|------|---------|--------|------------|
+| **Socials** — best for creators and small brands | $19/month | $190/year | One workspace |
+| **Workspaces** — best for agencies and larger businesses | $99/month | $990/year | Unlimited workspaces |
 
-Pricing is localized in some regions (for example, Brazil). See the [pricing page](https://trypost.it/pricing) for current rates.
+Yearly billing gives you 2 months free.
 
-A workspace is one brand or client, kept separate from the rest: its own social accounts, signatures, labels, analytics, members, and MCP connection. Need another brand? [Add a workspace](/knowledge-base/workspaces#creating-a-workspace) — Socials can hold one; Workspaces can hold as many as you need.
+A [workspace](/knowledge-base/settings/workspaces) is one brand or client, kept separate from the rest: its own social accounts, signatures, labels, analytics, member permissions and MCP connection.
 
-## First month
+### Everything included
 
-New accounts pick a plan during welcome. Checkout is **monthly** there. A card is required.
+On both plans:
 
-First-time subscribers pay **$1 for the first month**. The regular price — **$19** on Socials or **$99** on Workspaces — starts on the next cycle. Cancel before that cycle if you do not want to continue.
+- All social networks
+- Unlimited social accounts, even several from the same network
+- Unlimited members
+- Calendar and queue
+- The AI assistant in the composer
+- [MCP](/knowledge-base/settings/mcp): post from Claude, ChatGPT or other assistants
+- [Repurpose](/knowledge-base/repurpose)
+- [Insights](/knowledge-base/insights/overview)
 
-Re-subscribers do not get the $1 first month. Yearly billing is available later on the billing page — it is not part of welcome checkout.
+There are no AI credits or usage limits.
 
-If you let access lapse without an active subscription, the app and API return `402 Payment Required` until you subscribe.
+## Start your subscription
 
-## Subscribing
+After you sign up, the welcome steps end with **Choose your plan**. Pick Socials or Workspaces; the button reads **Start for $1** — $1 for the first month, then the plan's monthly price. You finish at Stripe Checkout, which asks for a card.
 
-1. During welcome, pick **Socials** or **Workspaces** and complete Stripe Checkout
-2. After you have a subscription, go to **Settings &gt; Account &gt; Billing** to switch plan or interval
-3. Pick **Monthly** or **Yearly** at the top of the plan picker
-4. Choose **Upgrade**, **Downgrade**, or switch interval
+When the first-month offer does not apply, a first subscription starts with an 8-day free trial instead, still with a card. The Billing page then shows **Trial until :date**.
 
-Yearly billing costs less per month than monthly (2 months free). Stripe prorates the difference when you change plan or interval.
+The welcome step is monthly only. Once subscribed, you can switch to yearly from the Billing page.
 
-## Changing plan
+Until the owner finishes checkout, members of the account see **Waiting for the account owner**.
 
-Use **Settings &gt; Account &gt; Billing**. Only the account owner can change the plan.
+## The Billing page
 
-- **Socials → Workspaces** — upgrade. You can add more workspaces right away.
-- **Workspaces → Socials** — downgrade. You must be down to **one** workspace first. If you still have extras, delete them before switching — the picker blocks Socials until you do.
-- **Monthly ↔ yearly** on the same plan — switch interval from the same picker.
+Only the account owner can manage billing. Open it from **Settings → Billing**, or **Plans and billing** in the workspace menu.
 
-Adding a workspace on Workspaces does not change what you pay.
+- **Current plan** — your plan and price, with **Renews automatically**, **Trial until :date** or **Cancelled, ends on :date**, and how many workspaces you use (**Workspaces: :count of :limit**).
+- **Payment method** — your card. **Manage on Stripe** opens Stripe to update your card or billing details, or to cancel.
+- **Invoices** — download past invoices.
 
-## Updating payment method &amp; invoices
+If a payment fails, the page shows **Payment past due** with **Update payment**.
 
-Click **Manage on Stripe** on the Billing page to open the Stripe Customer Portal in a new tab. From there you can:
+## Change plan
 
-- Update card / payment method
-- Download invoices and receipts
-- Change billing email
-- Cancel the subscription
+Click **Change plan** to upgrade or downgrade, or to switch between monthly and yearly. The change applies to your current subscription right away.
 
-## Limit behavior
+To move from Workspaces to Socials you can have only one workspace: with more, TryPost asks you to delete the extras before switching. See [Delete a workspace](/knowledge-base/settings/workspaces#delete-a-workspace).
 
-The Cloud limits that still apply:
+## Cancel
 
-- **No active subscription** — the dashboard, API, and MCP return `402 Payment Required`
-- **Socials workspace cap** — you cannot create a second workspace until you upgrade. The create page still opens; submitting it shows the upgrade dialog
-- **Downgrade with too many workspaces** — blocked until extras are deleted
+Cancel from **Manage on Stripe**. The Billing page then shows **Cancelled, ends on :date**, and you keep access until that date.
 
-There is **no** monthly AI credit ceiling. Copilot and the other AI tools stay available on both plans.
-
-## FAQ
-
-<AccordionGroup>
-  <Accordion title="How much does TryPost cost?">
-    Two plans: Socials at $19/month or $190/year, and Workspaces at $99/month or $990/year. First-time subscribers pay $1 for the first month. Both include every feature. The only difference is one workspace vs unlimited workspaces.
-  </Accordion>
-  <Accordion title="Can I manage more than one brand?">
-    Yes. Create a workspace per brand or client. Socials includes one workspace; Workspaces includes as many as you need, at the same flat price.
-  </Accordion>
-  <Accordion title="Do I pay per team member?">
-    No. Members are unlimited on both plans.
-  </Accordion>
-  <Accordion title="Are AI features metered?">
-    No. There is no credit cap and nothing is deducted from a monthly quota. You need an active subscription (Cloud) or a configured AI provider (self-hosted).
-  </Accordion>
-  <Accordion title="What happens if my card fails?">
-    Stripe retries automatically. After the grace period, the subscription enters `past_due` and the dashboard shows a banner. New actions that require app access return `402` until billing recovers.
-  </Accordion>
-  <Accordion title="Can I cancel any time?">
-    Yes. Cancel from the Stripe Customer Portal. The subscription stays active until the end of the current billing period, then expires.
-  </Accordion>
-  <Accordion title="Does self-hosted have plans?">
-    No. Self-hosted instances bypass all subscription checks. You manage your own infrastructure costs.
-  </Accordion>
-</AccordionGroup>
+Deleting your account also cancels the subscription. See [Delete account](/knowledge-base/settings/authentication#delete-account).

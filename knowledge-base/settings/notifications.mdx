@@ -1,101 +1,31 @@
 ---
 title: "Notifications"
-description: "Stay informed about post publishing, account issues, and team activity."
+description: "Choose which emails TryPost sends you."
 icon: "bell"
 ---
 
-## What are notifications?
+TryPost notifies you by **email only**. There is no in-app notification center.
 
-TryPost sends notifications to keep you informed about important events — successful publishes, failures, account issues, and team activity. Notifications are delivered in real time so you can react quickly.
+Open **Settings → Notifications** to choose which emails you receive. Each switch saves as soon as you flip it; if the save fails, the switch goes back and an error message appears.
 
-## Notification types
+## Email notifications
 
-### Publishing
+| Switch | What it covers | Who receives it |
+|--------|----------------|-----------------|
+| **Post published** | A post was published successfully. | The account owner |
+| **Post failed** | A post failed to publish on one or more channels. | The account owner |
+| **Account disconnected** | A channel lost its connection, the daily check found disconnected channels in a workspace, or upcoming posts are at risk because their channel needs reconnecting. | The account owner |
+| **New note on a post** | A teammate added a [note](/knowledge-base/publish/overview) to a post. | Every workspace member except the note's author (on a post pending approval: only approvers and the requester) |
+| **Collaboration** | [Approval](/knowledge-base/publish/approvals) requests, and posts approved or rejected. | Requests go to every approver except the requester; decisions go to the requester |
 
-| Type | When it's sent | What it tells you |
-|------|---------------|-------------------|
-| **Post published** | A post was published to all enabled platforms successfully | Which platforms were published with links to the live posts |
-| **Post failed** | A post failed on one or more platforms (covers both full failures and partial publishes) | Which platforms failed and the error messages |
+Every switch is on by default. The settings are personal: turning one off only stops the email for you.
 
-### AI
+## Emails you cannot turn off
 
-| Type | When it's sent | What it tells you |
-|------|---------------|-------------------|
-| **Post ready** | The AI **Create** flow finished generating a post (text + images) in the background | A link to the new draft so you can review and schedule it |
+- **Workspace invitations**, sent to the person you invite. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+- **Paused webhook**, sent to the account owner when a webhook is paused after repeated failed deliveries. See [Webhooks](/knowledge-base/settings/webhooks).
+- Account emails such as email verification and password reset.
 
-### Accounts
+## Language and times
 
-| Type | When it's sent | What it tells you |
-|------|---------------|-------------------|
-| **Account disconnected** | A social account lost its authorization | Which account and platform need reconnection |
-
-### Team
-
-| Type | When it's sent | What it tells you |
-|------|---------------|-------------------|
-| **Invite received** | You were invited to join a workspace | Who invited you and which workspace |
-| **Member joined** | Someone accepted an invite to your workspace | Who joined and their role |
-| **Member removed** | A member was removed from your workspace | Who was removed |
-| **Mentioned in comment** | A teammate `@`-mentioned you in a post comment | The post, the commenter, and a snippet of the comment |
-
-## Notification channels
-
-| Channel | Description |
-|---------|-------------|
-| **In-app** | Bell icon in the top nav. Delivered in real time via Reverb (WebSockets) — no refresh needed |
-| **Email** | Sent to the address on your TryPost account, via the configured mailer (SendKit by default) |
-
-In-app notifications are always created. Email is sent in addition to in-app for most types, with a couple of carve-outs:
-
-- `mentioned_in_comment` — if you're online, only the in-app toast fires; if you're offline, you get both.
-- `post_ready` — in-app only. The AI Create flow is short enough that a banner inside the app is all you need.
-
-## Notification preferences
-
-Go to **Settings > Notifications** to toggle which notifications you receive. Each toggle controls **email** for that notification type — in-app notifications are always created so you can catch up later from the bell.
-
-Today the page exposes three toggles:
-
-| Toggle | Controls email for |
-|--------|--------------------|
-| **Post published** | `post_published` |
-| **Post failed** | `post_failed` (covers both full failures and partial publishes) |
-| **Account disconnected** | `account_disconnected` |
-
-`mentioned_in_comment`, `invite_received`, `member_joined`, `member_removed`, and `post_ready` use sensible defaults today and aren't user-configurable yet.
-
-<Tip>
-  Keep **Post failed** and **Account disconnected** emails on. They need immediate action and you might not be looking at the dashboard when they fire.
-</Tip>
-
-## Managing notifications
-
-The notification center (bell icon) shows all your in-app notifications:
-
-- **Mark as read** — Click a notification to mark it as read
-- **Mark all as read** — Clear all unread notifications at once
-- **Archive all** — Archive all notifications to start fresh
-
-## Email configuration
-
-Email notifications require a working mail configuration. TryPost uses [SendKit](https://sendkit.dev?utm_source=trypost&utm_medium=docs&utm_campaign=notifications) as the default mailer with a free plan of 3,000 emails/month — more than enough for notification emails.
-
-A [paused webhook](/knowledge-base/webhooks#status) also emails the account owner. That message is transactional — it is not an in-app notification and has no toggle on this page.
-
-<Note>
-  **Self-hosting?** See the [Configuration guide](/self-hosting/configuration) to set up email delivery.
-</Note>
-
-## FAQ
-
-<AccordionGroup>
-  <Accordion title="Who receives publishing notifications?">
-    The workspace owner receives all publishing notifications (success and failure), regardless of who created or scheduled the post.
-  </Accordion>
-  <Accordion title="Can I disable all notifications?">
-    Yes. Go to **Settings > Notifications** and disable each notification type. In-app notifications will still appear in the notification center, but emails will stop.
-  </Accordion>
-  <Accordion title="Are notifications real-time?">
-    In-app notifications are delivered in real-time via WebSockets. You'll see them appear instantly without refreshing the page. Emails are sent asynchronously via the queue worker.
-  </Accordion>
-</AccordionGroup>
+Emails arrive in your interface language, and every time in them is shown in your time zone and time format. Change them in [Preferences](/knowledge-base/settings/preferences).

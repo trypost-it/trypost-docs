@@ -1,6 +1,57 @@
 ---
 title: "Channel settings"
-description: "Set a channel's posting times, time zone and posting goal."
+description: "Order your channels, and set each channel's time zone, posting goal and posting slots."
+icon: "clock"
 ---
 
-Content in progress.
+Only the account owner and workspace admins can manage channels. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+## The channel list
+
+**Settings → Channels** lists every channel connected to the workspace.
+
+- **Drag to reorder**, or use **Move up** / **Move down** in a channel's menu. This order is the one used in the sidebar and in the composer.
+- Each channel's menu also has **View profile** (opens it on the network), **Refresh connection** and **Disconnect**.
+- A channel that lost its connection shows **Connection lost** and a **Reconnect** button. See [Reconnect a channel](/knowledge-base/channels/connecting#reconnect-a-channel).
+- The gear icon opens **Channel settings** for that channel.
+
+## Time zone
+
+**Time zone** is the zone of this channel's posting schedule: posting slots and [recurring posts](/knowledge-base/publish/recurring-posts) follow its clock. A new channel starts with your own time zone from [Preferences](/knowledge-base/settings/preferences).
+
+Changing it asks first: **Change the channel time zone and reschedule posts?**
+
+- Queued posts are rescheduled to the posting slots of the new time zone. Each one keeps the same local clock time when that slot exists in the new zone; otherwise it takes the first free slot. A queued post with no slot left keeps its time as a custom-time post.
+- Posts with a custom time keep the same moment.
+
+## Posting goal
+
+**Posting goal** is how often you aim to post on this channel each week, from 1 to 28 posts. The channel's **Publish** page tracks it as posts sent this week, which follows your start of week from [Preferences](/knowledge-base/settings/preferences).
+
+When you connect a channel, TryPost asks for this goal first (**Keep it steady** 1/week, **Build a presence** 3/week, **Reach new heights** 5/week, or **Choose your goal**) and suggests recommended posting times to match it.
+
+## Posting slots
+
+**Posting slots** are the times that tell TryPost when to send posts from your [queue](/knowledge-base/publish/queue). The next posts you add to the queue go out in the next upcoming slots.
+
+- Turn each day **On** or **Off**.
+- **Add posting slot** for **Every day**, **Weekdays**, **Weekends** or a single day, at the time you pick. Each day takes up to 4 times.
+- Remove a time, or change its hour or minute, from the slot itself.
+- **Clear all** removes every posting time from the channel, after a confirmation.
+- **Generate new posting slots** replaces your current times with:
+  - **Meet my posting goal** — enough slots to reach the goal (disabled when you already have more slots than the goal);
+  - **Update slots to match TryPost's recommendations** — recommended times;
+  - **Copy from channel** — the schedule of another channel.
+
+Every change saves on its own. Times are shown in your time format (12-hour or 24-hour) and the week starts on your start of week, both from [Preferences](/knowledge-base/settings/preferences).
+
+Changing slots only moves queued posts whose slot no longer exists; they take the first free slots in order. A channel without posting times cannot use the queue.
+
+## Via the API and MCP
+
+| Task | REST | MCP |
+|------|------|-----|
+| Read the schedule | [Get posting schedule](/api-reference/channels/get-posting-schedule) | `get-posting-schedule-tool` |
+| Change times, goal or time zone | [Update posting schedule](/api-reference/channels/update-posting-schedule) | `update-posting-schedule-tool` |
+| Generate slots | [Generate posting schedule](/api-reference/channels/generate-posting-schedule) | `generate-posting-schedule-tool` |
+| Copy from another channel | [Copy posting schedule](/api-reference/channels/copy-posting-schedule) | `copy-posting-schedule-tool` |

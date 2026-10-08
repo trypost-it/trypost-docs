@@ -1,64 +1,41 @@
 ---
 title: "Labels"
-description: "Organize and categorize your posts with color-coded labels."
+description: "Organize and filter your posts and ideas with colored labels."
 icon: "tag"
 ---
 
-## What are labels?
+Labels are colored tags for posts and ideas: a campaign, a content pillar, a client. Labels belong to the workspace, so every member sees and uses the same list.
 
-Labels are color-coded tags that you can assign to posts to organize your content calendar. They make it easy to visually scan, filter, and manage your posts.
+Every member of the workspace can create, edit and delete labels. Find them in **Settings → Labels**.
 
-## Creating a label
+## Create a label
 
-Go to **Labels** in the sidebar or use the API:
+Click **New Label**, enter a **Name**, pick a **Color**, then **Create Label**.
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| **Name** | Yes | A descriptive name (e.g., "Product Launch", "Blog Content", "Urgent") |
-| **Color** | Yes | A hex color code (e.g., `#4f46e5`). Must be in `#RRGGBB` format |
+The list shows how many posts use each label. **View posts** opens Publish filtered by that label.
 
-## Using labels
+## Add labels
 
-Assign labels to posts when creating or editing them. A post can have **multiple labels**, and the same label can be used across many posts.
+- **Posts** — in the [composer](/knowledge-base/publish/composer), or from a post card's menu with **Edit labels** on the Publish page. A post can have several labels.
+- **Ideas** — in the idea editor. See [Ideas](/knowledge-base/create/ideas).
 
-Labels appear as colored badges in the post list and calendar, making it easy to visually identify different types of content at a glance.
+## Filter by label
 
-### Filtering by label
+- **Publish** — the **Labels** filter shows only posts with the labels you pick. **Untagged** shows posts without any label, and **Manage labels** opens this settings page. See [Publish](/knowledge-base/publish/overview).
+- **Channel insights** — filter a channel's per-post performance by label to compare campaigns. See [Channel insights](/knowledge-base/insights/channel-insights).
+- **Ideas** — filter the board or gallery by label.
 
-In the calendar and post list views, you can filter by label to see only posts tagged with a specific label. This is useful when you want to review all posts for a particular campaign or category.
+## Edit or delete
 
-## Label ideas
+Use **Edit label** to change the name or color; posts and ideas show the change right away. **Delete label** removes it from every post and idea, after a confirmation. The posts and ideas themselves stay.
 
-| Label | Color | Use case |
-|-------|-------|----------|
-| **Product Launch** | Indigo `#4f46e5` | Posts related to a product launch campaign |
-| **Blog** | Blue `#3b82f6` | Posts promoting blog articles |
-| **Engagement** | Green `#22c55e` | Polls, questions, and community engagement |
-| **Urgent** | Red `#ef4444` | Time-sensitive posts that need immediate review |
-| **Evergreen** | Teal `#14b8a6` | Content that can be reused or rescheduled |
-| **Client: Acme** | Orange `#f97316` | Agency use: posts for a specific client |
+## Via the API and MCP
 
-## Managing labels
+| Task | REST | MCP |
+|------|------|-----|
+| List | [List labels](/api-reference/labels/list-labels) | `list-labels-tool` |
+| Create | [Create label](/api-reference/labels/create-label) | `create-label-tool` |
+| Update | [Update label](/api-reference/labels/update-label) | `update-label-tool` |
+| Delete | [Delete label](/api-reference/labels/delete-label) | `delete-label-tool` |
 
-- **Edit** — Update the name or color at any time. Changes are reflected immediately across all posts that use the label.
-- **Delete** — Remove a label. It's removed from all posts, but the posts themselves are not affected or deleted.
-
-## Via the API
-
-Manage labels and assign them to posts programmatically:
-
-```bash
-# Create a label
-curl -X POST https://app.trypost.it/api/labels \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Product Launch", "color": "#4f46e5"}'
-
-# Assign labels when updating a post
-curl -X PUT https://app.trypost.it/api/posts/{post_id} \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"label_ids": ["label-uuid-1", "label-uuid-2"]}'
-```
-
-See the full [Labels API reference](/api-reference/endpoint/list-labels).
+Over the API a color is a hex code in `#RRGGBB` format. To label a post, send `label_ids` when you [create](/api-reference/posts/create-post) or [update](/api-reference/posts/update-post) it.

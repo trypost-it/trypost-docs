@@ -1,6 +1,43 @@
 ---
 title: "Disconnecting a channel"
-description: "What happens to a channel's posts when you disconnect it."
+description: "Remove a channel from a workspace. Disconnecting deletes every post of that channel in TryPost."
+icon: "link-slash"
 ---
 
-Content in progress.
+Only the account owner and workspace admins can disconnect a channel. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+<Warning>
+  Disconnecting deletes **every post of that channel in TryPost** — drafts, scheduled posts, posts pending approval, failed posts, sent posts and posts imported from the network — together with their media. Posts already on the network stay there. This cannot be undone.
+</Warning>
+
+## Before you disconnect
+
+If the channel is misbehaving or shows **Connection lost**, you probably want to reconnect it instead: [reconnecting](/knowledge-base/channels/connecting#reconnect-a-channel) keeps all of its posts, queue and settings. The disconnect dialog offers this first: **Having issues with your connection? Try Refresh connection first.**
+
+## Disconnect a channel
+
+<Steps>
+  <Step title="Open the channel's menu">
+    In **Settings → Channels**, open the menu of the channel and click **Disconnect**.
+  </Step>
+  <Step title="Type the keyword">
+    The **Disconnect :name** dialog explains what will be deleted. Type `disconnect` in the box (the copy button next to the keyword copies it). The keyword is case-sensitive: `DISCONNECT` does not confirm.
+  </Step>
+  <Step title="Confirm">
+    Click **Disconnect channel**.
+  </Step>
+</Steps>
+
+The keyword is translated: in another interface language you type the word that the dialog shows.
+
+## What happens
+
+- **Posts** — every post of the channel is deleted, whatever its status, with its media. No `post.deleted` [webhook](/knowledge-base/settings/webhooks) or email is sent for those posts. An older post created before TryPost 2.0 that also targets another channel keeps that other channel and only loses this one.
+- **Queue** — the channel's queue and posting schedule go with it.
+- **Repurpose** — a [repurpose](/knowledge-base/repurpose) that used this channel as its source is paused, and the confirmation message tells you how many were paused. A repurpose that only published to this channel drops it from its destinations, and is paused if no destination is left.
+- **Insights** — the channel leaves [Insights](/knowledge-base/insights/overview). If you connect the same account again later, TryPost imports its recent posts again.
+- **The network** — nothing changes on the network. To revoke TryPost's access there too, remove it in the network's own app settings.
+
+## Via the API and MCP
+
+Disconnecting is available in the web app only.

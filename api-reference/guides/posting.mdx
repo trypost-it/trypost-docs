@@ -194,9 +194,9 @@ When the channel has posting times (`has_posting_schedule: true`), send `queue` 
 }
 ```
 
-To take one exact slot, send `queue_slot` with an instant from [List free queue slots](/api-reference/channels/list-free-queue-slots). It works on [Create post](/api-reference/posts/create-post) only, and fails with `422` when the slot has been taken in the meantime. `queue` and `queue_slot` cannot be combined with `scheduled_at`.
+To take one exact slot, send `queue_slot` with an instant from [List free queue slots](/api-reference/channels/list-free-queue-slots). It works on [Create post](/api-reference/posts/create-post) only, and fails with `422` when the slot has been taken in the meantime. `queue` cannot be combined with `scheduled_at` or `queue_slot`. When you send `queue_slot`, it sets the time and any `scheduled_at` is ignored.
 
-A queued post keeps its slot. To change the order, use [Reorder queue](/api-reference/channels/reorder-queue) or [Move post to queue slot](/api-reference/channels/move-post-to-queue-slot); to change the times, [Update posting schedule](/api-reference/channels/update-posting-schedule) (it replaces the whole schedule: send the current `posting_goal` and `posting_schedule` to keep them, since omitted values are cleared). To repeat a scheduled post, see [Set post recurrence](/api-reference/recurrence/set-post-recurrence).
+A queued post keeps its slot. To change the order, use [Reorder queue](/api-reference/channels/reorder-queue) or [Move post to queue slot](/api-reference/channels/move-post-to-queue-slot); to change the times, [Update posting schedule](/api-reference/channels/update-posting-schedule) (it replaces the whole schedule: send the `timezone` (required) and the current `posting_goal` and `posting_schedule` to keep them, since omitted values are cleared). To repeat a scheduled post, see [Set post recurrence](/api-reference/recurrence/set-post-recurrence).
 
 <Note>
   Another change to the same channel queue can be running when you call. The API then answers `409`; retry the request.

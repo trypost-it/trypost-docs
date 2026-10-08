@@ -391,7 +391,7 @@
                       "null"
                     ],
                     "format": "date-time",
-                    "description": "Instant of one free slot from `GET /channels/{account}/queue/slots`, only with `status: scheduled`. Stores the post as a queue post in that slot; refused when the slot is taken or held by a pending approval request. Before `2038-01-19`. Cannot be combined with `queue`."
+                    "description": "Instant of one free slot from `GET /channels/{account}/queue/slots`, only with `status: scheduled`. Stores the post as a queue post in that slot; refused when the slot is taken or held by a pending approval request. Before `2038-01-19`. Cannot be combined with `queue`. Takes the place of `scheduled_at` when both are sent."
                   },
                   "label_ids": {
                     "type": "array",
@@ -2353,7 +2353,7 @@
         ],
         "summary": "Upload media",
         "operationId": "uploadPostMedia",
-        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.` Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
+        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.` Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
         "requestBody": {
           "required": true,
           "content": {
@@ -2664,7 +2664,7 @@
         ],
         "summary": "Attach media from URL",
         "operationId": "attachMediaFromUrl",
-        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
         "requestBody": {
           "required": true,
           "content": {
@@ -2891,7 +2891,7 @@
         ],
         "summary": "Create upload",
         "operationId": "createUpload",
-        "description": "Uploads one file as `multipart/form-data` without a post and returns an `upload_token`. Pass it as a media item (`media[].upload_token`) to `POST /posts`, `POST /posts/batch` or `PUT /posts/{post}`, or to `POST /posts/{post}/media/from-upload`, before `expires_at`. A token is spent by the first post that takes it; to put the same file on another post, pass that post's `media[].id`. Unused uploads are deleted after 24 hours. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Uploads one file as `multipart/form-data` without a post and returns an `upload_token`. Pass it as a media item (`media[].upload_token`) to `POST /posts`, `POST /posts/batch` or `PUT /posts/{post}`, or to `POST /posts/{post}/media/from-upload`, before `expires_at`. A token is spent by the first post that takes it; to put the same file on another post, pass that post's `media[].id`. Unused uploads are deleted after 24 hours. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
         "requestBody": {
           "required": true,
           "content": {
@@ -2958,7 +2958,7 @@
         "summary": "Upload to signed URL",
         "operationId": "uploadToSignedUrl",
         "security": [],
-        "description": "Receives a file at a one-time signed URL issued by the MCP `request-media-upload-tool`. No API key: the signature authorizes the request. Send the file as `multipart/form-data` in the `media` field, for example `curl -F media=@launch.jpg \"<upload_url>\"`. The URL works once, until it expires (15 minutes by default); a second upload to it returns `409`. The returned `upload_token` is then used as a media item, like a token from `POST /uploads`. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Receives a file at a one-time signed URL issued by the MCP `request-media-upload-tool`. No API key: the signature authorizes the request. Send the file as `multipart/form-data` in the `media` field, for example `curl -F media=@launch.jpg \"<upload_url>\"`. The URL works once, until it expires (15 minutes by default); a second upload to it returns `409`. The returned `upload_token` is then used as a media item, like a token from `POST /uploads`. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 64 megapixels, 8192 × 8192), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
         "parameters": [
           {
             "name": "token",
@@ -3203,7 +3203,7 @@
         ],
         "summary": "List Pinterest boards",
         "operationId": "listPinterestBoards",
-        "description": "Lists the boards of a Pinterest account, read live from Pinterest. Use a board `id` as `meta.board_id` on a Pinterest destination. `truncated` is `true` when TryPost could not read every page of boards from Pinterest. This endpoint also allows at most 60 requests per minute per user.",
+        "description": "Lists the boards of a Pinterest account, read live from Pinterest. Use a board `id` as `meta.board_id` on a Pinterest destination. `truncated` is `true` when TryPost could not read every page of boards from Pinterest. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
         "responses": {
           "200": {
             "description": "The account's boards.",
@@ -3279,7 +3279,29 @@
             }
           },
           "429": {
-            "$ref": "#/components/responses/TooManyRequests"
+            "description": "Our rate limit was exceeded (`rate_limit_exceeded` body, `Retry-After` set), or Pinterest reports a rate limit (`{message}` body, no `Retry-After`).",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying. Only for our own limit.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/RateLimitErrorBody"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorBody"
+                    }
+                  ]
+                }
+              }
+            }
           },
           "502": {
             "description": "Pinterest answered with an error.",
@@ -3299,7 +3321,7 @@
         ],
         "summary": "Create Pinterest board",
         "operationId": "createPinterestBoard",
-        "description": "Creates a board on a Pinterest account. The name is trimmed. When Pinterest refuses (expired connection, permission, limit or any other error), the request returns `422` with the reason on `name`. This endpoint also allows at most 60 requests per minute per user.",
+        "description": "Creates a board on a Pinterest account. The name is trimmed. When Pinterest refuses (expired connection, permission, limit or any other error), the request returns `422` with the reason on `name`. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3379,7 +3401,7 @@
         ],
         "summary": "List Discord channels",
         "operationId": "listDiscordChannels",
-        "description": "Lists the channels of a Discord account's server that TryPost's bot can post in, read live from Discord. Use a channel `id` as `meta.channel_id` on a Discord destination. This endpoint also allows at most 60 requests per minute per user.",
+        "description": "Lists the channels of a Discord account's server that TryPost's bot can post in, read live from Discord. Use a channel `id` as `meta.channel_id` on a Discord destination. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
         "responses": {
           "200": {
             "description": "The server's channels.",
@@ -3467,7 +3489,7 @@
         ],
         "summary": "Get TikTok creator info",
         "operationId": "getTikTokCreatorInfo",
-        "description": "Reads what TikTok allows this creator to publish now: the privacy levels to offer as `meta.privacy_level`, whether comments, duets and stitches are off, and the longest video allowed. A creator TikTok does not let post right now comes back with `can_post: false`. Answers are kept for 5 minutes. This endpoint also allows at most 60 requests per minute per user.",
+        "description": "Reads what TikTok allows this creator to publish now: the privacy levels to offer as `meta.privacy_level`, whether comments, duets and stitches are off, and the longest video allowed. A creator TikTok does not let post right now comes back with `can_post: false`. Answers are kept for 5 minutes. This endpoint also counts against a limit of 60 requests per minute per user, shared with the other Pinterest, Discord and TikTok lookup endpoints.",
         "responses": {
           "200": {
             "description": "The creator's publishing options.",
@@ -9249,7 +9271,7 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Workspace API key from Settings → API keys."
+        "description": "Workspace API key from Settings → API Keys."
       }
     },
     "schemas": {
@@ -13093,11 +13115,14 @@
     },
     "responses": {
       "Unauthorized": {
-        "description": "Missing or invalid API key.",
+        "description": "Missing, invalid, revoked or expired API key. Bodies: `Unauthenticated.` (no key, or a key that is invalid or revoked), `Token expired.` (past its `expires_at`), `Token not found.` and `No workspace selected.` (the key is no longer bound to a workspace).",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ErrorBody"
+            },
+            "example": {
+              "message": "Unauthenticated."
             }
           }
         }
@@ -13179,7 +13204,7 @@
         "name": "post",
         "in": "path",
         "required": true,
-        "description": "Post id.",
+        "description": "Post id. A post of another workspace returns `404`.",
         "schema": {
           "type": "string",
           "format": "uuid"

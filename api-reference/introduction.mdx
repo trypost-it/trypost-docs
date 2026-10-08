@@ -72,7 +72,7 @@ AI writing and image tools are part of the web app only. The API has no AI endpo
 
 Each workspace can make **60 requests per minute**. All keys of a workspace share that budget. Responses carry `X-RateLimit-Limit` and `X-RateLimit-Remaining`.
 
-A few calls that reach a network directly also have a limit of their own, 60 per minute: [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards), [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board), [List Discord channels](/api-reference/social-accounts/list-discord-channels) and [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info).
+Four calls that reach a network directly also count against a second limit of **60 requests per minute per user**, shared by the four of them and by all your workspaces: [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards), [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board), [List Discord channels](/api-reference/social-accounts/list-discord-channels) and [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info).
 
 Over the limit, the API answers `429` with a `Retry-After` header (seconds to wait):
 
@@ -91,7 +91,7 @@ The API uses standard HTTP status codes and always answers JSON with a `message`
 |--------|---------|
 | `200` | Success |
 | `201` | Created |
-| `204` | Success with no body (deletes, queue reorder) |
+| `204` | Success with no body (deletes except [Remove post recurrence](/api-reference/recurrence/remove-post-recurrence), queue reorder) |
 | `401` | Missing, invalid or expired API key (`Token expired.`) |
 | `402` | Cloud only: no active subscription (`Active subscription required.`) |
 | `403` | Not allowed: the key's owner is not a workspace admin (`Insufficient workspace permissions.`), or the action is not allowed for this resource |
@@ -112,6 +112,8 @@ Validation errors list the messages of each field under `errors`, with the field
   }
 }
 ```
+
+The key follows the request you sent. A destination's settings, text and media checks on [Create post](/api-reference/posts/create-post) and [Create posts in batch](/api-reference/posts/create-posts-in-batch) are reported under `destinations.N.…` (for example `destinations.0.meta.board_id`), even when you sent `platforms`.
 
 Other errors carry only `message`:
 
@@ -135,7 +137,7 @@ A single resource comes back as a plain object, with no `data` wrapper:
 
 Lists are paginated (see below). A few responses have their own shape, documented on their page: [List content types](/api-reference/platform/list-content-types) returns `{ "platforms": [...] }`, [List idea stages](/api-reference/idea-stages/list-idea-stages) a plain array, [List repurpose source formats](/api-reference/repurposes/list-repurpose-source-formats) `{ "data": [...] }`, [Create posts in batch](/api-reference/posts/create-posts-in-batch) `{ "posts": [...] }`, and [Create API key](/api-reference/api-keys/create-api-key) `{ "token": {...}, "plain_token": "..." }`.
 
-Posts, notes, ideas, labels, signatures and the workspace give their timestamps as `Y-m-d H:i:s` in UTC (`2026-10-12 14:00:00`). API keys, webhooks, webhook logs, repurposes and uploads use ISO 8601. In requests, send dates as ISO 8601 with an offset or `Z` (`2026-10-12T14:00:00Z`).
+Posts, notes, ideas, labels, signatures and the workspace give their timestamps as `Y-m-d H:i:s` in UTC (`2026-10-12 14:00:00`). API keys, webhooks, webhook logs, repurposes, uploads, free queue slots and channel post performance use ISO 8601. In requests, send dates as ISO 8601 with an offset or `Z` (`2026-10-12T14:00:00Z`).
 
 ## Pagination
 

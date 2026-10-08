@@ -38,22 +38,16 @@ SELF_HOSTED=true
 - No Stripe, Cashier, or `CASHIER_TRIAL_DAYS` configuration required
 - The `LoadWorkspaceFromToken` middleware skips the `402 Payment Required` gate
 - Subscription gating is not enforced, so workspaces, social accounts, and members are unlimited per account
-- AI calls go straight to your configured provider; you pay the provider directly (no Cloud metering)
+- The **Billing** settings page and the welcome plan step are hidden
+- AI calls go straight to your configured provider; you pay the provider directly
 
-There's no reason to flip this to `false` on a self-hosted install. The Cloud SaaS deployment is the only place that runs with billing enabled.
+There's no reason to flip this to `false` on a self-hosted install. The Cloud SaaS deployment is the only place that runs with billing enabled; its Stripe settings are listed under [Advanced and internal settings](#advanced-and-internal-settings) and can stay empty.
 
 ## Multiple accounts per network
 
 A workspace can connect as many accounts as you want on the same network — two LinkedIns, two Instagrams, and so on. There is no env flag for this.
 
-Two flavours of the same platform still collapse to **one identity**:
-
-- LinkedIn profile + LinkedIn Page
-- Instagram Standalone + Instagram (Facebook Business)
-
-The same identity cannot sit twice. Reconnecting an account that already has a card updates that card instead of adding another.
-
-`ALLOW_MULTIPLE_SOCIAL_ACCOUNTS` was removed. If it is still in your `.env`, you can delete it — it is ignored.
+The same identity cannot sit twice. Reconnecting an account that already has a channel refreshes that channel instead of adding another, and the two Instagram connection methods (directly and via Facebook) lead to the same identity, so one Instagram account is connected only one way. A LinkedIn profile and a LinkedIn Page are different identities and connect side by side.
 
 ## Database
 
@@ -165,8 +159,23 @@ MEDIA_SIGNED_UPLOAD_URL_TTL_MINUTES=15
 | `MEDIA_VIDEO_MAX_SIZE_MB` | `1024` | Max video upload size, in MB. Applied to direct uploads and URL fetches. |
 | `MEDIA_DOCUMENT_MAX_SIZE_MB` | `100` | Max document (PDF) upload size, in MB. |
 | `MEDIA_SIGNED_UPLOAD_URL_TTL_MINUTES` | `15` | Lifetime of the signed upload URL returned by MCP / API media upload flows. (`MCP_UPLOAD_URL_TTL_MINUTES` remains as a legacy fallback.) |
+| `MEDIA_IMAGE_MAX_PIXELS` | `67108864` (8192 × 8192) | Largest image, in pixels, TryPost accepts |
+| `MEDIA_HEIC_CONVERSION` | `true` | Convert HEIC/HEIF uploads to JPEG. Needs Imagick built with HEIC (the Docker image has it); `false` rejects HEIC uploads with a clear message |
+| `MEDIA_UPLOAD_RETENTION_HOURS` | `24` | Uploads never attached to a post are deleted after this many hours (`media:prune-uploads`, hourly) |
 
 Signed uploads are rate-limited per workspace and per IP (`MEDIA_SIGNED_UPLOAD_PER_WORKSPACE_PER_MINUTE`, `MEDIA_SIGNED_UPLOAD_PER_IP_PER_MINUTE`). If you raise the video limit, also bump PHP's `upload_max_filesize` / `post_max_size` and any reverse-proxy body-size cap to match.
+
+These are the ceilings for any upload. Each network's own limits (for example 5 MB images on X, 20 MB videos on Telegram) still apply on top — see the [platform guides](/platforms/linkedin) and [Media](/knowledge-base/media).
+
+## Post history retention
+
+```env
+POST_HISTORY_RETENTION_DAYS=730
+```
+
+<Warning>
+  **Every night, `posts:prune-history` deletes published posts older than `POST_HISTORY_RETENTION_DAYS` (default 730 days), together with their media.** Raise the value if you need a longer history. `0` or an empty value is rejected — retention cannot be switched off.
+</Warning>
 
 ## File Storage
 
@@ -228,7 +237,17 @@ SPACES_BUCKET=your_bucket
 
 ### Other S3-Compatible Storage
 
-Any other S3-compatible storage (MinIO, Backblaze B2, etc.) can be used with the `s3` disk configuration.
+Any other S3-compatible storage (MinIO, Backblaze B2, etc.) can be used with the `s3` disk configuration. Point it at your endpoint, and turn on path-style URLs if your server needs them (MinIO usually does):
+
+```env
+FILESYSTEM_DISK=s3
+AWS_ENDPOINT=https://minio.yourdomain.com
+AWS_USE_PATH_STYLE_ENDPOINT=true
+```
+
+<Note>
+  Media must be reachable at a public URL, because the networks download it from there. Use `public` or object storage — the private `local` disk has no URL.
+</Note>
 
 ## Mail
 
@@ -261,26 +280,35 @@ MAIL_HOST=smtp.example.com
 MAIL_PORT=587
 MAIL_USERNAME=your_username
 MAIL_PASSWORD=your_password
-MAIL_ENCRYPTION=tls
+MAIL_SCHEME=smtp
 MAIL_FROM_ADDRESS="notifications@yourdomain.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
+
+`MAIL_SCHEME` is `smtp` (STARTTLS on port 587) or `smtps` (implicit TLS on port 465). Other mailers available out of the box: `postmark`, `resend`, `ses` and `log`.
 
 ### Emails sent by TryPost
 
 | Email | When it's sent |
 |-------|---------------|
-| **Post published** | A scheduled post was successfully published |
-| **Post failed** | A post failed to publish on one or more platforms |
-| **Account disconnected** | A social account lost its authorization and needs reconnection |
-| **Connections check** | Multiple accounts in a workspace were found disconnected |
-| **Workspace invite** | A team member is invited to join a workspace |
+| **Post published** | A post was published |
+| **Post failed** | A post failed to publish |
+| **Posts at risk** | Scheduled posts are on channels that must be reconnected before they can publish |
+| **Approval requested** | A member who needs approval saved a post; sent to the approvers |
+| **Post approved** / **Post rejected** | An approver decided; sent to the member who asked |
+| **Note added** | Someone added a note to a post |
+| **Account disconnected** | A channel lost its authorization and needs reconnection |
+| **Connections check** | The daily check found disconnected channels in a workspace |
+| **Webhook paused** | A webhook was paused after 5 failed deliveries in a row |
+| **Workspace invite** | Someone is invited to join a workspace |
 | **Email verification** | A new user needs to verify their email address |
 | **Password reset** | A user requests a password reset |
 
+Every email is translated into all the languages of the app and sent in the recipient's language; an invite goes out in the language of the person who sent it.
+
 ## WebSockets (Reverb)
 
-TryPost uses [Laravel Reverb](https://laravel.com/docs/reverb) for real-time updates (live post status, notifications).
+TryPost uses [Laravel Reverb](https://laravel.com/docs/reverb) for real-time updates: post created, deleted and status changes, post notes, Telegram connections and webhook delivery logs.
 
 ```env
 REVERB_APP_ID=1001
@@ -319,7 +347,7 @@ VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 
 ## Social Platforms
 
-Each social platform requires API credentials from its developer portal. See each [platform guide](/) for step-by-step setup.
+Each social platform requires API credentials from its developer portal. See each platform guide (for example [LinkedIn](/platforms/linkedin#self-hosting-setup)) for step-by-step setup.
 
 <Note>
   **Bluesky** and **Mastodon** don't require API credentials — they work out of the box. **Telegram** uses a single shared bot you create with [@BotFather](https://t.me/BotFather), and **Discord** uses a single shared bot application from the [Discord Developer Portal](https://discord.com/developers/applications) — neither is a per-user OAuth app. See their credentials below.
@@ -332,7 +360,6 @@ Each social platform requires API credentials from its developer portal. See eac
 LINKEDIN_CLIENT_ID=
 LINKEDIN_CLIENT_SECRET=
 LINKEDIN_CLIENT_REDIRECT="${APP_URL}/accounts/linkedin/callback"
-LINKEDIN_PAGE_CLIENT_REDIRECT="${APP_URL}/accounts/linkedin-page/callback"
 
 # X / Twitter (https://developer.twitter.com)
 X_CLIENT_ID=
@@ -344,7 +371,7 @@ FACEBOOK_CLIENT_ID=
 FACEBOOK_CLIENT_SECRET=
 FACEBOOK_CLIENT_REDIRECT="${APP_URL}/accounts/facebook/callback"
 
-# Instagram (https://developers.facebook.com)
+# Instagram (https://developers.facebook.com) — Instagram via Facebook reuses the Facebook app
 INSTAGRAM_CLIENT_ID=
 INSTAGRAM_CLIENT_SECRET=
 INSTAGRAM_CLIENT_REDIRECT="${APP_URL}/accounts/instagram/callback"
@@ -364,6 +391,11 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_CLIENT_REDIRECT="${APP_URL}/accounts/youtube/callback"
 
+# Google Business Profile (its own Google OAuth client, separate from YouTube)
+GOOGLE_BUSINESS_CLIENT_ID=
+GOOGLE_BUSINESS_CLIENT_SECRET=
+GOOGLE_BUSINESS_CLIENT_REDIRECT="${APP_URL}/accounts/google-business/callback"
+
 # Pinterest (https://developers.pinterest.com)
 PINTEREST_CLIENT_ID=
 PINTEREST_CLIENT_SECRET=
@@ -382,12 +414,22 @@ DISCORD_CLIENT_REDIRECT="${APP_URL}/accounts/discord/callback"
 ```
 
 <Note>
-  Telegram delivers `/connect` commands and reactions over a webhook. After setting the variables above, register it with `php artisan telegram:set-webhook`. The webhook URL is `{APP_URL}/telegram/webhook`, so `APP_URL` must be a public HTTPS URL Telegram can reach — re-run the command whenever it changes. The bot must be added as an **administrator** of each channel or group it publishes to.
+  Telegram delivers `/connect` commands over a webhook. After setting the variables above, register it with `php artisan telegram:set-webhook`. The webhook URL is `{WEBHOOK_URL or APP_URL}/telegram/webhook`, so that base URL must be a public HTTPS address Telegram can reach — set `WEBHOOK_URL` when `APP_URL` is private, and re-run the command whenever it changes. The bot must be added as an **administrator** of each channel or group it publishes to.
 </Note>
 
 <Note>
   Discord uses a single shared bot application (create one in the [Discord Developer Portal](https://discord.com/developers/applications)). Use the OAuth2 **Client Secret** — not the application's **Public Key** — for `DISCORD_CLIENT_SECRET`, and add the redirect URL above under **OAuth2 → Redirects**. The bot invite permissions and scopes are configurable via `DISCORD_PERMISSIONS` (default `248832`) and `DISCORD_SCOPES` (default `bot,identify,guilds`). See the [Discord platform guide](/platforms/discord) for the full setup.
 </Note>
+
+### OAuth scope overrides
+
+LinkedIn and TikTok request a fixed scope list by default. When your developer app lacks a product (LinkedIn's Marketing Developer Platform, TikTok's Display API), trim the list with a comma-separated value. The defaults are on the [LinkedIn](/platforms/linkedin#oauth-scopes) and [TikTok](/platforms/tiktok#oauth-scopes) pages.
+
+```env
+LINKEDIN_SCOPES=openid,profile,email,w_member_social
+LINKEDIN_PAGE_SCOPES=openid,profile,email,w_organization_social,r_organization_social,rw_organization_admin,w_member_social
+TIKTOK_SCOPES=user.info.basic,user.info.profile,user.info.stats,video.publish,video.upload,video.list
+```
 
 ### Enabling/disabling platforms
 
@@ -408,9 +450,10 @@ BLUESKY_ENABLED=true
 MASTODON_ENABLED=true
 TELEGRAM_ENABLED=true
 DISCORD_ENABLED=true
+GOOGLE_BUSINESS_ENABLED=true
 ```
 
-Set any platform to `false` to hide it from the UI. All platforms are enabled by default.
+Set any platform to `false` to hide it from the UI and stop its queue worker. All platforms are enabled by default. The Instagram card shows while either Instagram method is on, and the LinkedIn card while either LinkedIn type is on.
 
 ### Link defusing on X
 
@@ -444,7 +487,7 @@ Publishing and the post previews in the app, the API and MCP all show the same r
 
 ## Repurpose
 
-Active [repurposes](/knowledge-base/repurposes) poll Instagram and Facebook for videos published outside TryPost. The scheduler runs `repurpose:poll` every five minutes; each source is checked when it is due.
+Active [repurposes](/knowledge-base/repurpose) poll Instagram and Facebook for videos published outside TryPost. The scheduler runs `repurpose:poll` every five minutes; each source is checked when it is due.
 
 ```env
 REPURPOSE_POLL_INTERVAL_MINUTES=15
@@ -490,25 +533,55 @@ Register a new OAuth App at [github.com/settings/developers](https://github.com/
 
 ## AI features (optional)
 
-The Generate / Review / Create AI flows in the post editor need a configured text-generation provider. Without one, the AI buttons stay disabled. See [AI Providers](/self-hosting/ai) for the full list of supported providers, per-provider model overrides, and OpenRouter-specific gotchas.
+The AI features — the writing assistant in the composer (generate, rephrase, shorten, expand, change the tone), idea generation, image alt text and caption adaptation in Repurpose — need a text provider. The AI buttons stay disabled until the selected provider's API key is set. See [AI Providers](/self-hosting/ai) for every supported provider and model override.
 
 ```env
 AI_TEXT_PROVIDER=openai
 OPENAI_API_KEY=sk-...
 ```
 
-## Asset library (Unsplash & Giphy)
+## Media sources (optional)
 
-The **Assets** page exposes optional Unsplash and Giphy tabs. Configure these to enable them:
+The composer's **More media sources** menu can offer Unsplash, Google Drive, Google Photos and Canva. Each source stays hidden until it is switched on **and** its keys are set. Uploading from the computer always works.
+
+### Unsplash
 
 ```env
 UNSPLASH_ACCESS_KEY=
-UNSPLASH_SECRET_KEY=
-
-GIPHY_API_KEY=
 ```
 
-Without these keys, the Library tab still works — only the stock-photo and GIF tabs are hidden.
+The access key alone turns Unsplash on.
+
+### Google Drive and Google Photos
+
+Both use one Google "media" OAuth client (a Web application client), separate from the YouTube and Google Business Profile clients — nothing falls back to `GOOGLE_CLIENT_ID`.
+
+```env
+GOOGLE_MEDIA_CLIENT_ID=
+GOOGLE_MEDIA_CLIENT_SECRET=
+GOOGLE_MEDIA_CLIENT_REDIRECT="${APP_URL}/integrations/google/callback"
+GOOGLE_MEDIA_API_KEY=
+GOOGLE_MEDIA_APP_ID=
+GOOGLE_DRIVE_ENABLED=true
+GOOGLE_PHOTOS_ENABLED=false
+```
+
+| Source | Needs |
+|--------|-------|
+| Google Drive | `GOOGLE_DRIVE_ENABLED=true` (default) and all five `GOOGLE_MEDIA_*` values — the picker needs the API key and the app id |
+| Google Photos | `GOOGLE_PHOTOS_ENABLED=true` (off by default) and the OAuth client. Its scope is sensitive, so Google must verify your app first |
+
+Register `GOOGLE_MEDIA_CLIENT_REDIRECT` as an authorized redirect URI on the client.
+
+### Canva
+
+```env
+CANVA_ENABLED=true
+CANVA_CLIENT_ID=
+CANVA_CLIENT_SECRET=
+```
+
+Create a [Canva Connect API](https://www.canva.com/developers/integrations/connect-api) integration with the redirect URL `${APP_URL}/integrations/canva/callback` and the return URL `${APP_URL}/integrations/canva/return`. Canva only lets other users connect once it approves the integration as public, so in practice this is easiest on a single-team install.
 
 ## Analytics (optional)
 
@@ -519,11 +592,12 @@ POSTHOG_ENABLED=true
 POSTHOG_API_KEY=phc_your_key
 POSTHOG_HOST=https://us.i.posthog.com
 
+VITE_POSTHOG_ENABLED="${POSTHOG_ENABLED}"
 VITE_POSTHOG_API_KEY="${POSTHOG_API_KEY}"
 VITE_POSTHOG_HOST="${POSTHOG_HOST}"
 ```
 
-`POSTHOG_ENABLED` gates the entire integration — without it set to `true`, the keys are ignored.
+`POSTHOG_ENABLED` gates the entire integration — without it set to `true`, the keys are ignored. The `VITE_*` values are baked into the frontend when it is built, so change them before `npm run build` (or rebuild the Docker image).
 
 ### Google Tag Manager
 
@@ -539,27 +613,116 @@ Both are optional and only needed if you want to track usage analytics.
 
 ```env
 HORIZON_ALLOWED_EMAILS=admin@example.com,dev@example.com
+HORIZON_PATH=horizon
+HORIZON_MEDIA_ADOPTION_PROCESSES=20
 ```
 
 | Variable | Description |
 |----------|-------------|
 | `HORIZON_ALLOWED_EMAILS` | Comma-separated list of emails allowed to access Horizon in production |
+| `HORIZON_PATH` | URL path of the dashboard (default `horizon`) |
+| `HORIZON_MEDIA_ADOPTION_PROCESSES` | Maximum workers for the `media-adoption` queue, used once by the [2.0 upgrade](/self-hosting/upgrading#upgrading-to-trypost-20) (default 20). Lower it on a small server |
 
 If not set, Horizon dashboard will be inaccessible in non-local environments.
+
+## Importing posts made outside TryPost
+
+TryPost checks each channel for posts you published directly on the network, shows them in **Sent** and uses them in [Insights](/knowledge-base/insights/overview).
+
+```env
+EXTERNAL_POSTS_IMPORT_LIMIT=50
+X_EXTERNAL_POSTS_IMPORT_DAYS=30
+EXTERNAL_POSTS_MATCH_WINDOW_MINUTES=120
+PUBLICATION_DISCOVERY_INTERVAL_HOURS=3
+X_PUBLICATION_DISCOVERY_INTERVAL_HOURS=24
+PUBLICATION_DISCOVERY_OVERLAP_HOURS=6
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EXTERNAL_POSTS_IMPORT_LIMIT` | `50` | Newest posts per channel imported into **Sent**. `0` turns the import off |
+| `X_EXTERNAL_POSTS_IMPORT_DAYS` | `30` | On X, only posts from the last N days are imported |
+| `EXTERNAL_POSTS_MATCH_WINDOW_MINUTES` | `120` | A network post within this many minutes of a TryPost post with the same text is treated as that post instead of being imported again |
+| `PUBLICATION_DISCOVERY_INTERVAL_HOURS` | `3` | How often channels are checked for new posts (1–24). Pick a divisor of 24 so the checks stay evenly spaced |
+| `X_PUBLICATION_DISCOVERY_INTERVAL_HOURS` | `24` | The same for X, kept separate because X bills every read |
+| `PUBLICATION_DISCOVERY_OVERLAP_HOURS` | `6` | Hours read back from the newest post already seen on each check |
+
+## RSS feeds
+
+Feeds added under **Create** > **Feeds** are polled in the background.
+
+```env
+RSS_FEEDS_POLL_INTERVAL_MINUTES=480
+RSS_FEEDS_MAX_PER_WORKSPACE=50
+RSS_FEEDS_MAX_ITEMS_PER_FEED=100
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RSS_FEEDS_POLL_INTERVAL_MINUTES` | `480` | Minutes between checks of one feed |
+| `RSS_FEEDS_MAX_PER_WORKSPACE` | `50` | Feeds a workspace can follow |
+| `RSS_FEEDS_MAX_ITEMS_PER_FEED` | `100` | Items kept per feed |
+
+## Sessions and logging
+
+```env
+SESSION_LIFETIME=1440
+SESSION_DOMAIN=null
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_LEVEL=debug
+```
+
+| Variable | Description |
+|----------|-------------|
+| `SESSION_LIFETIME` | Minutes a session stays valid without activity. `.env.example` sets `1440` (one day); without the variable Laravel uses `120` |
+| `SESSION_DOMAIN` | Cookie domain. Leave `null` unless the app must share its session with a parent domain |
+| `LOG_CHANNEL` / `LOG_STACK` | Where logs go. The default writes to `storage/logs/laravel.log`; in containers, `LOG_CHANNEL=stderr` sends them to the container output |
+| `LOG_LEVEL` | Lowest level written. Use `warning` in production; [upgrade notes](/self-hosting/upgrading) log what data migrations changed at that level |
 
 ## Advanced
 
 ```env
 TRYPOST_ALLOW_PRIVATE_NETWORK=false
 TRYPOST_USER_AGENT="TryPost.it/1.0 (+https://trypost.it)"
+META_PAGE_WALK_SECONDS=20
+LEGAL_TERMS_URL=https://trypost.it/terms
+LEGAL_PRIVACY_URL=https://trypost.it/privacy
 ```
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `TRYPOST_ALLOW_PRIVATE_NETWORK` | `false` | When `true`, allows HTTP requests from TryPost ([workspace webhooks](/knowledge-base/webhooks), URL media fetches, brand autofill, etc.) to private/internal network addresses. Keep `false` unless you intentionally need that for a private network install. |
+| `TRYPOST_ALLOW_PRIVATE_NETWORK` | `false` | When `true`, allows HTTP requests from TryPost ([workspace webhooks](/knowledge-base/settings/webhooks), URL media fetches, RSS feeds) to private/internal network addresses. Keep `false` unless you intentionally need that for a private network install. |
 | `TRYPOST_USER_AGENT` | `TryPost.it/1.0 (+https://trypost.it)` | `User-Agent` sent on outgoing HTTP, including webhook deliveries and test pings. |
+| `META_PAGE_WALK_SECONDS` | `20` | Seconds the Facebook and Instagram-via-Facebook connection may spend listing your pages during the login callback. Keep it under your web server's request timeout |
+| `LEGAL_TERMS_URL` / `LEGAL_PRIVACY_URL` | trypost.it pages | Terms and privacy links shown on the sign-in and sign-up screens. Point them at your own policies |
+
+## Advanced and internal settings
+
+`.env.example` lists more variables than this page explains. The ones below rarely need changing: they tune internals, override service hosts, or only matter on TryPost Cloud. Leave them at their defaults unless you know why you are changing them.
+
+| Variables | What they are |
+|-----------|---------------|
+| `APP_LOCALE`, `APP_FALLBACK_LOCALE`, `APP_FAKER_LOCALE` | Laravel defaults. Each user picks their own interface language, so these change nothing visible |
+| `APP_MAINTENANCE_DRIVER`, `BCRYPT_ROUNDS`, `SESSION_ENCRYPT`, `SESSION_PATH`, `LOG_DEPRECATIONS_CHANNEL` | Laravel defaults |
+| `VITE_APP_NAME` | App name baked into the frontend build (defaults to `APP_NAME`) |
+| `TELESCOPE_ENABLED` | Debugging tool; only loads in the `local` environment |
+| `NIGHTWATCH_ENABLED`, `NIGHTWATCH_TOKEN` | Optional Laravel Nightwatch monitoring; off by default |
+| `STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SOCIALS_MONTHLY`, `STRIPE_SOCIALS_YEARLY`, `STRIPE_WORKSPACES_MONTHLY`, `STRIPE_WORKSPACES_YEARLY`, `STRIPE_WORKSPACE_MONTHLY`, `STRIPE_WORKSPACE_YEARLY`, `STRIPE_SOCIALS_FIRST_MONTH_COUPON_ID`, `STRIPE_WORKSPACES_FIRST_MONTH_COUPON_ID`, `REQUIRE_CARD_FOR_TRIAL`, `CASHIER_ALLOW_PROMOTION_CODES` | TryPost Cloud billing. Ignored when `SELF_HOSTED=true`; leave them empty |
+| `AI_AUDIO_PROVIDER`, `ELEVENLABS_API_KEY`, `ELEVENLABS_AUDIO_MODEL`, `OPENAI_AUDIO_MODEL`, `GEMINI_AUDIO_MODEL`, `OPENROUTER_AUDIO_MODEL` | Audio settings of the AI SDK. No TryPost feature uses audio, so they do nothing |
+| `UNSPLASH_SECRET_KEY` | Not read. Unsplash only needs `UNSPLASH_ACCESS_KEY` |
+| `MAIL_ENCRYPTION` | Not read. SMTP encryption is set with `MAIL_SCHEME` |
+| `UNSPLASH_API_URL`, `UNSPLASH_WEBSITE_URL`, `UNSPLASH_DOWNLOAD_HOSTS`, `UNSPLASH_REQUESTS_PER_MINUTE` | Unsplash host overrides and rate limit |
+| `GOOGLE_PICKER_SDK_URL`, `GOOGLE_MEDIA_AUTHORIZE_URL`, `GOOGLE_MEDIA_OAUTH_API`, `GOOGLE_DRIVE_API_URL`, `GOOGLE_DRIVE_DOWNLOAD_HOSTS`, `GOOGLE_PHOTOS_PICKER_API_URL`, `GOOGLE_PHOTOS_DOWNLOAD_HOSTS`, `GOOGLE_PHOTOS_POLLS_PER_MINUTE`, `GOOGLE_PHOTOS_MAX_ITEMS` | Google Drive and Photos host overrides and polling limits |
+| `CANVA_API_URL`, `CANVA_AUTHORIZE_URL`, `CANVA_CODE_CHALLENGE_METHOD`, `CANVA_DOWNLOAD_HOSTS`, `CANVA_EDITOR_HOSTS`, `CANVA_EXPORT_POLL_SECONDS`, `CANVA_EXPORT_TIMEOUT_SECONDS` | Canva host overrides and export polling |
+| `MEDIA_IMPORT_TIMEOUT_SECONDS`, `MEDIA_IMPORTS_PER_MINUTE` | Timeout and per-user rate of media imported from the sources above |
+| `MEDIA_HEIC_MEMORY_LIMIT_MB`, `MEDIA_HEIC_MAP_LIMIT_MB`, `MEDIA_HEIC_DISK_LIMIT_MB`, `MEDIA_HEIC_AREA_LIMIT_MB`, `MEDIA_HEIC_WIDTH_LIMIT_PX`, `MEDIA_HEIC_HEIGHT_LIMIT_PX` | Imagick resource limits for decoding a HEIC upload |
+| `EXTERNAL_POSTS_MEDIA_REQUESTS_PER_MINUTE` | Network API calls per minute, per network, spent fetching the media of imported posts |
+| `RSS_FEEDS_FETCH_BUDGET_SECONDS`, `RSS_FEEDS_MAX_BACKOFF_MINUTES`, `RSS_FEEDS_MAX_RESPONSE_BYTES`, `RSS_FEEDS_OG_IMAGE_MAX_AGE_DAYS`, `RSS_FEEDS_OG_IMAGE_MAX_ITEMS`, `RSS_FEEDS_OG_IMAGE_MAX_PAGE_BYTES`, `RSS_FEEDS_REFRESH_COOLDOWN_MINUTES` | RSS fetch and back-off tuning |
+| `FAVICON_API` | Host of the icons shown in the feed directory |
+| `TELEGRAM_DEEP_LINK` | Base of the **Open in Telegram** link (default `https://t.me`) |
 
 ## Next Steps
 
-- [Connect your social accounts](/)
+- [Connect your social accounts](/knowledge-base/channels/connecting)
 - [Create your first post](/getting-started/quickstart)

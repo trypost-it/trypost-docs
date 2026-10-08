@@ -4,7 +4,7 @@ Docs for [TryPost](https://trypost.it) — open-source social media scheduling p
 
 ## Project Context
 
-TryPost is a Laravel + Inertia.js + **Vue 3** application that lets users schedule and publish posts across 12 social platforms (14 platform identifiers in code, since LinkedIn and Instagram each have two connection flavors). It has two deployment modes: **Cloud** (managed by us) and **Self-Hosted** (user deploys on their own server).
+TryPost is a Laravel + Inertia.js + **Vue 3** application that lets users plan, schedule and publish posts across 13 social networks (15 platform identifiers in code, since LinkedIn and Instagram each have two connection flavors), and see their performance in Insights. It has two deployment modes: **Cloud** (managed by us) and **Self-Hosted** (user deploys on their own server).
 
 The app source code lives at `~/Herd/trypost`. This repo (`trypost-docs`) is the documentation site only.
 
@@ -32,15 +32,29 @@ Same paths, user configures `APP_URL` in `.env`:
 
 ## Documentation Structure
 
-5 top-level navigation anchors in `docs.json`:
+5 top-level tabs in `docs.json` (`navigation.tabs`):
 
-| Anchor | Icon | Purpose |
-|--------|------|---------|
-| **Documentation** | `book-open` | Product docs: quickstart, platforms, features, contributing |
-| **API Reference** | `code` | REST API endpoint docs with curl examples |
-| **Build with AI** | `microchip-ai` | MCP server intro, tools reference, 16 setup guides |
-| **Knowledge Base** | `book` | Conceptual guides: posts, media, signatures, labels, accounts, team, notifications |
-| **Self-Hosting** | `server` | Installation, configuration, production, Docker — isolated from the rest |
+| Tab | Icon | Purpose |
+|-----|------|---------|
+| **Documentation** | `book-open` | Home (`index`), quickstart, one page per network under `platforms/`, community pages |
+| **API Reference** | `code` | REST API. Operation pages are generated from **`openapi.json`** at the repo root (hand-written from the app's `routes/api.php`, `app/Http/Requests/Api/**`, `app/Http/Resources/**`). Prose that does not fit one operation lives in `api-reference/introduction.mdx` and `api-reference/guides/*.mdx`. There are no per-endpoint `.mdx` files any more; old `api-reference/endpoint/*` slugs redirect |
+| **Build with AI** | `microchip-ai` | MCP server intro, tools reference, setup guides per client |
+| **Knowledge Base** | `book` | How the app works. Groups mirror the app sidebar, then the settings sidebar: Getting started, Create, Publish, Insights, Repurpose, Channels, Settings (Personal, Workspace, Features, Developers, Account). Page titles use the on-screen labels from `lang/en/*.php` |
+| **Self-Hosting** | `server` | Overview, requirements, installation, configuration, AI providers, Docker, production, upgrading (incl. the 2.0 release command) — isolated from the rest |
+
+Every removed or moved slug gets an entry in `docs.json` `redirects`.
+
+### Platform pages
+
+`platforms/<slug>.mdx`, one per network: `linkedin`, `x-twitter`, `facebook`, `instagram`, `tiktok`, `youtube`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`, `google-business`. Each follows the same layout: Connect, Supported content types, Media limits, Text and per-post options, Insights, OAuth scopes, Self-hosting setup (credentials inside `<Accordion>`).
+
+### Frozen URLs (the app links to them — never rename or remove)
+
+- `/platforms/<slug>` for every page above (`resources/js/lib/docs.ts` `platformGuideDocsUrl`)
+- `/knowledge-base/media` and its per-network anchors `#instagram`, `#facebook`, `#threads`, `#x-twitter`, `#linkedin`, `#tiktok`, `#youtube`, `#pinterest`, `#bluesky`, `#mastodon`, `#discord`, `#telegram`, `#google-business-profile` (`mediaLimitsDocsUrl`)
+- `/ai/introduction` and the site root
+
+If one of these must move, add a redirect and change the app in the same release.
 
 ## Writing Rules
 
@@ -166,10 +180,10 @@ These are the exact string values used in API responses. Never use alternatives.
 
 **NOT `active`/`inactive` — those are for `is_active` boolean field.**
 
-### Social account platforms (14 values)
-`linkedin`, `linkedin-page`, `x`, `tiktok`, `youtube`, `facebook`, `instagram`, `instagram-facebook`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`
+### Social account platforms (15 values)
+`linkedin`, `linkedin-page`, `x`, `tiktok`, `youtube`, `facebook`, `instagram`, `instagram-facebook`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`, `google_business`
 
-`instagram` is the standalone Basic Display flow; `instagram-facebook` is the Business-via-Facebook-Page flavor.
+`instagram` is Instagram Login for professional (Business/Creator) accounts; `instagram-facebook` is the same kind of account connected through a Facebook Page. `google_business` uses an underscore (its page slug and OAuth callback use `google-business`).
 
 ### Repurpose status
 `draft`, `active`, `paused`, `disabled`
@@ -268,27 +282,20 @@ Default mailer is **SendKit** (`MAIL_MAILER=sendkit`).
 
 ## Scheduled Commands
 
-| Command | Schedule | Purpose |
-|---------|----------|---------|
-| `posts:process-scheduled` | Every minute | Dispatches `PublishPost` jobs for posts that are due |
-| `social:refresh-expiring-tokens` | Hourly | Proactively refreshes OAuth tokens before they expire |
-| `social:recover-stuck-posts` | Every 30 minutes | Recovers posts stuck in `publishing` (retry or mark failed) |
-| `social:check-connections` | Daily | Verifies all connected social accounts still authenticate |
-| `app:prune-webhook-logs` | Daily | Deletes webhook delivery logs older than 7 days |
-| `repurpose:poll` | Every 5 minutes | Queues a check for each due repurpose source |
+The full table (17 entries, including analytics, retention and Google Business review checks) lives in `self-hosting/production.mdx` → **Scheduled Tasks (Cron)**; the source is `routes/console.php` / `php artisan schedule:list`.
 
 ## Self-Hosted Requirements
 
-- PHP 8.2+, Node.js 20+, PostgreSQL 14+ or MySQL 8+, Redis 6+
-- Supervisor for Horizon (queues) and Reverb (WebSockets)
-- Cron job running `php artisan schedule:run` every minute
-- Upload limits: `upload_max_filesize=2G`, `post_max_size=2G` (video support)
-- Bluesky and Mastodon work without API credentials
-- All other platforms require developer app credentials
+- PHP 8.3+ (the Docker image ships 8.4), Node.js 20.19+ or 22.12+, PostgreSQL or MySQL (MySQL from TryPost 2.0), Redis
+- Horizon (queues), Reverb (WebSockets) and the scheduler running continuously
+- Imagick with HEIC for iPhone photo conversion (in the Docker image)
+- Upload limits: `upload_max_filesize=1G`, `post_max_size=1G` (matches the Docker image)
+- Bluesky and Mastodon work without API credentials; every other network needs developer app credentials (Google Business Profile has its own Google client, separate from YouTube)
+- Upgrading an existing install to 2.0 needs `php artisan release:trypost-2` after `migrate --force`
 
 ## Supported Languages
 
-English (`en`), Spanish (`es`), Portuguese (`pt-BR`).
+16 locales (`App\Enums\User\Locale`): `en`, `uk`, `pt-BR`, `es`, `fr`, `de`, `it`, `nl`, `pl`, `el`, `ja`, `ko`, `zh`, `ru`, `tr`, `ar`. Docs are written in English only.
 
 ## Running Docs Locally
 

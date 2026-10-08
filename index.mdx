@@ -1,49 +1,72 @@
 ---
 title: Home
-description: TryPost documentation — schedule and publish social media posts across 12 platforms.
+description: TryPost documentation — plan, schedule and publish social media posts across 13 networks.
 icon: "book-open"
 ---
 
 # TryPost Documentation
 
-TryPost is a social media scheduling platform that lets you create, schedule, and publish posts across LinkedIn, X, Facebook, Instagram, TikTok, YouTube, Threads, Pinterest, Bluesky, Mastodon, Telegram, and Discord. LinkedIn and Instagram each support two connection types (profile vs. company page, standalone vs. Facebook Business), giving you **14 connection identifiers** in total.
+TryPost is an open-source social media scheduler. Plan ideas, write one post for every network, queue it on each channel's posting times, and see how it did in Insights — on LinkedIn, X, Facebook, Instagram, TikTok, YouTube, Threads, Pinterest, Bluesky, Mastodon, Telegram, Discord and Google Business Profile.
 
 <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart" horizontal>
-  Get started with TryPost in under 5 minutes.
+  Sign up, connect your first channel and schedule a post in a few minutes.
 </Card>
+
+## Find your way around
+
+<Columns cols={3}>
+  <Card title="Create" icon="lightbulb" href="/knowledge-base/create/ideas">
+    Ideas board, templates and RSS feeds
+  </Card>
+  <Card title="Publish" icon="calendar" href="/knowledge-base/publish/overview">
+    Composer, queue, approvals and the calendar
+  </Card>
+  <Card title="Insights" icon="chart-line" href="/knowledge-base/insights/overview">
+    Followers and post performance across channels
+  </Card>
+  <Card title="Repurpose" icon="repeat" href="/knowledge-base/repurpose">
+    Republish videos you post on Instagram or Facebook
+  </Card>
+  <Card title="Channels" icon="share-nodes" href="/knowledge-base/channels/connecting">
+    Connect, set up and disconnect social accounts
+  </Card>
+  <Card title="Settings" icon="gear" href="/knowledge-base/settings/members-and-permissions">
+    Members, permissions, signatures, labels and more
+  </Card>
+</Columns>
 
 ## Platforms
 
 <Columns cols={3}>
   <Card title="LinkedIn" icon="linkedin" href="/platforms/linkedin">
-    Posts and image carousels on profiles and pages
+    Posts with images, video or a PDF on profiles and pages
   </Card>
   <Card title="X (Twitter)" icon="x-twitter" href="/platforms/x-twitter">
-    Posts with images or video
+    Posts and threads with images or video
   </Card>
   <Card title="Facebook" icon="facebook" href="/platforms/facebook">
-    Posts, reels, and stories
+    Posts, reels, and stories on pages
   </Card>
   <Card title="Instagram" icon="instagram" href="/platforms/instagram">
-    Feed, carousels, reels, and stories
+    Feed posts, carousels, reels, and stories
   </Card>
   <Card title="TikTok" icon="tiktok" href="/platforms/tiktok">
-    Video and photo carousels
+    Videos and photo carousels
   </Card>
   <Card title="YouTube" icon="youtube" href="/platforms/youtube">
     YouTube Shorts
   </Card>
   <Card title="Threads" icon="threads" href="/platforms/threads">
-    Text posts with images or video
+    Posts and ghost posts with images or video
   </Card>
   <Card title="Pinterest" icon="pinterest" href="/platforms/pinterest">
     Pins, video pins, and carousels
   </Card>
   <Card title="Bluesky" icon="cloud" href="/platforms/bluesky">
-    Posts with images or video
+    Posts and threads with images or video
   </Card>
   <Card title="Mastodon" icon="mastodon" href="/platforms/mastodon">
-    Posts with media on any instance
+    Posts and threads on any instance
   </Card>
   <Card title="Telegram" icon="telegram" href="/platforms/telegram">
     Channel and group posts with media albums
@@ -51,19 +74,24 @@ TryPost is a social media scheduling platform that lets you create, schedule, an
   <Card title="Discord" icon="discord" href="/platforms/discord">
     Channel messages with media, mentions, and embeds
   </Card>
+  <Card title="Google Business Profile" icon="google" href="/platforms/google-business">
+    Updates, events and offers on your business locations
+  </Card>
 </Columns>
+
+LinkedIn (profile or page) and Instagram (directly or via Facebook) each have two connection types, so the API and MCP use **15 platform identifiers** for these 13 networks.
 
 ## API & Integrations
 
 <Columns cols={3}>
   <Card title="API Reference" icon="code" href="/api-reference/introduction">
-    Manage posts, signatures, repurposes, webhooks, and more via REST API
+    Manage posts, channels, ideas, analytics, webhooks and more over REST
   </Card>
   <Card title="Build with AI" icon="microchip-ai" href="/ai/introduction">
     Connect AI assistants via MCP
   </Card>
   <Card title="Knowledge Base" icon="book" href="/knowledge-base/introduction">
-    Guides and best practices
+    How every part of the app works
   </Card>
 </Columns>
 

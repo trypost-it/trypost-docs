@@ -9,13 +9,86 @@ Pull the new version, then run the same steps you already run on a deploy:
 
 - Rebuild dependencies and assets, and re-run the [optimization commands](/self-hosting/production#optimizations)
 - Apply migrations with `php artisan migrate --force`
+- When you cross into TryPost 2.0, run `php artisan release:trypost-2` once, right after the migrations — see [below](#upgrading-to-trypost-20)
 - Restart the queue workers so they pick up the new code — `php artisan horizon:terminate` lets Supervisor bring them back
 
-On Docker, [Common production commands](/self-hosting/docker#common-production-commands) has the container equivalents.
+On Docker, [Common production commands](/self-hosting/docker#common-production-commands) has the container equivalents. The container runs `migrate --force` itself on every boot.
 
 <Warning>
   **Back the database up before `migrate --force`.** Migrations run unattended and some of them rewrite data, not just schema. A dump you can restore is the only reliable way back.
 </Warning>
+
+## Upgrading to TryPost 2.0
+
+TryPost 2.0 changes how posts, media and team permissions are stored. The schema changes run with the usual migrations; the data changes run in a separate one-off command, `release:trypost-2`.
+
+<Steps>
+  <Step title="Back up the database and the media bucket">
+    Take a database dump **and** a snapshot of your storage bucket (or turn on bucket versioning). The media library adoption in step 3 deletes files that only the old library used, and there is no export.
+  </Step>
+  <Step title="Rehearse on a copy (recommended)">
+    Restore the dump somewhere disposable, run the migrations, then:
+
+    ```bash
+    php artisan release:trypost-2 --dry-run
+    ```
+
+    The dry run changes nothing and prints what each step would do.
+
+    <Warning>
+      **Never run the command for real on a database copy that points at the production bucket.** The adoption deletes every library file the copy does not reference, and your production posts still use them. Give the copy its own bucket (or a local disk), or rehearse with `--dry-run` only.
+    </Warning>
+  </Step>
+  <Step title="Deploy the new version and migrate">
+    Pull the new image (it adds Imagick with HEIC support) or update your server, set any new environment variables from [Configuration](/self-hosting/configuration), and run `php artisan migrate --force`.
+
+    On **MySQL**, one migration widens `posts.content` to `MEDIUMTEXT`, which rebuilds the `posts` table and blocks writes to it while it copies; time it on your rehearsal copy. PostgreSQL does it instantly. Rolling that migration back fails once a post is longer than 64 KB.
+  </Step>
+  <Step title="Run the release command">
+    ```bash
+    php artisan release:trypost-2 --force
+    ```
+
+    On Docker: `docker compose -f compose.prod.yaml exec app php artisan release:trypost-2 --force`. Without `--force`, the command asks for confirmation in production. It refuses to start while migrations are pending.
+
+    It runs eight steps, in order:
+
+    1. Deletes the posts of channels that were disconnected before 2.0 (disconnecting a channel now deletes its posts)
+    2. Splits posts that targeted several networks into one post per network, linked as a group
+    3. Bakes the old aspect-ratio crops into the media of scheduled and in-flight posts
+    4. Adopts the media library, workspace by workspace, on the `media-adoption` queue (the command waits and checks progress every 15 seconds)
+    5. Gives every channel posting defaults: the owner's time zone, a goal of 3 posts a week and the network's recommended posting times. Channels that already have a schedule keep it
+    6. Queues an analytics backfill for existing channels (once per install)
+    7. Queues a discovery of Instagram stories
+    8. Audits the media (read-only) and compares it with the state before the release
+
+    Every step is safe to run again, and a finished step does nothing the second time. If a step fails, the command exits with an error and a summary table; fix the cause and run it again. Use `--rerun-backfill` to queue the analytics backfill again, and `--adoption-timeout=<seconds>` (default 21600) to change how long it waits for the adoption.
+  </Step>
+  <Step title="Let the queues drain">
+    Keep Horizon running and watch it until the `media-adoption`, `analytics` and `media-imports` queues are empty. The backfill and the import of posts made outside TryPost run there. `HORIZON_MEDIA_ADOPTION_PROCESSES` caps the adoption workers (default 20).
+
+    Do not flush Redis or stop Horizon during the deploy: jobs and emails queued by 1.x are still in the queues, and 2.0 keeps just enough of the old code to finish them.
+  </Step>
+</Steps>
+
+### What changes for your users
+
+- **Roles became permissions.** Admin, Member and Viewer are gone. Former admins are workspace admins, former viewers become members whose posts need approval, and former members publish directly. The account owner is always an admin.
+- **One post per channel.** A post that went to several networks is now a group of posts, one per channel.
+- **Disconnecting a channel deletes its posts**, with their media.
+- **Old published posts are deleted every night** once they pass `POST_HISTORY_RETENTION_DAYS` (default 730 days) — see [Post history retention](/self-hosting/configuration#post-history-retention).
+- **Instagram allows at most 5 hashtags.** Scheduled posts with more still publish, but they cannot be saved again until the extra hashtags are removed.
+- **Giphy and AI image generation are gone**, and Facebook and Instagram images are no longer cropped on the server.
+
+### Settings you can remove
+
+These variables do nothing in 2.0; delete them from `.env` if they are still there:
+
+- `ALLOW_MULTIPLE_SOCIAL_ACCOUNTS` — a workspace can always connect several accounts on the same network
+- The AI image provider and every AI image model or image deployment setting — image generation was removed
+- The Giphy API key
+- The separate LinkedIn Page redirect — profiles and pages share `LINKEDIN_CLIENT_REDIRECT`
+- `MAIL_ENCRYPTION` and `UNSPLASH_SECRET_KEY` — never read; use `MAIL_SCHEME` and `UNSPLASH_ACCESS_KEY`
 
 ## Release notes that need attention
 
@@ -51,5 +124,3 @@ Collapsed duplicate social accounts
 <Tip>
   Want to know what it will do before it does it? Restore a copy of your production database somewhere disposable, run `php artisan migrate --force` against the copy, and read those log lines. If nothing is logged, you have no duplicates and the migration is a no-op.
 </Tip>
-
-Multiple accounts on the same network are always allowed. The `ALLOW_MULTIPLE_SOCIAL_ACCOUNTS` setting was removed — you can delete it from `.env` if it is still there.

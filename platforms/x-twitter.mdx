@@ -6,19 +6,26 @@ icon: "x-twitter"
 
 # X (Twitter)
 
-TryPost supports posting to X (formerly Twitter) accounts.
+TryPost publishes posts and threads to X (formerly Twitter) accounts.
 
 ## Connect your account
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect X**
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **X** and click **Connect X**
 3. Authorize TryPost on X
+4. On the confirmation page, check the account and click **Finish connection**
+
+TryPost opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
+
+<Tip>
+  X has no way to ask for a different login. To connect a second X account, sign out of X (or switch accounts on x.com) before you click **Connect X** — or use **Switch account** on the confirmation page.
+</Tip>
 
 ## Supported content types
 
-| Type | Description |
-|------|-------------|
-| **Post** | Text with up to 4 images or 1 video |
+| Type | `content_type` | Description |
+|------|----------------|-------------|
+| **Post** | `x_post` | Text with up to 4 images or 1 video. Images and a video can be combined; GIFs are accepted |
 
 ## Media limits
 
@@ -26,7 +33,14 @@ TryPost supports posting to X (formerly Twitter) accounts.
 |----------------|-------|-------|----------|--------|
 | `x_post` | 5 MB | 1 GB (Cloud cap; X allows 8 GB) | 20 minutes | JPG/PNG/GIF/WebP; video H.264 (MP4 or MOV) |
 
-These are Post (`tweet_video`) limits — 8 GB / 20 minutes by default, 16 GB / 125 minutes on X Premium — not DM or Ads (`amplify_video`) limits. Official specs: [Media best practices](https://docs.x.com/x-api/media/quickstart/best-practices). Full catalog: [Media](/knowledge-base/media).
+These are Post (`tweet_video`) limits — 8 GB / 20 minutes by default, 16 GB / 125 minutes on X Premium — not DM or Ads (`amplify_video`) limits. Official specs: [Media best practices](https://docs.x.com/x-api/media/quickstart/best-practices). Full catalog: [Media](/knowledge-base/media#x-twitter).
+
+## Text and per-post options
+
+- **280 characters** per post. Accounts with long posts — an X Basic, Premium or Premium+ subscription, or a verified business — get **25,000**. TryPost reads the subscription when you connect and re-checks it daily.
+- **Threads** — click **Start thread** to add replies under the post, up to **24**. Each reply has its own text and up to 4 media items, and is measured against the same limit as the post. X bills each reply as a post, and only allows replies through the API to your own post.
+- **AI-generated** — mark the post as made with AI (`platforms[].meta.is_ai_generated`).
+- **Alt text** — up to 1,000 characters per image.
 
 ## Links in posts
 
@@ -39,6 +53,10 @@ The editor previews the X post as it will be published and counts characters aga
 <Note>
   Self-hosting TryPost? Links go out untouched there by default, since you publish through your own X app and pay your own X bill — see [link defusing on X](/self-hosting/configuration#link-defusing-on-x).
 </Note>
+
+## Insights
+
+X posts and followers appear in [Insights](/knowledge-base/insights/overview). Because X bills every read, TryPost checks X for new posts once a day, and posts made directly on X are imported into **Sent** only from the last 30 days.
 
 ## OAuth scopes
 
@@ -60,4 +78,6 @@ The editor previews the X post as it will be published and counts characters aga
   X_CLIENT_SECRET=your_client_secret
   X_CLIENT_REDIRECT="${APP_URL}/accounts/x/callback"
   ```
+
+  How often TryPost reads X is set by `X_PUBLICATION_DISCOVERY_INTERVAL_HOURS` and `X_EXTERNAL_POSTS_IMPORT_DAYS` — see [Importing posts made outside TryPost](/self-hosting/configuration#importing-posts-made-outside-trypost).
 </Accordion>

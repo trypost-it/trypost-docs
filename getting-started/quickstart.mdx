@@ -1,45 +1,60 @@
 ---
 title: "Quickstart"
-description: "Get started with TryPost in under 5 minutes"
+description: "Sign up, connect a channel and schedule your first post on TryPost Cloud"
 icon: "rocket"
 ---
 
-Get your social media scheduling up and running in minutes.
+From sign-up to your first scheduled post in a few minutes.
 
 <Steps>
   <Step title="Create your account">
-    Sign up at [app.trypost.it/register](https://app.trypost.it/register). Pick a plan and complete checkout — first-time subscribers pay **$1 for the first month**. Verify your email when the link arrives.
+    Sign up at [app.trypost.it/register](https://app.trypost.it/register) with your email, Google or GitHub. TryPost creates your first workspace for you — one workspace per brand or client, each with its own channels, members and settings.
   </Step>
-  <Step title="Create your first workspace">
-    After signing in, set up a workspace (one per brand, client, or project). The workspace holds your social accounts, posts, labels, signatures, repurposes, and team members.
-  </Step>
-  <Step title="Connect your accounts">
-    Go to **Accounts** and connect your social media profiles. TryPost supports LinkedIn, X, Facebook, Instagram, TikTok, YouTube, Threads, Pinterest, Bluesky, Mastodon, Telegram, and Discord.
+  <Step title="Tell us about you">
+    The welcome steps ask two quick questions:
 
-    See the [platform guides](/) for details on each platform.
+    - **About you** — what best describes you (content creator, freelancer, agency, small business, …)
+    - **Your goals** — what you want from TryPost (post everywhere at once, plan on a calendar, post via MCP, …)
   </Step>
-  <Step title="Create your first post">
-    Click **Create Post**, write your content, and choose to post now or schedule for later.
+  <Step title="Choose your plan">
+    Pick **Socials** (one workspace, $19/month) or **Workspaces** (unlimited workspaces, $99/month). Both include every feature and network, and you can switch later in [Plans and billing](/knowledge-base/settings/plans-and-billing). Checkout runs on Stripe and starts an **8-day free trial**; a card is required.
 
-    - Pick which connected accounts to publish to (each becomes a platform entry)
-    - Add images or videos from your machine, the asset library, Unsplash, or Giphy
-    - Assign labels to organize your content
+    <Note>
+      Invited to someone else's account? You skip the plan step. If the owner has not subscribed yet, you see **Waiting for the account owner** until they do.
+    </Note>
   </Step>
-  <Step title="Schedule and publish">
-    Set a date and time, and TryPost will automatically publish your post at the right moment across all selected platforms.
+  <Step title="Connect your first channel">
+    After checkout you land in **Publish**. Click **New** > **Connect a new channel** in the sidebar (the **Publish** list of an empty workspace also shows **Welcome to TryPost 👋** with a **Connect channel** button), pick a network and authorize TryPost. On the confirmation page, tick the accounts you want and click **Finish connection**.
+
+    TryPost opens the new channel's **Publish** page and asks **How many times a week would you like to post?** Pick a goal and TryPost adds matching posting times to the channel's queue. See [Connecting channels](/knowledge-base/channels/connecting) and the [platform guides](/platforms/linkedin) for each network.
+  </Step>
+  <Step title="Write your first post">
+    Click **New** > **Post** to open the composer. Pick the channels, write once, and add images or video from your computer or **More media sources**. Use **Customize for each network** when one network needs its own text or settings. See [Composer](/knowledge-base/publish/composer).
+  </Step>
+  <Step title="Schedule it">
+    Choose **Add to queue** to drop the post into the channel's next free posting time, set a date and time yourself, or publish now. Scheduled posts appear on the **Publish** page under **Queue**, and in the calendar. See [Queue](/knowledge-base/publish/queue).
   </Step>
 </Steps>
 
 ## What's next?
 
 <Columns cols={3}>
-  <Card title="Platforms" icon="share-nodes" href="/">
-    Connect your social accounts
+  <Card title="Invite your team" icon="users" href="/knowledge-base/settings/members-and-permissions">
+    Add members and choose whose posts need approval
+  </Card>
+  <Card title="Plan ideas" icon="lightbulb" href="/knowledge-base/create/ideas">
+    Collect and move ideas on the board
+  </Card>
+  <Card title="Insights" icon="chart-line" href="/knowledge-base/insights/overview">
+    See how your channels and posts perform
   </Card>
   <Card title="API Reference" icon="code" href="/api-reference/introduction">
     Automate with the REST API
   </Card>
   <Card title="Build with AI" icon="microchip-ai" href="/ai/introduction">
     Connect AI assistants via MCP
+  </Card>
+  <Card title="Self-hosting" icon="server" href="/self-hosting/overview">
+    Run TryPost on your own server
   </Card>
 </Columns>

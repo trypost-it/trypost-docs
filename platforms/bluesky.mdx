@@ -6,23 +6,26 @@ icon: "cloud"
 
 # Bluesky
 
-TryPost supports posting to Bluesky.
+TryPost publishes posts and threads to Bluesky.
 
 ## Connect your account
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect Bluesky**
-3. Enter your Bluesky handle and an **App Password**
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **Bluesky** and click **Connect Bluesky**
+3. On the **Connect Bluesky** form, enter your **Handle or email** and an **App Password**, then click **Connect Bluesky**
+4. On the confirmation page, check the account and click **Finish connection**
+
+TryPost opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
 
 <Note>
-  Bluesky doesn't use OAuth. You need to create an [App Password](https://bsky.app/settings/app-passwords) in your Bluesky settings. Do not use your main password.
+  Bluesky doesn't use OAuth. Create an [App Password](https://bsky.app/settings/app-passwords) in your Bluesky settings — do not use your main password.
 </Note>
 
 ## Supported content types
 
-| Type | Description |
-|------|-------------|
-| **Post** | Text with up to 4 optional images **or** 1 video |
+| Type | `content_type` | Description |
+|------|----------------|-------------|
+| **Post** | `bluesky_post` | Text with up to 4 optional images **or** 1 video |
 
 ## Media limits
 
@@ -30,8 +33,29 @@ TryPost supports posting to Bluesky.
 |----------------|-------|-------|----------|--------|
 | `bluesky_post` | 10 MB | 300 MB | 10 minutes | Images JPEG/PNG/GIF/WebP. Video MP4 or MOV |
 
-The video size is the lexicon's decimal value (300 000 000 bytes). Bluesky's image blob limit is 2 MB (2 000 000 bytes), but TryPost re-encodes every non-GIF image under it at publish, so only the 10 MB hard cap applies to the original; a GIF over 2 MB fails at publish. Official specs: [`app.bsky.embed.video`](https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/embed/video.json), [`app.bsky.embed.images`](https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/embed/images.json); the 10-minute limit was [announced by Bluesky on 26 August 2026](https://techcrunch.com/2026/08/26/bluesky-now-lets-you-upload-10-minute-long-videos/). Full catalog: [Media](/knowledge-base/media).
+The video size is the lexicon's decimal value (300 000 000 bytes). Bluesky's image blob limit is 2 MB (2 000 000 bytes), but TryPost re-encodes every non-GIF image under it at publish, so only the 10 MB hard cap applies to the original; a GIF over 2 MB fails at publish. Official specs: [`app.bsky.embed.video`](https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/embed/video.json), [`app.bsky.embed.images`](https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/embed/images.json); the 10-minute limit was [announced by Bluesky on 26 August 2026](https://techcrunch.com/2026/08/26/bluesky-now-lets-you-upload-10-minute-long-videos/). Full catalog: [Media](/knowledge-base/media#bluesky).
+
+## Text and per-post options
+
+- **300 characters** per post (Bluesky counts graphemes).
+- **Threads** — click **Start thread** to add replies under the post, up to **24**. Each reply has its own text and up to 4 media items, following the same rules as a post.
+- **Link preview** — the first link gets a preview card. Remove it with the **×** on the card (`platforms[].meta.link_preview: false` on the API).
+- **Alt text** — up to 2,000 characters per image.
+
+## Insights
+
+Bluesky posts and followers appear in [Insights](/knowledge-base/insights/overview).
 
 ## Self-hosting setup
 
-No API credentials or environment variables are required for Bluesky. It works out of the box on any self-hosted instance.
+No API credentials are required for Bluesky. It works out of the box on any self-hosted instance.
+
+<Accordion title="Optional Bluesky settings">
+  Accounts connect through the default PDS, `https://bsky.social`. The connect form has no field for another server; to point every Bluesky connection at a different PDS, set:
+
+  ```env
+  BLUESKY_DEFAULT_SERVICE=https://bsky.social
+  ```
+
+  Hide Bluesky with `BLUESKY_ENABLED=false`.
+</Accordion>

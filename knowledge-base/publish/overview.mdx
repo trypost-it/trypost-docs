@@ -25,6 +25,8 @@ Published and partially published posts are kept for 2 years, then deleted from 
   Self-hosting TryPost? Change this with `POST_HISTORY_RETENTION_DAYS`. See [Configuration](/self-hosting/configuration).
 </Note>
 
+Sent posts show their latest metrics right on the card, with when they were last refreshed ("Refreshed 2 hours ago"). Use the arrows to page through the metrics, and **See post insights** for everything the network reports. Until the first collection a post shows "Metrics have not been collected yet." Networks without analytics (LinkedIn, Telegram, Discord, Google Business) show none; see [Insights](/knowledge-base/insights/overview).
+
 **Sent** also shows posts you published directly on the network, outside TryPost. They are marked "This was published directly from Instagram" (or the channel's network).
 
 ## List and Calendar
@@ -55,10 +57,10 @@ Each post card has buttons and a menu. What you see depends on the post's status
 | **Duplicate Post** | Create a draft copy of the post right away and open it in the composer. |
 | **Move to Drafts** | Unschedule a post. |
 | **Edit labels** | Change the post's labels. |
-| **Delete Post** | Delete the post and its media from TryPost. |
+| **Delete Post** | Delete the post and its media from TryPost. Members who need approval can delete only posts they wrote, or a request they made while it is still pending. |
 | **Open post on Instagram** (or the channel's network) | Open the live post. |
 | **See post insights** | Open the post's metrics. See [Channel insights](/knowledge-base/insights/channel-insights). |
-| **Post Details** | Show the full post with its notes. |
+| **Post Details** | Show the full post, its channels, who created it and, once sent, its metrics. |
 
 Posts that are **Publishing**, **Published**, **Partially Published** or **Failed** cannot be edited or deleted. To try again, duplicate the post. Deleting a post never removes it from the network.
 
@@ -86,10 +88,13 @@ A failed post shows **Why it failed** with a plain reason and the **Message from
 - The network had an error, was unavailable, or took too long to respond.
 - The channel's connection expired. Reconnect it in [Channel settings](/knowledge-base/channels/settings).
 - Publishing stopped before the network confirmed the post.
+- We couldn't publish this post. (the network gave no reason TryPost recognizes)
+
+A post that is longer than the network allows fails with a message such as "This post has 312 characters, but X allows 280."
 
 ## Notes
 
-Use **Notes** on a post to talk with your team about it. A new note emails every workspace member except its author. On a post pending approval, only the approvers and the member who asked get the email. Each person can turn these emails off with **New note on a post** in [Notifications](/knowledge-base/settings/notifications).
+Open **Notes** from the notes button on a post card to talk with your team about it. Press <kbd>Enter</kbd> to send. You can **Edit** or **Delete** your own notes; edited notes are marked "edited", and **Load older notes** shows earlier ones. A new note emails every workspace member except its author. On a post pending approval, only the approvers and the member who asked get the email. Each person can turn these emails off with **New note on a post** in [Notifications](/knowledge-base/settings/notifications).
 
 ## Channel page extras
 

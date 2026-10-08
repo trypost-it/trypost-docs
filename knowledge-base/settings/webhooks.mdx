@@ -89,15 +89,15 @@ const expected = crypto
   .update(rawBody)
   .digest('hex');
 
-const valid = crypto.timingSafeEqual(
-  Buffer.from(expected, 'utf8'),
-  Buffer.from(req.headers['x-webhook-signature'], 'utf8'),
-);
+const received = Buffer.from(req.headers['x-webhook-signature'] ?? '', 'utf8');
+const expectedBuf = Buffer.from(expected, 'utf8');
+const valid = received.length === expectedBuf.length
+  && crypto.timingSafeEqual(expectedBuf, received);
 ```
 
 ```php PHP
 $expected = hash_hmac('sha256', $rawBody, $secret);
-$valid = hash_equals($expected, $request->header('X-Webhook-Signature'));
+$valid = hash_equals($expected, (string) $request->header('X-Webhook-Signature'));
 ```
 
 ```python Python

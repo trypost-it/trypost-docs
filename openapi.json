@@ -86,7 +86,2915 @@
       "description": "Platform capabilities and content types."
     }
   ],
-  "paths": {},
+  "paths": {
+    "/posts": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "List posts",
+        "operationId": "listPosts",
+        "description": "Lists the workspace's posts, latest scheduled first, with their destinations and labels. Pending approval requests of other members are included (API keys belong to admins, who can approve). Page size is set by the server: read `meta.per_page`.",
+        "parameters": [
+          {
+            "name": "channels[]",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "description": "Only posts on these social accounts. Values that are not UUIDs are ignored.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          {
+            "name": "labels[]",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "description": "Only posts with any of these labels.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          {
+            "name": "untagged",
+            "in": "query",
+            "required": false,
+            "description": "Only posts without labels (combined with `labels[]`, posts matching either).",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of posts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Post"
+                      }
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                      "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                      "author": {
+                        "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                        "name": "Ana Souza"
+                      },
+                      "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                      "media": [
+                        {
+                          "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                          "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "type": "image",
+                          "mime_type": "image/jpeg",
+                          "original_filename": "launch.jpg",
+                          "size": 482113,
+                          "meta": {
+                            "width": 1080,
+                            "height": 1350,
+                            "alt_text": "Product launch banner"
+                          }
+                        }
+                      ],
+                      "status": "scheduled",
+                      "schedule_mode": "custom",
+                      "scheduled_at": "2026-10-12 14:00:00",
+                      "published_at": null,
+                      "approval_requested_by": null,
+                      "approval_requested_at": null,
+                      "approved_by": null,
+                      "approved_at": null,
+                      "recurrence": null,
+                      "origin": "trypost",
+                      "platforms": [
+                        {
+                          "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                          "platform": "x",
+                          "content_type": "x_post",
+                          "meta": {
+                            "thread_replies": [
+                              {
+                                "text": "2/ Replies publish under the first post.",
+                                "media": []
+                              }
+                            ]
+                          },
+                          "status": "pending",
+                          "enabled": true,
+                          "platform_url": null,
+                          "published_at": null,
+                          "error_message": null,
+                          "display_name": "TryPost",
+                          "display_username": "trypostit",
+                          "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                          "social_account": {
+                            "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                            "platform": "x",
+                            "display_name": "TryPost",
+                            "username": "trypostit",
+                            "status": "connected",
+                            "has_posting_schedule": true,
+                            "timezone": "America/Sao_Paulo",
+                            "posting_goal": 5,
+                            "max_content_length": 280,
+                            "long_posts": false,
+                            "verified_badge": null
+                          }
+                        }
+                      ],
+                      "labels": [
+                        {
+                          "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                          "name": "Launch",
+                          "color": "#2563EB",
+                          "created_at": "2026-09-01 10:00:00",
+                          "updated_at": "2026-09-01 10:00:00"
+                        }
+                      ],
+                      "created_at": "2026-10-08 13:20:11",
+                      "updated_at": "2026-10-08 13:20:11"
+                    }
+                  ],
+                  "links": {
+                    "first": "https://app.trypost.it/api/posts?page=1",
+                    "last": "https://app.trypost.it/api/posts?page=1",
+                    "prev": null,
+                    "next": null
+                  },
+                  "meta": {
+                    "current_page": 1,
+                    "from": 1,
+                    "last_page": 1,
+                    "links": [],
+                    "path": "https://app.trypost.it/api/posts",
+                    "per_page": 25,
+                    "to": 1,
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Create post",
+        "operationId": "createPost",
+        "description": "Creates one post on one social account.\n\n- `status: draft` (default) saves a draft.\n- `status: scheduled` with `scheduled_at` schedules it at that time; with `queue` (`next` or `top`) it takes a slot of the channel's posting schedule; with `queue_slot` it takes that exact free slot (from `GET /channels/{account}/queue/slots`).\n- `status: publishing` publishes it now.\n\nOmitted `content_type` is chosen like the app does: on Pinterest a video makes `pinterest_video_pin` and several images `pinterest_carousel`, on TikTok images only make `tiktok_photo`, every other network takes its default format.\n\nTo schedule or publish, the destination needs its required settings in `platforms[].meta` (see `PlatformMeta`). API keys belong to workspace admins, who publish directly, so a post created through the API is never stored as `pending_approval`.\n\nTo post the same text on several channels at once, use `POST /posts/batch`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "platforms"
+                ],
+                "properties": {
+                  "content": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 25000,
+                    "description": "Post text, at most 25000 characters. When `status` is `scheduled` or `publishing` it must also fit each account's limit (`max_content_length` of the social account, for example 280 on X or 25000 for X accounts with long posts, 300 on Bluesky, 500 on Mastodon including the content warning), measured on the text the network receives. A scheduled or published post needs text or media."
+                  },
+                  "media": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/MediaReference"
+                    },
+                    "description": "Media in order. Each item is one of `upload_token`, `url` or `id`. Types the channel does not accept are refused."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "scheduled",
+                      "publishing"
+                    ],
+                    "description": "`draft` keeps the post editable. `scheduled` schedules it at `scheduled_at` or in the channel queue (`queue`). `publishing` publishes it now.",
+                    "default": "draft"
+                  },
+                  "platforms": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "description": "Exactly one destination.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "social_account_id"
+                      ],
+                      "properties": {
+                        "social_account_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "Social account of this workspace."
+                        },
+                        "content_type": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/ContentType"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Format; must belong to the account's network. Omitted, it is chosen from the media."
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PlatformMeta"
+                        }
+                      }
+                    }
+                  },
+                  "scheduled_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "When to publish, for `status: scheduled`. Any date string; must be in the future and before `2038-01-19`. Cannot be combined with `queue`."
+                  },
+                  "queue": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "next",
+                      "top",
+                      null
+                    ],
+                    "description": "Queue position, only with `status: scheduled`. `next` takes the channel's first free slot; `top` takes its first slot and moves the queued posts behind it to the next gap. The channel must have posting times (`has_posting_schedule`). Cannot be combined with `scheduled_at`."
+                  },
+                  "queue_slot": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "Instant of one free slot from `GET /channels/{account}/queue/slots`, only with `status: scheduled`. Stores the post as a queue post in that slot; refused when the slot is taken or held by a pending approval request. Before `2038-01-19`. Cannot be combined with `queue`."
+                  },
+                  "label_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Labels of this workspace."
+                  }
+                }
+              },
+              "example": {
+                "content": "We just shipped scheduled threads. Here is how they work.",
+                "status": "scheduled",
+                "scheduled_at": "2026-10-12T14:00:00Z",
+                "media": [
+                  {
+                    "url": "https://example.com/launch.jpg",
+                    "alt": "Product launch banner"
+                  }
+                ],
+                "platforms": [
+                  {
+                    "social_account_id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                    "content_type": "x_post",
+                    "meta": {
+                      "thread_replies": [
+                        {
+                          "text": "2/ Replies publish under the first post."
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "label_ids": [
+                  "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created post.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/posts/batch": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Create posts in batch",
+        "operationId": "createPostsInBatch",
+        "description": "Creates one independent post per destination, as the app does when several channels are selected. The posts share a `post_group_id`. Each destination may override the shared `content`, `media`, `content_type` and `meta`.\n\n`status: scheduled` schedules every post at `scheduled_at` or in each channel's queue (`queue: next` or `top`). One specific slot (`queue_slot`) is not taken here: use `POST /posts` or `PUT /channels/{account}/queue/slot`.\n\n`destinations[].meta` follows the same per-network rules as `platforms[].meta` (see `PlatformMeta`), checked with the destination's network; errors are reported on `destinations.N.meta.*`. To schedule or publish, every destination needs its required settings and text or media. API keys belong to workspace admins, so these posts are never stored as `pending_approval`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status",
+                  "destinations"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "scheduled",
+                      "publishing"
+                    ],
+                    "description": "`draft` keeps the post editable. `scheduled` schedules it at `scheduled_at` or in the channel queue (`queue`). `publishing` publishes it now."
+                  },
+                  "content": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 25000,
+                    "description": "Shared text, at most 25000 characters. When `status` is `scheduled` or `publishing` it must also fit each account's limit (`max_content_length` of the social account, for example 280 on X or 25000 for X accounts with long posts, 300 on Bluesky, 500 on Mastodon including the content warning), measured on the text the network receives. A scheduled or published post needs text or media."
+                  },
+                  "media": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/MediaReference"
+                    },
+                    "description": "Shared media. Media in order. Each item is one of `upload_token`, `url` or `id`. Types the channel does not accept are refused."
+                  },
+                  "scheduled_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "When to publish, for `status: scheduled`. Any date string; must be in the future and before `2038-01-19`. Cannot be combined with `queue`. Required with `status: scheduled` unless `queue` is sent."
+                  },
+                  "queue": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "next",
+                      "top",
+                      null
+                    ],
+                    "description": "Queue position, only with `status: scheduled`. `next` takes the channel's first free slot; `top` takes its first slot and moves the queued posts behind it to the next gap. Every channel must have posting times (`has_posting_schedule`). Cannot be combined with `scheduled_at`."
+                  },
+                  "label_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Labels of this workspace."
+                  },
+                  "destinations": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "One entry per social account; each account at most once.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "social_account_id"
+                      ],
+                      "properties": {
+                        "social_account_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "content_type": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/ContentType"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Must belong to the account's network. Omitted, it is chosen from the media."
+                        },
+                        "content": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 25000,
+                          "description": "Replaces the shared text for this destination."
+                        },
+                        "media": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MediaReference"
+                          },
+                          "description": "Replaces the shared media for this destination. An item without alt text takes the alt text of the same shared item."
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PlatformMeta"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "status": "scheduled",
+                "queue": "next",
+                "content": "Our October changelog is live.",
+                "media": [
+                  {
+                    "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b",
+                    "alt": "Changelog cover"
+                  }
+                ],
+                "destinations": [
+                  {
+                    "social_account_id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                    "content_type": "x_post"
+                  },
+                  {
+                    "social_account_id": "9c8b7a65-5e4f-4a3b-9c2d-1e0f9a8b7c65",
+                    "content_type": "pinterest_pin",
+                    "content": "Everything we shipped in October, in one pin.",
+                    "meta": {
+                      "board_id": "1022106146620830917",
+                      "title": "October changelog",
+                      "link": "https://trypost.it/changelog"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created posts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Post"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "posts": [
+                    {
+                      "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                      "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                      "author": {
+                        "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                        "name": "Ana Souza"
+                      },
+                      "content": "Our October changelog is live.",
+                      "media": [
+                        {
+                          "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                          "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "type": "image",
+                          "mime_type": "image/jpeg",
+                          "original_filename": "launch.jpg",
+                          "size": 482113,
+                          "meta": {
+                            "width": 1080,
+                            "height": 1350,
+                            "alt_text": "Product launch banner"
+                          }
+                        }
+                      ],
+                      "status": "scheduled",
+                      "schedule_mode": "queue",
+                      "scheduled_at": "2026-10-12 14:00:00",
+                      "published_at": null,
+                      "approval_requested_by": null,
+                      "approval_requested_at": null,
+                      "approved_by": null,
+                      "approved_at": null,
+                      "recurrence": null,
+                      "origin": "trypost",
+                      "platforms": [
+                        {
+                          "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                          "platform": "x",
+                          "content_type": "x_post",
+                          "meta": {},
+                          "status": "pending",
+                          "enabled": true,
+                          "platform_url": null,
+                          "published_at": null,
+                          "error_message": null,
+                          "display_name": "TryPost",
+                          "display_username": "trypostit",
+                          "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                          "social_account": {
+                            "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                            "platform": "x",
+                            "display_name": "TryPost",
+                            "username": "trypostit",
+                            "status": "connected",
+                            "has_posting_schedule": true,
+                            "timezone": "America/Sao_Paulo",
+                            "posting_goal": 5,
+                            "max_content_length": 280,
+                            "long_posts": false,
+                            "verified_badge": null
+                          }
+                        }
+                      ],
+                      "labels": [
+                        {
+                          "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                          "name": "Launch",
+                          "color": "#2563EB",
+                          "created_at": "2026-09-01 10:00:00",
+                          "updated_at": "2026-09-01 10:00:00"
+                        }
+                      ],
+                      "created_at": "2026-10-08 13:20:11",
+                      "updated_at": "2026-10-08 13:20:11"
+                    },
+                    {
+                      "id": "9d3c1f2a-7c5f-4d9b-8e2f-3b8c6d9e1f52",
+                      "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                      "author": {
+                        "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                        "name": "Ana Souza"
+                      },
+                      "content": "Everything we shipped in October, in one pin.",
+                      "media": [
+                        {
+                          "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                          "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "type": "image",
+                          "mime_type": "image/jpeg",
+                          "original_filename": "launch.jpg",
+                          "size": 482113,
+                          "meta": {
+                            "width": 1080,
+                            "height": 1350,
+                            "alt_text": "Product launch banner"
+                          }
+                        }
+                      ],
+                      "status": "scheduled",
+                      "schedule_mode": "queue",
+                      "scheduled_at": "2026-10-12 14:00:00",
+                      "published_at": null,
+                      "approval_requested_by": null,
+                      "approval_requested_at": null,
+                      "approved_by": null,
+                      "approved_at": null,
+                      "recurrence": null,
+                      "origin": "trypost",
+                      "platforms": [
+                        {
+                          "id": "9d3c1f2b-2b3c-4d4e-9f5a-6b7c8d9e0f21",
+                          "platform": "pinterest",
+                          "content_type": "pinterest_pin",
+                          "meta": {
+                            "board_id": "1022106146620830917",
+                            "title": "October changelog",
+                            "link": "https://trypost.it/changelog"
+                          },
+                          "status": "pending",
+                          "enabled": true,
+                          "platform_url": null,
+                          "published_at": null,
+                          "error_message": null,
+                          "display_name": "TryPost",
+                          "display_username": "trypostit",
+                          "display_avatar": null,
+                          "social_account": {
+                            "id": "9c8b7a65-5e4f-4a3b-9c2d-1e0f9a8b7c65",
+                            "platform": "pinterest",
+                            "display_name": "TryPost",
+                            "username": "trypostit",
+                            "status": "connected",
+                            "has_posting_schedule": true,
+                            "timezone": "UTC",
+                            "posting_goal": 5,
+                            "max_content_length": 500,
+                            "long_posts": false,
+                            "verified_badge": null
+                          }
+                        }
+                      ],
+                      "labels": [
+                        {
+                          "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                          "name": "Launch",
+                          "color": "#2563EB",
+                          "created_at": "2026-09-01 10:00:00",
+                          "updated_at": "2026-09-01 10:00:00"
+                        }
+                      ],
+                      "created_at": "2026-10-08 13:20:11",
+                      "updated_at": "2026-10-08 13:20:11"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/posts/{post}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get post",
+        "operationId": "getPost",
+        "description": "Returns one post with its destinations and labels.",
+        "responses": {
+          "200": {
+            "description": "The post.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Update post",
+        "operationId": "updatePost",
+        "description": "Updates a post. Only the fields you send change. The social account is fixed (`social_account_id` is refused).\n\nSend the destination's format and settings either as top-level `content_type` and `meta` (the post has one destination), or as `platforms[]` with the destination `id`. `meta` is merged with the stored settings: send `null` for a key to clear it; `thread_replies` replaces the whole list. `media` replaces the post's media; `label_ids` replaces its labels.\n\n`status: publishing` publishes the post now; `scheduled` schedules it at `scheduled_at`, in the queue (`queue`), or keeps its future `scheduled_at`; `draft` unschedules it. When scheduling or publishing, the content type must fit the media and the required settings must be present.\n\nPosts that are publishing, published, partially published or failed cannot be edited: the request returns `422` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 25000,
+                    "description": "Post text, at most 25000 characters. When `status` is `scheduled` or `publishing` it must also fit each account's limit (`max_content_length` of the social account, for example 280 on X or 25000 for X accounts with long posts, 300 on Bluesky, 500 on Mastodon including the content warning), measured on the text the network receives. A scheduled or published post needs text or media."
+                  },
+                  "media": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/MediaReference"
+                    },
+                    "description": "Replaces the post's media. Omit it to keep the current media. Media in order. Each item is one of `upload_token`, `url` or `id`. Types the channel does not accept are refused."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "scheduled",
+                      "publishing"
+                    ],
+                    "description": "`draft` keeps the post editable. `scheduled` schedules it at `scheduled_at` or in the channel queue (`queue`). `publishing` publishes it now. Omit it to keep the current status."
+                  },
+                  "content_type": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ContentType"
+                      }
+                    ],
+                    "description": "New format for the post's destination. Omitted, the stored format is kept, except on Pinterest and TikTok where new media decides it as on create."
+                  },
+                  "meta": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PlatformMeta"
+                      }
+                    ],
+                    "description": "Settings of the post's destination, merged with the stored ones."
+                  },
+                  "platforms": {
+                    "type": "array",
+                    "description": "Alternative to top-level `content_type` / `meta`.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "An enabled destination of this post (`platforms[].id` in the post)."
+                        },
+                        "content_type": {
+                          "$ref": "#/components/schemas/ContentType"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PlatformMeta"
+                        }
+                      }
+                    }
+                  },
+                  "scheduled_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "With `status: scheduled`: required unless `queue` is sent or the post already has a future time; must be in the future. Cannot be combined with `queue`."
+                  },
+                  "queue": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "next",
+                      "top",
+                      null
+                    ],
+                    "description": "Queue position, only with `status: scheduled`. `next` takes the channel's first free slot; `top` takes its first slot and moves the queued posts behind it to the next gap. The channel must have posting times (`has_posting_schedule`). Cannot be combined with `scheduled_at`."
+                  },
+                  "label_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Replaces the post's labels."
+                  }
+                }
+              },
+              "example": {
+                "content": "We just shipped scheduled threads (and a few fixes).",
+                "status": "scheduled",
+                "queue": "next",
+                "meta": {
+                  "thread_replies": [
+                    {
+                      "text": "2/ Replies publish under the first post."
+                    },
+                    {
+                      "text": "3/ Full changelog below.",
+                      "media": [
+                        {
+                          "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated post.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Delete post",
+        "operationId": "deletePost",
+        "description": "Deletes a post that has not been sent, with its media. Nothing is removed from the network. Posts that are publishing, published, partially published or failed cannot be deleted: the request returns `422` with `Sent posts cannot be deleted.` on `post`.",
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/metrics": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get post metrics",
+        "operationId": "getPostMetrics",
+        "description": "Returns the saved analytics of each enabled destination: the latest daily snapshot TryPost collected from the network. No call is made to the network. LinkedIn, LinkedIn Page, Telegram, Discord and Google Business are not in analytics.",
+        "responses": {
+          "200": {
+            "description": "Metrics per destination.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostMetrics"
+                },
+                "example": {
+                  "post_id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "platforms": [
+                    {
+                      "post_platform_id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "status": "published",
+                      "platform_post_id": "1843921066571337728",
+                      "platform_url": "https://x.com/trypostit/status/1843921066571337728",
+                      "metrics": {
+                        "available": true,
+                        "reason": null,
+                        "publication": {
+                          "id": "9d4a0b1c-2d3e-4f5a-8b6c-7d8e9f0a1b2c",
+                          "post_platform_id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                          "social_account_key": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                          "platform": "x",
+                          "origin": "trypost",
+                          "content_type": "text",
+                          "availability": "available",
+                          "provider_published_at": "2026-10-12T14:00:03+00:00",
+                          "permalink": "https://x.com/trypostit/status/1843921066571337728",
+                          "excerpt": "We just shipped scheduled threads.",
+                          "preview_metadata": null,
+                          "account_display_name": "TryPost",
+                          "account_username": "trypostit",
+                          "account_avatar_url": null
+                        },
+                        "snapshot": {
+                          "date": "2026-10-14",
+                          "collected_at": "2026-10-14T06:10:00+00:00",
+                          "provider_observed_at": "2026-10-14T06:09:58+00:00",
+                          "reactions_count": 42,
+                          "comments_count": 5,
+                          "shares_count": 7,
+                          "saves_count": 3,
+                          "views_count": null,
+                          "impressions_count": 3120,
+                          "reach_count": null,
+                          "engagement_count": 57,
+                          "exposure_count": 3120,
+                          "exposure_kind": "impressions",
+                          "watch_time_milliseconds": null,
+                          "average_watch_time_milliseconds": null
+                        },
+                        "metrics": {
+                          "impressions": {
+                            "value": 3120,
+                            "unit": "count",
+                            "time_basis": "lifetime",
+                            "precision": "exact",
+                            "availability": "available",
+                            "provider_metric": "impression_count",
+                            "period_start": null,
+                            "period_end": null
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/preview": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get post preview",
+        "operationId": "getPostPreview",
+        "description": "Shows the text each enabled destination will send, after the network's formatting rules, and its length against the account's limit. Nothing is published.",
+        "responses": {
+          "200": {
+            "description": "Preview per destination.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostPreview"
+                },
+                "example": {
+                  "post_id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "original_content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "original_length": 66,
+                  "platforms": [
+                    {
+                      "post_platform_id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "sanitized_content": "We just shipped scheduled threads. Here is how they work.",
+                      "sanitized_length": 59,
+                      "max_content_length": 280,
+                      "truncated": true,
+                      "thread_replies": [
+                        {
+                          "text": "2/ Replies publish under the first post.",
+                          "media": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/notes": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Post notes"
+        ],
+        "summary": "List post notes",
+        "operationId": "listPostNotes",
+        "description": "Lists the post's notes, newest first. Page size is set by the server: read `meta.per_page`.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PostNote"
+                      }
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "9d3c2a10-3b4c-4d5e-8f6a-7b8c9d0e1f2a",
+                      "post_id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                      "body": "Can we swap the image for the dark version?",
+                      "author": {
+                        "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                        "name": "Ana Souza",
+                        "photo_url": "https://media.trypost.it/medias/9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e.jpg"
+                      },
+                      "created_at": "2026-10-08 14:02:45",
+                      "updated_at": "2026-10-08 14:02:45"
+                    }
+                  ],
+                  "links": {
+                    "first": "https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/notes?page=1",
+                    "last": "https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/notes?page=1",
+                    "prev": null,
+                    "next": null
+                  },
+                  "meta": {
+                    "current_page": 1,
+                    "from": 1,
+                    "last_page": 1,
+                    "links": [],
+                    "path": "https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/notes",
+                    "per_page": 25,
+                    "to": 1,
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Post notes"
+        ],
+        "summary": "Create post note",
+        "operationId": "createPostNote",
+        "description": "Adds an internal note to a post as the API key's user. Notes are never published. Every other workspace member is emailed about it; on a post pending approval, only the approvers and the member who asked are.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "body"
+                ],
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                }
+              },
+              "example": {
+                "body": "Can we swap the image for the dark version?"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created note.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostNote"
+                },
+                "example": {
+                  "id": "9d3c2a10-3b4c-4d5e-8f6a-7b8c9d0e1f2a",
+                  "post_id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "body": "Can we swap the image for the dark version?",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza",
+                    "photo_url": "https://media.trypost.it/medias/9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e.jpg"
+                  },
+                  "created_at": "2026-10-08 14:02:45",
+                  "updated_at": "2026-10-08 14:02:45"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/notes/{note}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        },
+        {
+          "$ref": "#/components/parameters/NoteId"
+        }
+      ],
+      "put": {
+        "tags": [
+          "Post notes"
+        ],
+        "summary": "Update post note",
+        "operationId": "updatePostNote",
+        "description": "Changes a note's text. Only the note's author can edit it (`403` otherwise). A note of another post returns `404`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "body"
+                ],
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                }
+              },
+              "example": {
+                "body": "Can we swap the image for the dark version?"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated note.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostNote"
+                },
+                "example": {
+                  "id": "9d3c2a10-3b4c-4d5e-8f6a-7b8c9d0e1f2a",
+                  "post_id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "body": "Can we swap the image for the dark version?",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza",
+                    "photo_url": "https://media.trypost.it/medias/9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e.jpg"
+                  },
+                  "created_at": "2026-10-08 14:02:45",
+                  "updated_at": "2026-10-08 14:02:45"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Post notes"
+        ],
+        "summary": "Delete post note",
+        "operationId": "deletePostNote",
+        "description": "Deletes a note. Only the note's author can delete it (`403` otherwise). A note of another post returns `404`.",
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/approve": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Approvals"
+        ],
+        "summary": "Approve post",
+        "operationId": "approvePost",
+        "description": "Approves a post waiting for approval (`pending_approval`). With an empty body the post is scheduled as requested: in the queue position or at the time the member asked for. Send `scheduled_at` to pick another time, or `publish_now` to publish it now. When the requested time has passed (or the member asked to publish now) and neither is sent, the request fails with `422` on `scheduled_at`: `The requested time has passed. Choose a new time.` A post that is no longer pending fails with `422`: `This post is no longer waiting for approval.` The member who asked is emailed about the decision.\n\nAPI keys belong to workspace admins, who publish directly, so posts created or edited through the API never wait for approval. These endpoints decide the requests of members who need approval.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "publish_now": {
+                    "type": "boolean",
+                    "description": "Publish now instead of at the requested time. Cannot be combined with `scheduled_at`."
+                  },
+                  "scheduled_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time",
+                    "description": "New time; in the future and before `2038-01-19`. Cannot be combined with `publish_now`."
+                  }
+                }
+              },
+              "example": {
+                "scheduled_at": "2026-10-13T15:00:00Z"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The approved post.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        }
+      }
+    },
+    "/posts/{post}/reject": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Approvals"
+        ],
+        "summary": "Reject post",
+        "operationId": "rejectPost",
+        "description": "Rejects a post waiting for approval. The post goes back to `draft`; no reason is stored. The member who asked is emailed about the decision. A post that is no longer pending fails with `422`.\n\nAPI keys belong to workspace admins, who publish directly, so posts created or edited through the API never wait for approval. These endpoints decide the requests of members who need approval.",
+        "responses": {
+          "200": {
+            "description": "The rejected post, now a draft.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "draft",
+                  "schedule_mode": "custom",
+                  "scheduled_at": null,
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/recurrence": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Recurrence"
+        ],
+        "summary": "Set post recurrence",
+        "operationId": "setPostRecurrence",
+        "description": "Makes a scheduled post repeat: every `interval` `frequency`, `times` more times after this one. Each occurrence keeps the same local time in the channel's time zone. The post must be `scheduled` with a time, else `422` on `post`: `Only scheduled posts can repeat.` The last occurrence must be before 2038 in every channel's time zone, else `422` on `times`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "interval",
+                  "frequency",
+                  "times"
+                ],
+                "properties": {
+                  "interval": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 365,
+                    "description": "Repeat every N `frequency` units."
+                  },
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "day",
+                      "week",
+                      "month",
+                      "year"
+                    ]
+                  },
+                  "times": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "description": "How many times it repeats after this occurrence."
+                  }
+                }
+              },
+              "example": {
+                "interval": 1,
+                "frequency": "week",
+                "times": 4
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The post with its repeat rule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": {
+                    "interval": 1,
+                    "frequency": "week",
+                    "remaining": 4
+                  },
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Recurrence"
+        ],
+        "summary": "Remove post recurrence",
+        "operationId": "removePostRecurrence",
+        "description": "Stops a post from repeating. The post and its next scheduled time stay.",
+        "responses": {
+          "200": {
+            "description": "The post without a repeat rule.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/media": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Media and uploads"
+        ],
+        "summary": "Upload media",
+        "operationId": "uploadPostMedia",
+        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.`",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "media"
+                ],
+                "properties": {
+                  "media": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The post with the new media.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/media/from-upload": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Media and uploads"
+        ],
+        "summary": "Attach media from upload",
+        "operationId": "attachMediaFromUpload",
+        "description": "Appends a file uploaded earlier (`POST /uploads` or a signed upload URL) to the post's media. The token is spent by this post. An unknown or expired token fails with `422` on `upload_token`: `This upload expired. Add the file again.` A type the post's channel does not accept fails with `422`.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "upload_token"
+                ],
+                "properties": {
+                  "upload_token": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "alt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 2000,
+                    "description": "Alt text. Applies to images only."
+                  }
+                }
+              },
+              "example": {
+                "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b",
+                "alt": "Product launch banner"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The post with the new media.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                },
+                "example": {
+                  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                  "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                  "author": {
+                    "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                    "name": "Ana Souza"
+                  },
+                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "media": [
+                    {
+                      "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                      "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                      "type": "image",
+                      "mime_type": "image/jpeg",
+                      "original_filename": "launch.jpg",
+                      "size": 482113,
+                      "meta": {
+                        "width": 1080,
+                        "height": 1350,
+                        "alt_text": "Product launch banner"
+                      }
+                    }
+                  ],
+                  "status": "scheduled",
+                  "schedule_mode": "custom",
+                  "scheduled_at": "2026-10-12 14:00:00",
+                  "published_at": null,
+                  "approval_requested_by": null,
+                  "approval_requested_at": null,
+                  "approved_by": null,
+                  "approved_at": null,
+                  "recurrence": null,
+                  "origin": "trypost",
+                  "platforms": [
+                    {
+                      "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                      "platform": "x",
+                      "content_type": "x_post",
+                      "meta": {
+                        "thread_replies": [
+                          {
+                            "text": "2/ Replies publish under the first post.",
+                            "media": []
+                          }
+                        ]
+                      },
+                      "status": "pending",
+                      "enabled": true,
+                      "platform_url": null,
+                      "published_at": null,
+                      "error_message": null,
+                      "display_name": "TryPost",
+                      "display_username": "trypostit",
+                      "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                      "social_account": {
+                        "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                        "platform": "x",
+                        "display_name": "TryPost",
+                        "username": "trypostit",
+                        "status": "connected",
+                        "has_posting_schedule": true,
+                        "timezone": "America/Sao_Paulo",
+                        "posting_goal": 5,
+                        "max_content_length": 280,
+                        "long_posts": false,
+                        "verified_badge": null
+                      }
+                    }
+                  ],
+                  "labels": [
+                    {
+                      "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                      "name": "Launch",
+                      "color": "#2563EB",
+                      "created_at": "2026-09-01 10:00:00",
+                      "updated_at": "2026-09-01 10:00:00"
+                    }
+                  ],
+                  "created_at": "2026-10-08 13:20:11",
+                  "updated_at": "2026-10-08 13:20:11"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/posts/{post}/media/from-url": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/PostId"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Media and uploads"
+        ],
+        "summary": "Attach media from URL",
+        "operationId": "attachMediaFromUrl",
+        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "urls"
+                ],
+                "properties": {
+                  "urls": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "url"
+                      ],
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Public `http` or `https` URL whose host resolves."
+                        },
+                        "alt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 2000,
+                          "description": "Alt text. Applies to images only."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "urls": [
+                  {
+                    "url": "https://example.com/launch.jpg",
+                    "alt": "Product launch banner"
+                  },
+                  {
+                    "url": "https://example.com/teaser.mp4"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The post and the result of each URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "post": {
+                      "$ref": "#/components/schemas/Post"
+                    },
+                    "attached_count": {
+                      "type": "integer"
+                    },
+                    "failed_urls": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "failures": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "reason": {
+                            "type": "string",
+                            "enum": [
+                              "unreachable",
+                              "type_not_allowed",
+                              "too_large",
+                              "host_not_allowed"
+                            ]
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "post": {
+                    "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+                    "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+                    "author": {
+                      "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+                      "name": "Ana Souza"
+                    },
+                    "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                    "media": [
+                      {
+                        "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                        "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                        "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                        "type": "image",
+                        "mime_type": "image/jpeg",
+                        "original_filename": "launch.jpg",
+                        "size": 482113,
+                        "meta": {
+                          "width": 1080,
+                          "height": 1350,
+                          "alt_text": "Product launch banner"
+                        }
+                      }
+                    ],
+                    "status": "scheduled",
+                    "schedule_mode": "custom",
+                    "scheduled_at": "2026-10-12 14:00:00",
+                    "published_at": null,
+                    "approval_requested_by": null,
+                    "approval_requested_at": null,
+                    "approved_by": null,
+                    "approved_at": null,
+                    "recurrence": null,
+                    "origin": "trypost",
+                    "platforms": [
+                      {
+                        "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                        "platform": "x",
+                        "content_type": "x_post",
+                        "meta": {
+                          "thread_replies": [
+                            {
+                              "text": "2/ Replies publish under the first post.",
+                              "media": []
+                            }
+                          ]
+                        },
+                        "status": "pending",
+                        "enabled": true,
+                        "platform_url": null,
+                        "published_at": null,
+                        "error_message": null,
+                        "display_name": "TryPost",
+                        "display_username": "trypostit",
+                        "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                        "social_account": {
+                          "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                          "platform": "x",
+                          "display_name": "TryPost",
+                          "username": "trypostit",
+                          "status": "connected",
+                          "has_posting_schedule": true,
+                          "timezone": "America/Sao_Paulo",
+                          "posting_goal": 5,
+                          "max_content_length": 280,
+                          "long_posts": false,
+                          "verified_badge": null
+                        }
+                      }
+                    ],
+                    "labels": [
+                      {
+                        "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                        "name": "Launch",
+                        "color": "#2563EB",
+                        "created_at": "2026-09-01 10:00:00",
+                        "updated_at": "2026-09-01 10:00:00"
+                      }
+                    ],
+                    "created_at": "2026-10-08 13:20:11",
+                    "updated_at": "2026-10-08 13:20:11"
+                  },
+                  "attached_count": 1,
+                  "failed_urls": [
+                    "https://example.com/teaser.mp4"
+                  ],
+                  "failures": [
+                    {
+                      "url": "https://example.com/teaser.mp4",
+                      "reason": "unreachable",
+                      "message": "Could not fetch media from https://example.com/teaser.mp4."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "tags": [
+          "Media and uploads"
+        ],
+        "summary": "Create upload",
+        "operationId": "createUpload",
+        "description": "Uploads one file as `multipart/form-data` without a post and returns an `upload_token`. Pass it as a media item (`media[].upload_token`) to `POST /posts`, `POST /posts/batch` or `PUT /posts/{post}`, or to `POST /posts/{post}/media/from-upload`, before `expires_at`. A token is spent by the first post that takes it; to put the same file on another post, pass that post's `media[].id`. Unused uploads are deleted after 24 hours. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "media"
+                ],
+                "properties": {
+                  "media": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Upload"
+                },
+                "example": {
+                  "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b",
+                  "type": "image",
+                  "mime_type": "image/jpeg",
+                  "size": 482113,
+                  "original_filename": "launch.jpg",
+                  "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                  "expires_at": "2026-10-09T13:20:11+00:00"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/uploads/{token}": {
+      "post": {
+        "tags": [
+          "Media and uploads"
+        ],
+        "summary": "Upload to signed URL",
+        "operationId": "uploadToSignedUrl",
+        "security": [],
+        "description": "Receives a file at a one-time signed URL issued by the MCP `request-media-upload-tool`. No API key: the signature authorizes the request. Send the file as `multipart/form-data` in the `media` field, for example `curl -F media=@launch.jpg \"<upload_url>\"`. The URL works once, until it expires (15 minutes by default); a second upload to it returns `409`. The returned `upload_token` is then used as a media item, like a token from `POST /uploads`. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "description": "Upload token from the signed URL.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b"
+          },
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "required": true,
+            "description": "Part of the signed URL.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expires",
+            "in": "query",
+            "required": true,
+            "description": "Part of the signed URL (Unix timestamp).",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "signature",
+            "in": "query",
+            "required": true,
+            "description": "Part of the signed URL.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "media"
+                ],
+                "properties": {
+                  "media": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The stored file.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUpload"
+                },
+                "example": {
+                  "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b",
+                  "media_id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                  "type": "image",
+                  "mime_type": "image/jpeg",
+                  "original_filename": "launch.jpg"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The signature is invalid or the URL expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                },
+                "example": {
+                  "message": "Invalid signature."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "This URL was already used.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "description": "Too many uploads. Limits: 60 per minute per workspace and 1200 per minute per IP address.",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -223,6 +3131,1806 @@
             ]
           }
         }
+      },
+      "ContentType": {
+        "type": "string",
+        "enum": [
+          "instagram_feed",
+          "instagram_reel",
+          "instagram_story",
+          "linkedin_post",
+          "linkedin_page_post",
+          "facebook_post",
+          "facebook_reel",
+          "facebook_story",
+          "tiktok_video",
+          "tiktok_photo",
+          "youtube_short",
+          "x_post",
+          "threads_post",
+          "threads_ghost_post",
+          "pinterest_pin",
+          "pinterest_video_pin",
+          "pinterest_carousel",
+          "bluesky_post",
+          "mastodon_post",
+          "telegram_post",
+          "discord_message",
+          "google_business_post"
+        ],
+        "description": "Post format on one network. It must belong to the destination's network. `GET /content-types` lists the formats of each network with their media rules. Instagram and Facebook stories publish no text."
+      },
+      "Platform": {
+        "type": "string",
+        "enum": [
+          "linkedin",
+          "linkedin-page",
+          "x",
+          "tiktok",
+          "youtube",
+          "facebook",
+          "instagram",
+          "instagram-facebook",
+          "threads",
+          "pinterest",
+          "bluesky",
+          "mastodon",
+          "telegram",
+          "discord",
+          "google_business"
+        ],
+        "description": "Network of a social account. `linkedin-page` is a LinkedIn company page, `instagram-facebook` an Instagram account connected through a Facebook Page."
+      },
+      "Person": {
+        "type": "object",
+        "description": "A workspace member. Only the id and name are exposed.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Label": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "description": "Hex color, `#RRGGBB`.",
+            "examples": [
+              "#2563EB"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "UTC, format `Y-m-d H:i:s`.",
+            "examples": [
+              "2026-09-01 10:00:00"
+            ]
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "UTC, format `Y-m-d H:i:s`.",
+            "examples": [
+              "2026-09-01 10:00:00"
+            ]
+          }
+        }
+      },
+      "SocialAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/Platform"
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "username": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "disconnected",
+              "token_expired"
+            ]
+          },
+          "has_posting_schedule": {
+            "type": "boolean",
+            "description": "Whether the channel has posting times. Queueing a post (`queue`) needs them."
+          },
+          "timezone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IANA time zone of the channel. Queue slots and recurrence follow it."
+          },
+          "posting_goal": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Posts per week the channel aims for."
+          },
+          "max_content_length": {
+            "type": "integer",
+            "description": "Text limit of this account, in characters. An X account with long posts gets 25000."
+          },
+          "long_posts": {
+            "type": "boolean",
+            "description": "Whether this X account can publish long posts."
+          },
+          "verified_badge": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "MediaItemMeta": {
+        "type": "object",
+        "description": "Editable settings of one media item. Other keys the server measured (for example `width`, `height`, `duration`) may also appear in responses.",
+        "properties": {
+          "alt_text": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Accessibility description. Applies to images; each network truncates it to its own cap."
+          },
+          "user_tags": {
+            "type": "array",
+            "maxItems": 20,
+            "description": "People tagged on an Instagram image.",
+            "items": {
+              "type": "object",
+              "required": [
+                "username",
+                "x",
+                "y"
+              ],
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "pattern": "^@?[A-Za-z0-9._]{1,30}$",
+                  "description": "Public Instagram username. A leading `@` is dropped."
+                },
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Offset from the left edge, 0 to 1."
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Offset from the top edge, 0 to 1."
+                }
+              }
+            }
+          },
+          "cover_offset_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Video frame used as the cover, in milliseconds from the start. Cannot pass the end of the video."
+          }
+        }
+      },
+      "MediaReference": {
+        "type": "object",
+        "description": "One media item to put on a post. Give **exactly one** of `upload_token`, `url` or `id`, otherwise the request fails with `Each media item needs exactly one of upload_token, url or id.`",
+        "properties": {
+          "upload_token": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Token from `POST /uploads` or a signed upload URL. Single use: the first post that takes it consumes it. Kept 24 hours."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "Public `http` or `https` URL of the file itself. Downloaded once per request; redirects are not followed and private hosts are refused."
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id of a media item already in this workspace (for example `media[].id` of another post). The file is copied."
+          },
+          "alt": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Alt text shorthand. Applies to images only; `meta.alt_text` wins when both are sent."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MediaItemMeta"
+          }
+        },
+        "examples": [
+          {
+            "url": "https://example.com/launch.jpg",
+            "alt": "Product launch banner"
+          }
+        ]
+      },
+      "MediaItem": {
+        "type": "object",
+        "description": "A media item as stored on a post.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Media id. Pass it as `media[].id` to reuse the file on another post."
+          },
+          "path": {
+            "type": "string",
+            "description": "Storage path, `medias/{uuid}.{ext}`."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public URL of the file."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video",
+              "document"
+            ]
+          },
+          "mime_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "original_filename": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "size": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Size in bytes."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/MediaItemMeta"
+          }
+        },
+        "examples": [
+          {
+            "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+            "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+            "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+            "type": "image",
+            "mime_type": "image/jpeg",
+            "original_filename": "launch.jpg",
+            "size": 482113,
+            "meta": {
+              "width": 1080,
+              "height": 1350,
+              "alt_text": "Product launch banner"
+            }
+          }
+        ]
+      },
+      "ThreadReply": {
+        "type": "object",
+        "description": "One reply published under the post as a thread (X, Bluesky and Mastodon). A reply needs text or media. Its text must fit the account limit (Bluesky 300, Mastodon 500 including the content warning, which every reply repeats, X 280 or 25000 for accounts with long posts). Its media belongs to this reply only and follows the media rules of a post on that network.",
+        "properties": {
+          "text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 25000
+          },
+          "media": {
+            "type": "array",
+            "maxItems": 4,
+            "description": "Up to 4 media items, each given by `url`, `id` or `upload_token`, with optional `meta.alt_text`.",
+            "items": {
+              "$ref": "#/components/schemas/MediaReference"
+            }
+          }
+        },
+        "examples": [
+          {
+            "text": "3/ Full changelog below.",
+            "media": [
+              {
+                "url": "https://example.com/changelog.png"
+              }
+            ]
+          }
+        ]
+      },
+      "PlatformMetaX": {
+        "type": "object",
+        "title": "X",
+        "description": "Settings for `x_post`.",
+        "properties": {
+          "thread_replies": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "maxItems": 24,
+            "description": "Up to 24 replies published under the post as a thread. Each item is a `ThreadReply`, or a plain string for a text-only reply. On update this list replaces the stored one.",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 25000,
+                  "title": "Text-only reply"
+                },
+                {
+                  "$ref": "#/components/schemas/ThreadReply"
+                }
+              ]
+            }
+          },
+          "is_ai_generated": {
+            "type": "boolean",
+            "description": "Discloses AI-generated media on the post (sent to X as `made_with_ai`)."
+          }
+        }
+      },
+      "PlatformMetaBluesky": {
+        "type": "object",
+        "title": "Bluesky",
+        "description": "Settings for `bluesky_post`.",
+        "properties": {
+          "thread_replies": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "maxItems": 24,
+            "description": "Up to 24 replies published under the post as a thread. Each item is a `ThreadReply`, or a plain string for a text-only reply. On update this list replaces the stored one.",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 25000,
+                  "title": "Text-only reply"
+                },
+                {
+                  "$ref": "#/components/schemas/ThreadReply"
+                }
+              ]
+            }
+          },
+          "link_preview": {
+            "type": "boolean",
+            "default": true,
+            "description": "Send `false` (a real boolean) to publish a text post with a link without its preview card."
+          }
+        }
+      },
+      "PlatformMetaMastodon": {
+        "type": "object",
+        "title": "Mastodon",
+        "description": "Settings for `mastodon_post`.",
+        "properties": {
+          "thread_replies": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "maxItems": 24,
+            "description": "Up to 24 replies published under the post as a thread. Each item is a `ThreadReply`, or a plain string for a text-only reply. On update this list replaces the stored one.",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 25000,
+                  "title": "Text-only reply"
+                },
+                {
+                  "$ref": "#/components/schemas/ThreadReply"
+                }
+              ]
+            }
+          },
+          "spoiler_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "description": "Content warning. Counts toward the 500-character post limit."
+          }
+        }
+      },
+      "PlatformMetaTikTok": {
+        "type": "object",
+        "title": "TikTok",
+        "description": "Settings for `tiktok_video` and `tiktok_photo`. `privacy_level` is required to schedule or publish; read the allowed values from `GET /social-accounts/{account}/tiktok-creator-info` and keep `allow_comments`, `allow_duet` and `allow_stitch` false when it reports them disabled. `SELF_ONLY` cannot be combined with `brand_content_toggle`.",
+        "properties": {
+          "privacy_level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "PUBLIC_TO_EVERYONE",
+              "MUTUAL_FOLLOW_FRIENDS",
+              "FOLLOWER_OF_CREATOR",
+              "SELF_ONLY",
+              null
+            ],
+            "description": "Who can see the post. Required to schedule or publish."
+          },
+          "allow_comments": {
+            "type": "boolean"
+          },
+          "allow_duet": {
+            "type": "boolean",
+            "description": "`tiktok_video` only."
+          },
+          "allow_stitch": {
+            "type": "boolean",
+            "description": "`tiktok_video` only."
+          },
+          "is_aigc": {
+            "type": "boolean",
+            "description": "AI-generated content label. `tiktok_video` only."
+          },
+          "auto_add_music": {
+            "type": "boolean",
+            "description": "`tiktok_photo` only."
+          },
+          "disclose": {
+            "type": "boolean",
+            "description": "Commercial content disclosure."
+          },
+          "brand_content_toggle": {
+            "type": "boolean",
+            "description": "Paid partnership."
+          },
+          "brand_organic_toggle": {
+            "type": "boolean",
+            "description": "Promotes your own brand."
+          }
+        }
+      },
+      "PlatformMetaPinterest": {
+        "type": "object",
+        "title": "Pinterest",
+        "description": "Settings for `pinterest_pin`, `pinterest_video_pin` and `pinterest_carousel`. The pin description is the post content; a video pin cover is the media item's `meta.cover_offset_ms`.",
+        "properties": {
+          "board_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Board to pin to. Required to schedule or publish. List boards with `GET /social-accounts/{account}/boards` or create one with `POST /social-accounts/{account}/boards`."
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "link": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "Destination URL (`http` or `https`)."
+          }
+        }
+      },
+      "PlatformMetaDiscord": {
+        "type": "object",
+        "title": "Discord",
+        "description": "Settings for `discord_message`.",
+        "properties": {
+          "channel_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Channel to post in. Required to schedule or publish. List channels with `GET /social-accounts/{account}/channels`."
+          },
+          "channel_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Channel name shown in the app."
+          },
+          "mentions": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "required": [
+                "token"
+              ],
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Mention token, for example `@everyone` or `<@&roleId>`."
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "embeds": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 256
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 4096
+                },
+                "url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "image": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri",
+                  "description": "Image URL."
+                },
+                "color": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^#?[0-9A-Fa-f]{6}$",
+                  "description": "Hex color, `#RRGGBB`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "PlatformMetaYouTube": {
+        "type": "object",
+        "title": "YouTube",
+        "description": "Settings for `youtube_short`. A post needs `title` or text to be scheduled or published.",
+        "properties": {
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100,
+            "description": "No `<` or `>` (refused even on drafts). Omitted, it is the first non-empty line of the text with `<` and `>` removed, cut to 100 characters."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Plain text, at most 5000 bytes. Omit or send `null` to use the post content."
+          },
+          "category_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "1",
+              "2",
+              "10",
+              "15",
+              "17",
+              "19",
+              "20",
+              "22",
+              "23",
+              "24",
+              "25",
+              "26",
+              "27",
+              "28",
+              "29",
+              null
+            ],
+            "default": "22",
+            "description": "YouTube category: 1 Film & Animation, 2 Autos & Vehicles, 10 Music, 15 Pets & Animals, 17 Sports, 19 Travel & Events, 20 Gaming, 22 People & Blogs, 23 Comedy, 24 Entertainment, 25 News & Politics, 26 Howto & Style, 27 Education, 28 Science & Technology, 29 Nonprofits & Activism."
+          },
+          "privacy_status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "public",
+              "unlisted",
+              "private",
+              null
+            ],
+            "default": "public"
+          },
+          "license": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "youtube",
+              "creativeCommon",
+              null
+            ]
+          },
+          "notify_subscribers": {
+            "type": "boolean",
+            "default": true
+          },
+          "embeddable": {
+            "type": "boolean",
+            "default": true
+          },
+          "made_for_kids": {
+            "type": "boolean",
+            "default": false
+          },
+          "is_ai_generated": {
+            "type": "boolean",
+            "description": "Discloses altered or synthetic content."
+          }
+        }
+      },
+      "PlatformMetaInstagram": {
+        "type": "object",
+        "title": "Instagram",
+        "description": "Settings for `instagram_feed`, `instagram_reel` and `instagram_story` (both `instagram` and `instagram-facebook` accounts). An `instagram_feed` post with a single video publishes as a Reel. People tags are the media item's `meta.user_tags`; a video cover is `meta.cover_offset_ms`. A post may carry at most 5 hashtags.",
+        "properties": {
+          "is_ai_generated": {
+            "type": "boolean",
+            "description": "AI-generated label (feed, reels, stories, carousels)."
+          },
+          "share_to_feed": {
+            "type": "boolean",
+            "default": true,
+            "description": "`instagram_reel` only: also show the Reel in the profile feed."
+          }
+        }
+      },
+      "PlatformMetaThreads": {
+        "type": "object",
+        "title": "Threads",
+        "description": "Settings for `threads_post`. Use the content type `threads_ghost_post` for a text-only post archived after 24 hours (no media, no topic).",
+        "properties": {
+          "topic_tag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Topic, 1 to 50 characters after a leading `#` is dropped, without `.` or `&`."
+          }
+        }
+      },
+      "PlatformMetaFacebook": {
+        "type": "object",
+        "title": "Facebook",
+        "description": "Settings for `facebook_post`. Facebook reels and stories take no settings; stories publish no text.",
+        "properties": {
+          "link_preview": {
+            "type": "boolean",
+            "default": true,
+            "description": "Send `false` (a real boolean) to publish a text post with a link without its preview card."
+          }
+        }
+      },
+      "PlatformMetaLinkedIn": {
+        "type": "object",
+        "title": "LinkedIn",
+        "description": "Settings for `linkedin_post` and `linkedin_page_post`.",
+        "properties": {
+          "link_preview": {
+            "type": "boolean",
+            "default": true,
+            "description": "Send `false` (a real boolean) to publish a text post with a link without its preview card."
+          },
+          "document_title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 300,
+            "description": "Title shown on a PDF document post. Defaults to the file name."
+          }
+        }
+      },
+      "PlatformMetaGoogleBusiness": {
+        "type": "object",
+        "title": "Google Business Profile",
+        "description": "Settings for `google_business_post`. An `EVENT` or `OFFER` needs `event.title`, `event.start_date` and `event.end_date` (the title is the offer title), and cannot end before it starts.",
+        "properties": {
+          "topic_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "STANDARD",
+              "EVENT",
+              "OFFER",
+              null
+            ],
+            "default": "STANDARD"
+          },
+          "call_to_action": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Button on the post. Not on `OFFER`.",
+            "properties": {
+              "action_type": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "NONE",
+                  "BOOK",
+                  "ORDER",
+                  "SHOP",
+                  "LEARN_MORE",
+                  "SIGN_UP",
+                  "CALL",
+                  null
+                ]
+              },
+              "url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "Required unless `action_type` is `NONE` or `CALL`."
+              }
+            }
+          },
+          "event": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Required on `EVENT` and `OFFER`.",
+            "properties": {
+              "title": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 58
+              },
+              "start_date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "`YYYY-MM-DD`."
+              },
+              "end_date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "`YYYY-MM-DD`, not before `start_date`."
+              },
+              "start_time": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{2}:\\d{2}$",
+                "description": "`HH:MM`."
+              },
+              "end_time": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^\\d{2}:\\d{2}$",
+                "description": "`HH:MM`."
+              }
+            }
+          },
+          "offer": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "`OFFER` only.",
+            "properties": {
+              "coupon_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "redeem_online_url": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "terms_conditions": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 5000
+              }
+            }
+          }
+        }
+      },
+      "PlatformMetaNone": {
+        "type": "object",
+        "title": "Telegram",
+        "description": "Telegram (and Facebook reels and stories) take no settings.",
+        "properties": {}
+      },
+      "PlatformMeta": {
+        "description": "Per-network settings of one destination. Pick the shape of the destination's network. Keys without a rule are dropped. Every known key is validated whatever the network, but only the keys of the destination's network are used when publishing. On update, `meta` is merged with the stored settings: send `null` for a key to clear it; `thread_replies` replaces the whole list. Required to schedule or publish: TikTok `privacy_level`, Pinterest `board_id`, Discord `channel_id`, Google Business `event` on `EVENT`/`OFFER`, YouTube a title (`title` or the first line of the text). `GET /content-types` lists them per network as `required_meta`.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PlatformMetaX"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaBluesky"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaMastodon"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaTikTok"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaPinterest"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaDiscord"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaYouTube"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaInstagram"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaThreads"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaFacebook"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaLinkedIn"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaGoogleBusiness"
+          },
+          {
+            "$ref": "#/components/schemas/PlatformMetaNone"
+          }
+        ]
+      },
+      "PostPlatform": {
+        "type": "object",
+        "description": "The post's destination: one social account and its format and settings.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Destination id. Use it as `platforms[].id` on `PUT /posts/{post}`."
+          },
+          "platform": {
+            "$ref": "#/components/schemas/Platform"
+          },
+          "content_type": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ContentType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "meta": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Stored per-network settings (see `PlatformMeta`)."
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "pending",
+              "publishing",
+              "retrying",
+              "pending_review",
+              "published",
+              "failed",
+              "rejected",
+              null
+            ],
+            "description": "Publishing state on this network. `retrying` waits for a retry after a network limit; `pending_review` and `rejected` come from networks that review posts (Google Business)."
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "platform_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Link to the published post on the network."
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "error_message": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Account name, kept even after the account is disconnected."
+          },
+          "display_username": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display_avatar": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "social_account": {
+            "$ref": "#/components/schemas/SocialAccount"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "description": "A post on one channel. Posts created together from several channels are independent posts that share a `post_group_id`.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "post_group_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Shared by the posts created in one batch."
+          },
+          "author": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Person"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Post text as stored (HTML from the editor or plain text)."
+          },
+          "media": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/MediaItem"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "pending_approval",
+              "scheduled",
+              "publishing",
+              "published",
+              "partially_published",
+              "failed"
+            ],
+            "description": "`pending_approval` is a post a member who needs approval asked to schedule or publish."
+          },
+          "schedule_mode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "queue",
+              "custom",
+              null
+            ],
+            "description": "`queue`: the post holds a slot of the channel's posting schedule. `custom`: it is scheduled at its own time."
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "approval_requested_by": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Person"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Who asked for approval (not always the author)."
+          },
+          "approval_requested_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "approved_by": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Person"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approved_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "recurrence": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Repeat rule, or `null`.",
+            "properties": {
+              "interval": {
+                "type": "integer"
+              },
+              "frequency": {
+                "type": "string",
+                "enum": [
+                  "day",
+                  "week",
+                  "month",
+                  "year"
+                ]
+              },
+              "remaining": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Repeats left after the next one."
+              }
+            }
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "trypost",
+              "network"
+            ],
+            "description": "`network` for posts imported from the network (published outside TryPost)."
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PostPlatform"
+            }
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "UTC, format `Y-m-d H:i:s`."
+          }
+        },
+        "examples": [
+          {
+            "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+            "post_group_id": "9d3c1f29-e0a1-4b7c-8d2e-5f6a7b8c9d03",
+            "author": {
+              "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+              "name": "Ana Souza"
+            },
+            "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+            "media": [
+              {
+                "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                "type": "image",
+                "mime_type": "image/jpeg",
+                "original_filename": "launch.jpg",
+                "size": 482113,
+                "meta": {
+                  "width": 1080,
+                  "height": 1350,
+                  "alt_text": "Product launch banner"
+                }
+              }
+            ],
+            "status": "scheduled",
+            "schedule_mode": "custom",
+            "scheduled_at": "2026-10-12 14:00:00",
+            "published_at": null,
+            "approval_requested_by": null,
+            "approval_requested_at": null,
+            "approved_by": null,
+            "approved_at": null,
+            "recurrence": null,
+            "origin": "trypost",
+            "platforms": [
+              {
+                "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
+                "platform": "x",
+                "content_type": "x_post",
+                "meta": {
+                  "thread_replies": [
+                    {
+                      "text": "2/ Replies publish under the first post.",
+                      "media": []
+                    }
+                  ]
+                },
+                "status": "pending",
+                "enabled": true,
+                "platform_url": null,
+                "published_at": null,
+                "error_message": null,
+                "display_name": "TryPost",
+                "display_username": "trypostit",
+                "display_avatar": "https://pbs.twimg.com/profile_images/1790000000000000000/avatar_400x400.jpg",
+                "social_account": {
+                  "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+                  "platform": "x",
+                  "display_name": "TryPost",
+                  "username": "trypostit",
+                  "status": "connected",
+                  "has_posting_schedule": true,
+                  "timezone": "America/Sao_Paulo",
+                  "posting_goal": 5,
+                  "max_content_length": 280,
+                  "long_posts": false,
+                  "verified_badge": null
+                }
+              }
+            ],
+            "labels": [
+              {
+                "id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
+                "name": "Launch",
+                "color": "#2563EB",
+                "created_at": "2026-09-01 10:00:00",
+                "updated_at": "2026-09-01 10:00:00"
+              }
+            ],
+            "created_at": "2026-10-08 13:20:11",
+            "updated_at": "2026-10-08 13:20:11"
+          }
+        ]
+      },
+      "PostNote": {
+        "type": "object",
+        "description": "An internal note on a post. Notes are never published.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "post_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "body": {
+            "type": "string"
+          },
+          "author": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "photo_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "description": "UTC, format `Y-m-d H:i:s`."
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "UTC, format `Y-m-d H:i:s`."
+          }
+        }
+      },
+      "PublicationAnalytics": {
+        "type": "object",
+        "description": "Saved analytics of one publication: the latest daily snapshot collected from the network.",
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "publication": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "post_platform_id": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "uuid"
+              },
+              "social_account_key": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "platform": {
+                "$ref": "#/components/schemas/Platform"
+              },
+              "origin": {
+                "type": "string"
+              },
+              "content_type": {
+                "type": "string"
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "available",
+                  "deleted",
+                  "unavailable"
+                ]
+              },
+              "provider_published_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "permalink": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "excerpt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "preview_metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              },
+              "account_display_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "account_username": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "account_avatar_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "snapshot": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "collected_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "provider_observed_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "reactions_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "comments_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "shares_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "saves_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "views_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "impressions_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "reach_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "engagement_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "exposure_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "exposure_kind": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "watch_time_milliseconds": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "average_watch_time_milliseconds": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Metrics the network reports for this publication, keyed by metric (`reactions`, `comments`, `views`, `impressions`, `reach`, `engagement_rate`, ...). Each value is an object.",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "time_basis": {
+                  "type": "string"
+                },
+                "precision": {
+                  "type": "string"
+                },
+                "availability": {
+                  "type": "string"
+                },
+                "provider_metric": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "period_start": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "period_end": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "PostMetrics": {
+        "type": "object",
+        "properties": {
+          "post_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "post_platform_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "platform": {
+                  "$ref": "#/components/schemas/Platform"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "platform_post_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "platform_url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "metrics": {
+                  "description": "The saved analytics, or `{unsupported: true, reason}` when there are none: `not_published`, `platform_not_supported` (LinkedIn, LinkedIn Page, Telegram, Discord and Google Business are not in analytics) or `not_collected` (not collected yet).",
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/PublicationAnalytics"
+                    },
+                    {
+                      "type": "object",
+                      "title": "Unavailable",
+                      "properties": {
+                        "unsupported": {
+                          "type": "boolean",
+                          "const": true
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "not_published",
+                            "platform_not_supported",
+                            "not_collected"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "PostPreview": {
+        "type": "object",
+        "properties": {
+          "post_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "original_content": {
+            "type": "string"
+          },
+          "original_length": {
+            "type": "integer",
+            "description": "Characters (code points) of the stored content."
+          },
+          "platforms": {
+            "type": "array",
+            "description": "One entry per enabled destination.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "post_platform_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "platform": {
+                  "$ref": "#/components/schemas/Platform"
+                },
+                "content_type": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sanitized_content": {
+                  "type": "string",
+                  "description": "The text the publisher sends to the network."
+                },
+                "sanitized_length": {
+                  "type": "integer"
+                },
+                "max_content_length": {
+                  "type": "integer",
+                  "description": "Text limit of the account (an X account with long posts gets 25000)."
+                },
+                "truncated": {
+                  "type": "boolean",
+                  "description": "Whether the sent text is shorter than the stored text."
+                },
+                "title": {
+                  "type": "string",
+                  "description": "YouTube only: the video title."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "YouTube only: the video description."
+                },
+                "description_length_bytes": {
+                  "type": "integer",
+                  "description": "YouTube only. The limit is 5000 bytes."
+                },
+                "thread_replies": {
+                  "type": "array",
+                  "description": "X, Bluesky and Mastodon, when the post has replies.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "text": {
+                        "type": "string"
+                      },
+                      "media": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/MediaItem"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Upload": {
+        "type": "object",
+        "description": "A temporary upload. Pass `upload_token` as a media item before `expires_at`.",
+        "properties": {
+          "upload_token": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video",
+              "document"
+            ]
+          },
+          "mime_type": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "description": "Bytes."
+          },
+          "original_filename": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601. 24 hours after the upload; unused uploads are then deleted."
+          }
+        }
+      },
+      "SignedUpload": {
+        "type": "object",
+        "properties": {
+          "upload_token": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "media_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video",
+              "document"
+            ]
+          },
+          "mime_type": {
+            "type": "string"
+          },
+          "original_filename": {
+            "type": "string"
+          }
+        }
       }
     },
     "responses": {
@@ -283,6 +4991,40 @@
             }
           }
         }
+      },
+      "Conflict": {
+        "description": "The channel's queue is busy with another change. Retry the request.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "PostId": {
+        "name": "post",
+        "in": "path",
+        "required": true,
+        "description": "Post id.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41"
+      },
+      "NoteId": {
+        "name": "note",
+        "in": "path",
+        "required": true,
+        "description": "Note id. It must belong to the post.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "9d3c2a10-3b4c-4d5e-8f6a-7b8c9d0e1f2a"
       }
     }
   }

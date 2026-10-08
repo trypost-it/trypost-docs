@@ -3664,7 +3664,7 @@
         ],
         "summary": "Update posting schedule",
         "operationId": "updatePostingSchedule",
-        "description": "Replaces the channel's time zone, posting goal and posting times. Send all seven days, or `posting_schedule: null` to remove every posting time. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A time zone change first gives each queued post the slot at the same local time in the new zone, then the first free slots. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
+        "description": "Replaces the channel's time zone, posting goal and posting times. Send all seven days, or `posting_schedule: null` to remove every posting time. Every field is written: omitting `posting_goal` or `posting_schedule` clears it like `null`, so send the current values to keep them (read them with `GET /channels/{account}/posting-schedule`). Without posting times, the channel's queued posts become custom-time posts at their current time. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A time zone change first gives each queued post the slot at the same local time in the new zone, then the first free slots. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3686,7 +3686,7 @@
                     ],
                     "minimum": 1,
                     "maximum": 28,
-                    "description": "Posts per week. `null` clears it."
+                    "description": "Posts per week. `null` or omitted clears it: send the current value to keep it."
                   },
                   "posting_schedule": {
                     "type": [
@@ -3698,7 +3698,7 @@
                     "items": {
                       "$ref": "#/components/schemas/PostingDay"
                     },
-                    "description": "Exactly seven days, each `day` once. `null` removes the posting times."
+                    "description": "Exactly seven days, each `day` once. `null` or omitted removes the posting times (queued posts become custom-time posts): send the current values to keep them."
                   }
                 }
               },
@@ -3842,13 +3842,18 @@
       }
     },
     "/channels/{account}/posting-schedule/generate": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/AccountId"
+        }
+      ],
       "post": {
         "tags": [
           "Channels"
         ],
         "summary": "Generate posting schedule",
         "operationId": "generatePostingSchedule",
-        "description": "Replaces the channel's posting times with `goal` times a week at the hours that usually work best on its network (minutes are randomized), and stores `goal` as the posting goal. Without `goal`, the channel's current goal is used, else 3. The time zone does not change. `mode` is required but has no effect today: both values generate the same schedule. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A time zone change first gives each queued post the slot at the same local time in the new zone, then the first free slots. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
+        "description": "Replaces the channel's posting times with `goal` times a week at the hours that usually work best on its network (minutes are randomized), and stores `goal` as the posting goal. Without `goal`, the channel's current goal is used, else 3. The time zone does not change. `mode` is required but has no effect today: both values generate the same schedule. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3972,13 +3977,18 @@
       }
     },
     "/channels/{account}/posting-schedule/copy": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/AccountId"
+        }
+      ],
       "post": {
         "tags": [
           "Channels"
         ],
         "summary": "Copy posting schedule",
         "operationId": "copyPostingSchedule",
-        "description": "Copies the posting times of another channel of the workspace onto this one. The time zone and posting goal of this channel stay. A source without posting times returns `422` on `from`. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A time zone change first gives each queued post the slot at the same local time in the new zone, then the first free slots. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
+        "description": "Copies the posting times of another channel of the workspace onto this one. The time zone and posting goal of this channel stay. A source without posting times returns `422` on `from`. Queued posts keep their slot. A schedule change moves only the posts whose slot no longer exists, into the first free slots in order. A queued post with no slot left becomes a custom-time post at its current time. Custom-time posts never move.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7366,7 +7376,7 @@
                 "example": {
                   "data": [
                     {
-                      "id": "4f1d8c2b7e9a03c6d5b8e1f2a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1",
+                      "id": "4f1d8c2b7e9a03c6d5b8e1f2a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0",
                       "name": "Zapier",
                       "last_used_at": "2026-10-08T13:00:00+00:00",
                       "expires_at": "2026-12-31T23:59:59+00:00",
@@ -7464,7 +7474,7 @@
                 },
                 "example": {
                   "token": {
-                    "id": "4f1d8c2b7e9a03c6d5b8e1f2a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1",
+                    "id": "4f1d8c2b7e9a03c6d5b8e1f2a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0",
                     "name": "Zapier",
                     "last_used_at": null,
                     "expires_at": "2026-12-31T23:59:59+00:00",
@@ -13261,7 +13271,7 @@
         "schema": {
           "type": "string"
         },
-        "example": "4f1d8c2b7e9a03c6d5b8e1f2a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1"
+        "example": "4f1d8c2b7e9a03c6d5b8e1f2a3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0"
       },
       "WebhookId": {
         "name": "webhook",

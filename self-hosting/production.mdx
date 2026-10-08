@@ -8,7 +8,7 @@ icon: "rocket"
 
 This guide is for **bare metal / a VM** after you have completed [Installation](/self-hosting/installation) (app key, `.env`, migrations, Passport keys, seed, frontend build).
 
-Prefer containers? Use [`compose.prod.yaml`](/self-hosting/docker#production-recommended-for-self-hosting) — it already runs Horizon, Reverb, and the scheduler for you.
+Prefer containers? Use [`compose.prod.yaml`](/self-hosting/docker#production-self-hosting) — it already runs Horizon, Reverb, and the scheduler for you.
 
 ## Before you continue
 
@@ -57,12 +57,16 @@ php artisan event:cache
 
 TryPost uses queues for critical background processing:
 
-- **Publishing posts** to social platforms at scheduled times
-- **Sending notifications** (email and in-app)
-- **Verifying social account connections**
-- **Processing analytics events**
-- **Delivering [webhooks](/knowledge-base/webhooks)** and their retries
+- **Publishing posts** to social platforms at scheduled times (one `social-<platform>` queue per enabled network)
+- **Sending email** notifications
+- **Verifying channel connections** and refreshing tokens
+- **Collecting analytics** for [Insights](/knowledge-base/insights/overview) (`analytics` queue)
+- **Importing posts** made outside TryPost and media from Google Drive, Google Photos, Canva or Unsplash (`media-imports` queue)
+- **Polling RSS feeds** (`rss-feeds` queue) and [repurpose](/knowledge-base/repurpose) sources
+- **Delivering [webhooks](/knowledge-base/settings/webhooks)** and their retries (`webhooks` queue)
+- **Live updates** to the browser (`broadcasts` queue)
 
+Horizon starts a worker pool for each of these queues from `config/horizon.php`.
 Without a running queue worker, scheduled posts will not be published. Use Supervisor to keep Horizon running.
 
 ### Install Supervisor
@@ -163,7 +167,7 @@ server {
     error_page 404 /index.php;
 
     location ~ \.php$ {
-        # Replace with the FPM socket for the PHP version you installed (e.g. php8.2-fpm.sock, php8.3-fpm.sock, php8.4-fpm.sock).
+        # Replace with the FPM socket for the PHP version you installed (e.g. php8.3-fpm.sock, php8.4-fpm.sock).
         fastcgi_pass unix:/var/run/php/php-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
@@ -196,10 +200,24 @@ TryPost uses Laravel's task scheduler for several recurring jobs. The scheduler 
 |---------|----------|---------|
 | `posts:process-scheduled` | every minute | Dispatches `PublishPost` jobs for posts that are due |
 | `social:refresh-expiring-tokens` | every 15 minutes | Refreshes OAuth tokens that are about to expire |
+| `social:check-upcoming-connections` | every 15 minutes | Verifies the channels of posts scheduled within the next hour and emails when they need reconnecting |
 | `social:recover-stuck-posts` | every 30 minutes | Detects posts stuck in `publishing` and retries or fails them |
-| `social:check-connections` | daily | Verifies every connected social account still has a valid token |
-| `app:prune-webhook-logs` | daily | Deletes [webhook](/knowledge-base/webhooks) delivery logs older than 7 days |
-| `repurpose:poll` | every 5 minutes | Queues a check for each [repurpose](/knowledge-base/repurposes) source that is due |
+| `social:reconcile-google-business-posts` | every 5 minutes | Checks Google Business Profile posts that are still in review by Google |
+| `social:check-connections` | daily | Verifies every connected channel still authenticates |
+| `app:prune-webhook-logs` | daily | Deletes [webhook](/knowledge-base/settings/webhooks) delivery logs older than 7 days |
+| `posts:prune-history` | daily | Deletes published posts older than `POST_HISTORY_RETENTION_DAYS` (default 730) with their media |
+| `media:prune-uploads` | hourly | Deletes uploads never attached to a post after `MEDIA_UPLOAD_RETENTION_HOURS` (default 24) |
+| `repurpose:poll` | every 5 minutes | Queues a check for each [repurpose](/knowledge-base/repurpose) source that is due |
+| `rss-feeds:poll` | every 5 minutes | Queues a check for each RSS feed that is due |
+| `analytics:dispatch-account-daily` | daily, 02:00 UTC | Collects daily follower and account numbers |
+| `analytics:dispatch-publication-discovery` | every 3 hours (X: every 24 hours) | Finds new posts on each channel, including ones made outside TryPost — see [`PUBLICATION_DISCOVERY_INTERVAL_HOURS`](/self-hosting/configuration#importing-posts-made-outside-trypost) |
+| `analytics:dispatch-publication-metrics` | daily, 03:00 UTC | Refreshes post metrics |
+
+Two jobs also run on the scheduler to close each day's analytics (23:30 and 00:30 UTC).
+
+<Warning>
+  `posts:prune-history` **deletes data every night.** Published posts older than `POST_HISTORY_RETENTION_DAYS` are removed together with their media. See [Post history retention](/self-hosting/configuration#post-history-retention).
+</Warning>
 
 Add the Laravel scheduler to cron:
 
@@ -219,7 +237,7 @@ Add this line:
 
 ## WebSocket Server (Reverb)
 
-TryPost uses [Laravel Reverb](https://laravel.com/docs/reverb) for real-time updates in the dashboard (live post status changes, notifications). Add a Supervisor config to keep it running:
+TryPost uses [Laravel Reverb](https://laravel.com/docs/reverb) for real-time updates in the app (posts created, deleted or changing status, post notes, Telegram connections and webhook delivery logs). Add a Supervisor config to keep it running:
 
 Create `/etc/supervisor/conf.d/trypost-reverb.conf`:
 
@@ -272,7 +290,7 @@ Make sure all of these are in place in production:
 | **Storage link** | `php artisan storage:link` (once, if `FILESYSTEM_DISK=public`) | Local media URLs — skip for S3 / R2 / Spaces |
 | **Redis** | `QUEUE_CONNECTION=redis` + Redis up | Queues, cache, schedule locks |
 | **Mail** | SMTP or SendKit | Invites, password reset, alerts |
-| **Horizon** | `php artisan horizon` (Supervisor) | Publishes posts, notifications, and [webhooks](/knowledge-base/webhooks) |
+| **Horizon** | `php artisan horizon` (Supervisor) | Publishes posts, sends email and [webhooks](/knowledge-base/settings/webhooks), collects analytics |
 | **Reverb** | `php artisan reverb:start` (Supervisor) | Real-time WebSocket updates |
 | **Scheduler** | cron → `schedule:run` every minute | Due posts, token refresh, stuck-post recovery |
 
@@ -326,5 +344,5 @@ mysql -h "$DB_HOST" -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < "trypost
 On the bundled Compose stack the app container carries both clients and already has those variables, so `docker compose -f compose.prod.yaml exec app` runs either one as written — as does `php artisan db` for an interactive session.
 
 <Note>
-  `mysql-client` was added to the image alongside `pdo_mysql`; images up to and including `v1.0.8` carry only the PostgreSQL client. On those, run the MySQL commands from the database host instead.
+  The image carries `mysql-client` alongside `pdo_mysql` from TryPost 2.0. Older images carry only the PostgreSQL client; on those, run the MySQL commands from the database host instead.
 </Note>

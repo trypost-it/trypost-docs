@@ -1,78 +1,97 @@
 ---
 title: Instagram
-description: Connect a personal Instagram or a Business / Creator account to TryPost
+description: Connect an Instagram Business or Creator account to TryPost
 icon: "instagram"
 ---
 
 # Instagram
 
-TryPost supports two Instagram connection flavors, each backed by a different OAuth flow:
+TryPost publishes feed posts, reels and stories to Instagram **professional accounts** (Business or Creator). There are two ways to connect one:
 
-| Connection | Identifier | Best for |
-|------------|------------|----------|
-| **Instagram (Standalone)** | `instagram` | Personal Instagram accounts that aren't linked to a Facebook page. Uses Instagram's own OAuth. |
-| **Instagram (Facebook Business)** | `instagram-facebook` | Business or Creator accounts linked to a Facebook page. Required for first-party publishing of feed, reels, and stories at full quality. |
+| Connection | Identifier | Use it when |
+|------------|------------|-------------|
+| **Instagram** | `instagram` | Your Business or Creator account signs in with Instagram directly. Uses Instagram's own login. |
+| **Instagram via Facebook** | `instagram-facebook` | Your Business or Creator account is linked to a Facebook page and you manage it through Facebook. |
 
-Both are reached from the single **Instagram** card on the **Accounts** page, which asks which method you want.
+Both start from the single **Instagram** card in the **Connect a new channel** dialog, which asks how you want to connect.
 
 <Note>
-  You can connect as many Instagram accounts as you want in one workspace. Standalone and Facebook Business are two ways into the same identity — the same Instagram account cannot sit on both. Connecting it the second way updates the existing card. See [multiple accounts](/knowledge-base/social-accounts#connection-limits).
+  You can connect as many Instagram accounts as you want in one workspace. The two connection methods lead to the same identity, so one Instagram account can only be connected one way. Connecting it the other way does not offer it again; to refresh its connection, use **Reconnect** on the existing channel instead. See [Connecting channels](/knowledge-base/channels/connecting).
 </Note>
 
 ## Connect your account
 
-### Standalone (personal)
+### Instagram (direct)
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect** on the **Instagram** card, then choose **Instagram**
-3. Authorize TryPost on instagram.com
-4. The account shows up immediately
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **Instagram** and click **Connect Instagram**
+3. Under **Professional (Business & Creator)**, click **Connect to Instagram**
+4. Sign in on instagram.com and authorize TryPost. If your account is still personal, Instagram offers to convert it to a professional account
+5. On the confirmation page, check the account and click **Finish connection**
 
-### Business (via Facebook)
+### Instagram via Facebook
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect** on the **Instagram** card, then choose **Instagram (Facebook Business)**
-3. Authorize TryPost through Facebook
-4. Select the Facebook page whose Instagram account you want to connect. If only one of your pages has one, TryPost connects it without asking
+1. Open the **Instagram** card as above and click **Connect Instagram through Facebook**
+2. Check the requirements TryPost lists:
+   - The Instagram account is **Business or Creator**, not a personal profile
+   - It is **linked to a Facebook page**, not a Facebook profile
+   - You are logged in as a **Page admin with full control**
+   - You select **all permissions for all Pages and Instagram accounts** when Facebook asks, even ones you won't connect
+3. Click **Connect through Facebook** and authorize TryPost
+4. On the **Select accounts** page, tick the Instagram accounts you want and click **Finish connection**
+
+Either way, TryPost opens the new channel's **Publish** page and asks how many times a week you want to post.
 
 ## Supported content types
 
-| Type | `content_type` | Aspect | Media | Description |
-|------|----------------|--------|-------|-------------|
-| **Feed** | `instagram_feed` | 4:5 | Up to 10 images, or 1 video (required) | Feed post — single image/video **or** multi-image carousel (all use `instagram_feed`) |
-| **Reel** | `instagram_reel` | 9:16 | 1 video (required) | Short-form vertical video |
-| **Story** | `instagram_story` | 9:16 | 1 image or video (required) | Temporary content (24 hours) |
+| Type | `content_type` | Media | Description |
+|------|----------------|-------|-------------|
+| **Feed Post** | `instagram_feed` | Up to 10 images, or 1 video (required) | Single image, multi-image carousel, or a video (published as a Reel) |
+| **Reel** | `instagram_reel` | 1 video (required) | Short-form vertical video |
+| **Story** | `instagram_story` | 1 image or video (required) | Visible for 24 hours. Stories carry no caption, so the post text is not sent |
 
-There is **no** separate `instagram_carousel` content type on posts. The AI Create wizard may still accept `instagram_carousel` as a generation format; the resulting draft is stored as `instagram_feed`.
-
-All three content types are available on both connection flavors.
+There is no separate carousel content type: a multi-image post is an `instagram_feed`. All three types work on both connection methods.
 
 ## Media limits
 
-| `content_type` | Image | Video | Duration | Format |
-|----------------|-------|-------|----------|--------|
-| `instagram_feed` | 8 MB | 100 MB | 60 seconds | JPEG after store. Video MP4 or MOV |
-| `instagram_reel` | — | 300 MB | 15 minutes | MOV or MP4 |
-| `instagram_story` | 8 MB | 100 MB | 60 seconds | Same as feed; stills auto-fit to 9:16 |
+| `content_type` | Image | Video | Duration | Aspect ratio | Format |
+|----------------|-------|-------|----------|--------------|--------|
+| `instagram_feed` | 8 MB | 100 MB | 60 seconds | Images 3:4 to 1.91:1 | JPEG after upload. Video MP4 or MOV |
+| `instagram_reel` | — | 300 MB | 15 minutes | — | MOV or MP4 |
+| `instagram_story` | 8 MB | 100 MB | 60 seconds | Images fitted to 9:16 | Same as feed |
 
-A single video on `instagram_feed` publishes through the Reels container; the 100 MB / 60 seconds on `instagram_feed` is TryPost's conservative rule (Meta only documents the Reel spec) — use `instagram_reel` for longer clips. Official specs: [IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/). Full catalog: [Media](/knowledge-base/media).
+A feed image outside 3:4 to 1.91:1 is rejected when you save; use the crop presets (3:4, 4:5, 1:1, 1.91:1) in **Edit Media**. GIFs are not accepted. A single video on `instagram_feed` publishes through the Reels container; the 100 MB / 60 seconds on `instagram_feed` is TryPost's conservative rule (Meta only documents the Reel spec) — use `instagram_reel` for longer clips. Official specs: [IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/). Full catalog: [Media](/knowledge-base/media#instagram).
 
-Either flavor can be a [repurpose](/knowledge-base/repurposes) source. TryPost watches the account for new Reels, feed videos, or Stories you publish outside TryPost and republishes them to the destinations you pick.
+## Text and per-post options
+
+- **2,200 characters** per caption.
+- **5 hashtags at most.** A post with more cannot be saved (web, API and MCP). Stories are exempt because they send no caption.
+- **Share to feed** — a Reel also appears on your profile grid by default; turn it off with **Share to feed** (`platforms[].meta.share_to_feed`).
+- **AI-generated** — label the post as made with AI (`platforms[].meta.is_ai_generated`).
+- **Tag people** — tag accounts on feed images in **Edit Media** > **Tag People**.
+- **Video cover** — pick the frame shown as the cover of a feed or reel video in **Edit Media** > **Thumbnail**.
+- **Alt text** — up to 1,000 characters per image.
+
+## Insights
+
+Instagram metrics, followers and follows appear in [Insights](/knowledge-base/insights/overview), for both connection methods. Instagram channels also get a **Grid** view on their Publish page that approximates your profile grid.
+
+Either connection can be a [Repurpose](/knowledge-base/repurpose) source: TryPost watches the account for new Reels, feed videos or Stories you publish outside TryPost and republishes them to the channels you pick.
 
 ## OAuth scopes
 
 | Connection | Scopes requested |
 |------------|------------------|
-| Instagram (Standalone, `instagram`) | `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights` |
-| Instagram (Facebook Business, `instagram-facebook`) | `public_profile`, `pages_show_list`, `pages_read_engagement`, `business_management`, `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights` |
+| Instagram (`instagram`) | `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights` |
+| Instagram via Facebook (`instagram-facebook`) | `public_profile`, `pages_show_list`, `pages_read_engagement`, `business_management`, `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights` |
 
-The `*_manage_insights` scopes power the **Analytics** dashboard's Instagram view.
+The `*_manage_insights` scopes power Instagram metrics in Insights.
 
 ## Self-hosting setup
 
-<Accordion title="Configure Instagram (Standalone) API credentials">
+<Accordion title="Configure Instagram API credentials">
   1. Go to [Meta for Developers](https://developers.facebook.com/) and create an app
-  2. Add the **Instagram** product (the standalone Instagram API, not Instagram Graph via Facebook)
+  2. Add the **Instagram** product (Instagram API with Instagram Login)
   3. Set the redirect URL to `{APP_URL}/accounts/instagram/callback`
   4. Request permissions: `instagram_business_basic`, `instagram_business_content_publish`, `instagram_business_manage_insights`
   5. Add to your `.env`:
@@ -84,9 +103,11 @@ The `*_manage_insights` scopes power the **Analytics** dashboard's Instagram vie
   ```
 </Accordion>
 
-<Accordion title="Configure Instagram (Facebook Business) API credentials">
+<Accordion title="Configure Instagram via Facebook API credentials">
   1. In the same Meta for Developers app, also add the **Facebook Login for Business** product
-  2. Set the redirect URL to `{APP_URL}/accounts/instagram-facebook/callback`
+  2. Set the redirect URL to `{APP_URL}/accounts/instagram-facebook/callback` (fixed by the app route; there is no env variable for it)
   3. Request permissions: `public_profile`, `pages_show_list`, `pages_read_engagement`, `business_management`, `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights`
-  4. Use the same `FACEBOOK_CLIENT_ID` / `FACEBOOK_CLIENT_SECRET` you've configured for Facebook (it's the same app)
+  4. Use the same `FACEBOOK_CLIENT_ID` / `FACEBOOK_CLIENT_SECRET` you've configured for [Facebook](/platforms/facebook#self-hosting-setup)
 </Accordion>
+
+Turn either method off with `INSTAGRAM_ENABLED=false` or `INSTAGRAM_FACEBOOK_ENABLED=false`; the Instagram card shows while at least one is on.

@@ -6,28 +6,28 @@ icon: "linkedin"
 
 # LinkedIn
 
-TryPost supports posting to LinkedIn personal profiles and company pages.
+TryPost publishes to LinkedIn personal profiles and to the company pages you administer.
 
 ## Connect your account
 
-A single **LinkedIn** card covers both your personal profile and the company pages you administer — there is no separate "Connect LinkedIn Page" button.
+A single **LinkedIn** card covers both your personal profile and your company pages — there is no separate "LinkedIn Page" card.
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect** on **LinkedIn**
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **LinkedIn** and click **Connect LinkedIn**
 3. Authorize TryPost on LinkedIn
-4. Pick what to connect on the **Select a LinkedIn identity** screen: your personal profile, or one of the Pages you administer
+4. On the **Select accounts** page, tick your profile and any Pages you want (each card is marked **Profile** or **Page**), then click **Finish connection**
 
-Each identity connects as its own social account.
+TryPost opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
 
 <Note>
-  You can connect your profile and as many Pages as you administer — each identity is its own account. Connecting another one means authorizing again, which is normal — LinkedIn keeps both tokens valid as long as TryPost asks for the same permissions each time. The same identity cannot sit twice. See [multiple accounts](/knowledge-base/social-accounts#connection-limits).
+  Your profile and every Page are separate identities, so you can connect all of them in the same workspace. An identity that is already connected shows as **Connected** and cannot be added twice.
 </Note>
 
 ## Supported content types
 
 | Type | `content_type` | Description |
 |------|----------------|-------------|
-| **Post** | `linkedin_post` / `linkedin_page_post` | Text with optional media — up to **10 images**, **1 video**, or **1 PDF**. Format is inferred from the attached files (no separate carousel / document content type). For PDF posts you can set `platforms[].meta.document_title`. |
+| **Post** | `linkedin_post` / `linkedin_page_post` | Text with optional media — up to **10 images**, **1 video**, or **1 PDF**. The attached files decide the format; there is no separate carousel or document type. |
 
 Personal profiles use `linkedin_post`; company pages use `linkedin_page_post`.
 
@@ -37,23 +37,35 @@ Personal profiles use `linkedin_post`; company pages use `linkedin_page_post`.
 |----------------|-------|-------|-----|----------|--------|
 | `linkedin_post` / `linkedin_page_post` | 5 MB | 1 GB | 100 MB | 10 minutes | JPG/PNG. Video MP4 or MOV. PDF alone |
 
-Official specs: [Videos](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/videos-api), [Images](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/images-api), [Documents](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/documents-api). Full catalog: [Media](/knowledge-base/media).
+Images, a video and a PDF never mix in one post, and GIFs are not accepted. Official specs: [Videos](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/videos-api), [Images](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/images-api), [Documents](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/documents-api). Full catalog: [Media](/knowledge-base/media#linkedin).
+
+## Text and per-post options
+
+- **3,000 characters** per post. Characters are counted as code points, so an emoji counts as one.
+- Bold text from the editor is converted to LinkedIn's bold characters; other formatting is sent as plain text.
+- **Link preview** — the first link in the text gets a preview card. Remove it with the **×** on the card (`platforms[].meta.link_preview: false` on the API).
+- **Document title** — for PDF posts, set the title shown on the document (`platforms[].meta.document_title`, up to 300 characters). Defaults to the file name.
+- **Alt text** — up to 4,086 characters per image.
+
+## Insights
+
+LinkedIn is not included in [Insights](/knowledge-base/insights/overview): TryPost does not collect followers or post metrics for LinkedIn profiles or pages.
 
 ## OAuth scopes
 
 | Connection | Scopes requested |
 |------------|------------------|
-| Personal profile (`linkedin`) | `openid`, `profile`, `email`, `r_basicprofile`, `w_member_social` |
+| Personal profile (`linkedin`) | `openid`, `profile`, `email`, `w_member_social` |
 | Company page (`linkedin-page`) | `openid`, `profile`, `email`, `w_organization_social`, `r_organization_social`, `rw_organization_admin`, `w_member_social` |
+
+One consent screen asks for the scopes of every LinkedIn connection type that is enabled.
 
 ## Self-hosting setup
 
 <Accordion title="Configure LinkedIn API credentials">
   1. Go to [LinkedIn Developers](https://developer.linkedin.com/) and click **Create App**
-  2. Fill in app details (name, company page, logo) and create the app
-  3. Go to the **Auth** tab and add redirect URLs:
-     - `{APP_URL}/accounts/linkedin/callback` (profiles)
-     - `{APP_URL}/accounts/linkedin-page/callback` (pages)
+  2. Fill in the app details (name, company page, logo) and create the app
+  3. Go to the **Auth** tab and add the redirect URL `{APP_URL}/accounts/linkedin/callback` — profiles and pages share this one callback
   4. Go to the **Products** tab and request access to:
      - **Share on LinkedIn**
      - **Sign In with LinkedIn using OpenID Connect**
@@ -64,6 +76,14 @@ Official specs: [Videos](https://learn.microsoft.com/en-us/linkedin/marketing/co
   LINKEDIN_CLIENT_ID=your_client_id
   LINKEDIN_CLIENT_SECRET=your_client_secret
   LINKEDIN_CLIENT_REDIRECT="${APP_URL}/accounts/linkedin/callback"
-  LINKEDIN_PAGE_CLIENT_REDIRECT="${APP_URL}/accounts/linkedin-page/callback"
   ```
+
+  To change the scopes TryPost requests (for example, while your Marketing Developer Platform access is pending), set comma-separated lists:
+
+  ```env
+  LINKEDIN_SCOPES=openid,profile,email,w_member_social
+  LINKEDIN_PAGE_SCOPES=openid,profile,email,w_organization_social,r_organization_social,rw_organization_admin,w_member_social
+  ```
+
+  Turn either connection type off with `LINKEDIN_ENABLED=false` or `LINKEDIN_PAGE_ENABLED=false`. See [Configuration](/self-hosting/configuration#social-platforms).
 </Accordion>

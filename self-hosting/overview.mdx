@@ -7,14 +7,14 @@ icon: "server"
 TryPost is open-source and can be self-hosted on your own server. This section covers everything you need to install, configure, and run TryPost in production.
 
 <Note>
-  Don't want to manage infrastructure? Use [TryPost Cloud](https://app.trypost.it/register) — no setup required, free to get started.
+  Don't want to manage infrastructure? Use [TryPost Cloud](https://app.trypost.it/register) — no setup required. Cloud starts with an 8-day free trial (a card is required at checkout).
 </Note>
 
 ## Pick a path
 
 | Path | Best when | Guide |
 |------|-----------|-------|
-| **Docker production** | You want the published image with Horizon, Reverb, and the scheduler already wired | [Docker → Production](/self-hosting/docker#production-recommended-for-self-hosting) |
+| **Docker production** | You want the published image with Horizon, Reverb, and the scheduler already wired | [Docker → Production](/self-hosting/docker#production-self-hosting) |
 | **Bare metal** | You install PHP/Node yourself on a VPS | [Installation](/self-hosting/installation) then [Production](/self-hosting/production) |
 | **Docker development** | You contribute to the codebase locally | [Docker → Local development](/self-hosting/docker#local-development) |
 
@@ -26,6 +26,9 @@ Every path needs the same building blocks:
 4. **Passport keys** + **Personal Access Client** (REST API keys; MCP OAuth also uses the keys)
 5. **Admin user** (`UserSeeder`)
 6. Long-running **Horizon**, **Reverb**, and the **scheduler** (Docker prod starts these for you)
+7. **Imagick** with HEIC support if you want iPhone photos converted on upload (included in the Docker image)
+
+Upgrading an existing install to TryPost 2.0? Read [Upgrading](/self-hosting/upgrading#upgrading-to-trypost-20) first — it needs a one-off release command after the migrations.
 
 ## Deployment options
 

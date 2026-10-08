@@ -37,7 +37,7 @@ services:
 Then delete the `pgsql:` service itself and the `pgdata` volume it declared.
 
 <Warning>
-  **Check the image ships the MySQL driver before you switch.** Images up to and including `v1.0.8` were built with `pdo_pgsql` only, so `DB_CONNECTION=mysql` fails with *could not find driver* before a single query runs. Confirm with:
+  **Check the image ships the MySQL driver before you switch.** MySQL is supported from TryPost 2.0; older images were built with `pdo_pgsql` only, so `DB_CONNECTION=mysql` fails with *could not find driver* before a single query runs. Confirm with:
 
   ```bash
   docker compose -f compose.prod.yaml exec app php -m | grep pdo_mysql
@@ -61,7 +61,7 @@ See [Database](/self-hosting/configuration#database) for the trade-offs between 
 
 ## Production self-hosting
 
-No local PHP/Node install required. The published image includes the built frontend.
+No local PHP/Node install required. The published image (`ghcr.io/trypostit/trypost`, amd64 and arm64) is built on Alpine with PHP 8.4, includes the built frontend, and ships GD and Imagick with HEIC support. The image also contains an Inertia SSR bundle, but TryPost does not run SSR — leave `INERTIA_SSR_ENABLED` unset.
 
 ### What you do vs what the container does
 
@@ -102,7 +102,7 @@ Paste the PEM contents into the compose env vars (use `\n` for newlines). Do not
 
 Leave `REVERB_APP_KEY` as `trypost-reverb-key` unless you rebuild the image — it must match the key baked into the published frontend bundle.
 
-Queues, cache, session, and broadcast are already set to Redis / Reverb / database in `compose.prod.yaml`. Configure **mail** (defaults to `log`) and optional social/AI credentials in the same file — see [Configuration](/self-hosting/configuration).
+Queues, cache, session, and broadcast are already set to Redis / Reverb / database in `compose.prod.yaml`, and `FILESYSTEM_DISK` to `public`. Configure **mail** (`MAIL_MAILER` defaults to `log`, which writes emails to the log instead of sending them) and optional social/AI credentials in the same file — see [Configuration](/self-hosting/configuration).
 
 ### 3. Start the stack
 
@@ -189,17 +189,20 @@ docker build \
 
 Point `compose.prod.yaml` at that image. Changing only runtime `REVERB_HOST` / `PORT` / `SCHEME` does not update the browser client.
 
+Every `VITE_*` value is baked in at build time the same way. The Dockerfile also takes `VITE_APP_NAME`, `VITE_POSTHOG_ENABLED`, `VITE_POSTHOG_API_KEY` and `VITE_POSTHOG_HOST` as build arguments.
+
 ### Common production commands
 
 ```bash
 docker compose -f compose.prod.yaml logs -f app
 docker compose -f compose.prod.yaml exec app php artisan horizon:status
 docker compose -f compose.prod.yaml exec app php artisan migrate --force
+docker compose -f compose.prod.yaml exec app php artisan release:trypost-2 --force
 docker compose -f compose.prod.yaml down
 ```
 
 <Note>
-  Running `migrate --force` to move an existing instance to a newer version? Back the database up first and check [Upgrading](/self-hosting/upgrading) — some releases rewrite data as well as schema.
+  Moving an existing instance to a newer version? Back the database up first and check [Upgrading](/self-hosting/upgrading) — some releases rewrite data as well as schema. The container runs `migrate --force` on boot; `release:trypost-2` is a one-off step for the move to TryPost 2.0 only.
 </Note>
 
 ---
@@ -218,7 +221,7 @@ docker compose up -d
 
 On first boot the entrypoint can seed `.env` from `docker/.env.docker.example`, install Composer/npm deps if missing, generate `APP_KEY`, migrate, `storage:link`, and `passport:keys`. Horizon, Reverb, the scheduler, and Vite start via Supervisor.
 
-For local media URLs, set `FILESYSTEM_DISK=public` in `.env` (the Docker example ships with `local`) and ensure `storage:link` ran.
+For local media URLs, set `FILESYSTEM_DISK=public` in `.env` and ensure `storage:link` ran. The Docker example ships with `local`, which is a private disk with no public URL, so uploaded media cannot be served until you change it.
 
 ### 2. Seed admin + Passport client
 
@@ -295,7 +298,7 @@ The image predates the MySQL driver. Check and pull a newer one:
 docker compose -f compose.prod.yaml exec app php -m | grep pdo_mysql
 ```
 
-Images up to and including `v1.0.8` shipped `pdo_pgsql` only — see [above](#which-database-compose-gives-you).
+Images older than TryPost 2.0 shipped `pdo_pgsql` only — see [above](#which-database-compose-gives-you).
 
 ### Boot hangs for a minute on MySQL
 

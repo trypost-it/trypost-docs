@@ -4,7 +4,7 @@ Docs for [TryPost](https://trypost.it) — open-source social media scheduling p
 
 ## Project Context
 
-TryPost is a Laravel + Inertia.js + **Vue 3** application that lets users schedule and publish posts across 12 social platforms (14 platform identifiers in code, since LinkedIn and Instagram each have two connection flavors). It has two deployment modes: **Cloud** (managed by us) and **Self-Hosted** (user deploys on their own server).
+TryPost is a Laravel + Inertia.js + **Vue 3** application that lets users plan, schedule and publish posts across 13 social networks (15 platform identifiers in code, since LinkedIn and Instagram each have two connection flavors), and see their performance in Insights. It has two deployment modes: **Cloud** (managed by us) and **Self-Hosted** (user deploys on their own server).
 
 The app source code lives at `~/Herd/trypost`. This repo (`trypost-docs`) is the documentation site only.
 
@@ -32,15 +32,29 @@ Same paths, user configures `APP_URL` in `.env`:
 
 ## Documentation Structure
 
-5 top-level navigation anchors in `docs.json`:
+5 top-level tabs in `docs.json` (`navigation.tabs`):
 
-| Anchor | Icon | Purpose |
-|--------|------|---------|
-| **Documentation** | `book-open` | Product docs: quickstart, platforms, features, contributing |
-| **API Reference** | `code` | REST API endpoint docs with curl examples |
-| **Build with AI** | `microchip-ai` | MCP server intro, tools reference, 16 setup guides |
-| **Knowledge Base** | `book` | Conceptual guides: posts, media, signatures, labels, accounts, team, notifications |
-| **Self-Hosting** | `server` | Installation, configuration, production, Docker — isolated from the rest |
+| Tab | Icon | Purpose |
+|-----|------|---------|
+| **Documentation** | `book-open` | Home (`index`), quickstart, one page per network under `platforms/`, community pages |
+| **API Reference** | `code` | REST API. Operation pages are generated from **`openapi.json`** at the repo root (hand-written from the app's `routes/api.php`, `app/Http/Requests/Api/**`, `app/Http/Resources/**`). Prose that does not fit one operation lives in `api-reference/introduction.mdx` and `api-reference/guides/*.mdx`. There are no per-endpoint `.mdx` files any more; old `api-reference/endpoint/*` slugs redirect |
+| **Build with AI** | `microchip-ai` | MCP server intro, tools reference, setup guides per client |
+| **Knowledge Base** | `book` | How the app works. Groups mirror the app sidebar, then the settings sidebar: Getting started, Create, Publish, Insights, Repurpose, Channels, Settings (Personal, Workspace, Features, Developers, Account). Page titles use the on-screen labels from `lang/en/*.php` |
+| **Self-Hosting** | `server` | Overview, requirements, installation, configuration, AI providers, Docker, production, upgrading (incl. the 2.0 release command) — isolated from the rest |
+
+Every removed or moved slug gets an entry in `docs.json` `redirects`.
+
+### Platform pages
+
+`platforms/<slug>.mdx`, one per network: `linkedin`, `x-twitter`, `facebook`, `instagram`, `tiktok`, `youtube`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`, `google-business`. Each follows the same layout: Connect, Supported content types, Media limits, Text and per-post options, Insights, OAuth scopes, Self-hosting setup (credentials inside `<Accordion>`).
+
+### Frozen URLs (the app links to them — never rename or remove)
+
+- `/platforms/<slug>` for every page above (`resources/js/lib/docs.ts` `platformGuideDocsUrl`)
+- `/knowledge-base/media` and its per-network anchors `#instagram`, `#facebook`, `#threads`, `#x-twitter`, `#linkedin`, `#tiktok`, `#youtube`, `#pinterest`, `#bluesky`, `#mastodon`, `#discord`, `#telegram`, `#google-business-profile` (`mediaLimitsDocsUrl`)
+- `/ai/introduction` and the site root
+
+If one of these must move, add a redirect and change the app in the same release.
 
 ## Writing Rules
 
@@ -137,7 +151,7 @@ Do not confuse with `media[].meta.alt_text` (media accessibility, max 2000). Pin
 - Asset JSON (`AssetResource`): `id`, `original_filename`, `type`, `mime_type`, `size`, `url`, `meta`, `created_at`. **No `path`.** `url` is the stored public file URL, not a signed preview.
 - Attach (`POST /posts/{post}/media/from-asset` / `attach-existing-asset-tool`): `{ asset_id, alt? }`. Draft/scheduled only. Foreign post → API `404` / MCP `Post not found.` Foreign/missing/non-library asset → `Asset not found.` Type not allowed by enabled platforms → `This file type is not supported by the platforms enabled on the post.` Repeat same post+asset → no duplicate and **does not change alt**. **Omit `alt`** → keep library `alt_text`. Set `alt` → override on images only.
 - MCP list: `limit` 1–100 (default **50**), `{ assets, has_more }`. No cursor/offset — cannot page past the first `limit` items.
-- Auth: list/get require `createPost` (viewers 403 / `Not authorized to view assets.`). Attach requires `update` on the post.
+- Auth: list/get require `createPost`, which every workspace member has. Attach requires `update` on the post.
 
 ## MCP Server
 
@@ -147,7 +161,7 @@ Do not confuse with `media[].meta.alt_text` (media accessibility, max 2000). Pin
 - Plus: `list-content-types-tool` (Platforms), `list-signatures-tool` / `create-signature-tool` / `update-signature-tool` / `delete-signature-tool`, `list-labels-tool` / `create-label-tool` / `update-label-tool` / `delete-label-tool`, `list-social-accounts-tool` / `list-pinterest-boards-tool` / `list-discord-channels-tool` / `toggle-social-account-tool`, `get-workspace-tool`, `list-api-keys-tool` / `create-api-key-tool` / `delete-api-key-tool`, `list-repurpose-source-formats-tool` / `list-repurposes-tool` / `get-repurpose-tool` / `create-repurpose-tool` / `update-repurpose-tool` / `list-repurpose-items-tool` / `activate-repurpose-tool` / `pause-repurpose-tool` / `resume-repurpose-tool` / `disable-repurpose-tool` / `delete-repurpose-tool`, `list-webhooks-tool` / `get-webhook-tool` / `create-webhook-tool` / `update-webhook-tool` / `delete-webhook-tool` / `send-webhook-test-tool` / `rotate-webhook-secret-tool` / `list-webhook-logs-tool` / `replay-webhook-log-tool`.
 - `create-post-tool` accepts `platforms[]` (each with `social_account_id`, `content_type`, optional `meta`), `scheduled_at`, `label_ids` — same fields as REST `POST /posts` **except** MCP does **not** accept inline `media[]` (use attach tools). `update-post-tool` uses `platforms[].id` (post_platform UUID), not `social_account_id`.
 - `create-api-key-tool` returns plain secret as `token` (REST create returns `plain_token`).
-- Before publishing Pinterest/Discord, resolve IDs via `list-pinterest-boards-tool` / `list-discord-channels-tool` (REST: `GET /social-accounts/{account}/boards|channels`). Those MCP tools authorize with `createPost` — Viewers get `Not authorized to manage posts.` (Owner / Admin / Member OK).
+- Before publishing Pinterest/Discord, resolve IDs via `list-pinterest-boards-tool` / `list-discord-channels-tool` (REST: `GET /social-accounts/{account}/boards|channels`). Those MCP tools authorize with `createPost`, which every workspace member has (there are no roles).
 - `publish-post-tool` is a separate, destructive tool (annotated `IsDestructive`); REST clients use `PUT /posts/{id}` with `status=publishing` instead.
 - Server route: `Mcp::web('/mcp/trypost', TryPostServer::class)->middleware(['auth:api', 'workspace.token:mcp'])`. The `workspace.token:mcp` middleware (`LoadWorkspaceFromToken`) requires an OAuth grant with `mcp:use` (not a Personal Access Token) and returns `402 Active subscription required` on Cloud accounts without app access.
 
@@ -166,10 +180,10 @@ These are the exact string values used in API responses. Never use alternatives.
 
 **NOT `active`/`inactive` — those are for `is_active` boolean field.**
 
-### Social account platforms (14 values)
-`linkedin`, `linkedin-page`, `x`, `tiktok`, `youtube`, `facebook`, `instagram`, `instagram-facebook`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`
+### Social account platforms (15 values)
+`linkedin`, `linkedin-page`, `x`, `tiktok`, `youtube`, `facebook`, `instagram`, `instagram-facebook`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`, `google_business`
 
-`instagram` is the standalone Basic Display flow; `instagram-facebook` is the Business-via-Facebook-Page flavor.
+`instagram` is Instagram Login for professional (Business/Creator) accounts; `instagram-facebook` is the same kind of account connected through a Facebook Page. `google_business` uses an underscore (its page slug and OAuth callback use `google-business`).
 
 ### Repurpose status
 `draft`, `active`, `paused`, `disabled`
@@ -240,16 +254,11 @@ Allowed MIME types: images = `image/jpeg`, `image/png`, `image/gif`, `image/webp
 
 No wildcard. Test ping type is `webhook.test` (not a subscribeable event).
 
-### Notification types (9 values)
-`post_published`, `post_failed`, `post_partially_published`, `post_ready`, `account_disconnected`, `invite_received`, `member_joined`, `member_removed`, `mentioned_in_comment`
+### Notification types (email only)
+`post_published`, `post_failed`, `account_disconnected`, `post_at_risk`, `post_note_added`, `collaboration` (approval requests and decisions). `post_ready` and `mentioned_in_comment` exist only so 1.x queued jobs finish; never document them. There is no in-app notification center and no notification channel setting: every notification is an email.
 
-### Notification channels
-`email`, `in_app`, `both`
-
-### Workspace roles (3 values)
-`admin`, `member`, `viewer`
-
-There is no `owner` role — the workspace owner is the user on `workspaces.owner_id`. Roles only apply to additional members joined via invites.
+### Member permissions (no roles)
+A membership (`user_workspace`) and an invite carry two flags: `is_admin` (manages members, settings, channels) and `requires_approval` (the member's posts need approval; always false for admins). The Admin / Member / Viewer roles were removed in 2.0. The account owner is always an admin and publishes directly. Every member can create posts.
 
 ## Emails Sent by TryPost
 
@@ -268,27 +277,20 @@ Default mailer is **SendKit** (`MAIL_MAILER=sendkit`).
 
 ## Scheduled Commands
 
-| Command | Schedule | Purpose |
-|---------|----------|---------|
-| `posts:process-scheduled` | Every minute | Dispatches `PublishPost` jobs for posts that are due |
-| `social:refresh-expiring-tokens` | Hourly | Proactively refreshes OAuth tokens before they expire |
-| `social:recover-stuck-posts` | Every 30 minutes | Recovers posts stuck in `publishing` (retry or mark failed) |
-| `social:check-connections` | Daily | Verifies all connected social accounts still authenticate |
-| `app:prune-webhook-logs` | Daily | Deletes webhook delivery logs older than 7 days |
-| `repurpose:poll` | Every 5 minutes | Queues a check for each due repurpose source |
+The full table (17 entries, including analytics, retention and Google Business review checks) lives in `self-hosting/production.mdx` → **Scheduled Tasks (Cron)**; the source is `routes/console.php` / `php artisan schedule:list`.
 
 ## Self-Hosted Requirements
 
-- PHP 8.2+, Node.js 20+, PostgreSQL 14+ or MySQL 8+, Redis 6+
-- Supervisor for Horizon (queues) and Reverb (WebSockets)
-- Cron job running `php artisan schedule:run` every minute
-- Upload limits: `upload_max_filesize=2G`, `post_max_size=2G` (video support)
-- Bluesky and Mastodon work without API credentials
-- All other platforms require developer app credentials
+- PHP 8.3+ (the Docker image ships 8.4), Node.js 20.19+ or 22.12+, PostgreSQL or MySQL (MySQL from TryPost 2.0), Redis
+- Horizon (queues), Reverb (WebSockets) and the scheduler running continuously
+- Imagick with HEIC for iPhone photo conversion (in the Docker image)
+- Upload limits: `upload_max_filesize=1G`, `post_max_size=1G` (matches the Docker image)
+- Bluesky and Mastodon work without API credentials; every other network needs developer app credentials (Google Business Profile has its own Google client, separate from YouTube)
+- Upgrading an existing install to 2.0 needs `php artisan release:trypost-2` after `migrate --force`
 
 ## Supported Languages
 
-English (`en`), Spanish (`es`), Portuguese (`pt-BR`).
+16 locales (`App\Enums\User\Locale`): `en`, `uk`, `pt-BR`, `es`, `fr`, `de`, `it`, `nl`, `pl`, `el`, `ja`, `ko`, `zh`, `ru`, `tr`, `ar`. Docs are written in English only.
 
 ## Running Docs Locally
 

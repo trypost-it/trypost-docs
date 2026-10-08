@@ -6,14 +6,14 @@ icon: "download"
 
 # Installation
 
-Step-by-step install on a bare-metal server or VM. Prefer containers? Use [Docker production](/self-hosting/docker#production-recommended-for-self-hosting) instead.
+Step-by-step install on a bare-metal server or VM. Prefer containers? Use [Docker production](/self-hosting/docker#production-self-hosting) instead.
 
 ## Requirements
 
-- PHP 8.2+ (with the extensions listed in [Requirements](/self-hosting/requirements))
-- Node.js 20+
-- PostgreSQL 14+ or MySQL 8+ (either works — see [choosing a database](/self-hosting/configuration#database))
-- Redis 6+
+- PHP 8.3+ (with the extensions listed in [Requirements](/self-hosting/requirements))
+- Node.js 20.19+ or 22.12+
+- PostgreSQL or MySQL (either works — see [choosing a database](/self-hosting/configuration#database))
+- Redis
 - Composer 2.x
 
 ## Install
@@ -97,7 +97,7 @@ php artisan migrate --force
 ```
 
 <Note>
-  On a fresh install this just builds the schema. When you run it later to **upgrade** an existing instance, back the database up first and check [Upgrading](/self-hosting/upgrading) — some releases rewrite data as well as schema.
+  On a fresh install this just builds the schema. When you run it later to **upgrade** an existing instance, back the database up first and check [Upgrading](/self-hosting/upgrading) — some releases rewrite data as well as schema, and moving an existing install to TryPost 2.0 also needs `php artisan release:trypost-2`. A fresh 2.0 install does not.
 </Note>
 
 ### 5. Passport keys (and local storage symlink)
@@ -170,14 +170,18 @@ composer dev
 
 This starts `php artisan serve`, a queue listener, log tail, and Vite. Open `http://localhost:8000` and sign in with the admin user.
 
+<Note>
+  The `composer dev` listener only works the `default`, `analytics`, `rss-feeds` and `media-imports` queues. Publishing, webhooks and live updates run on other queues, so posts are not published in this mode — run `php artisan horizon` alongside it to test publishing.
+</Note>
+
 **Production** — do **not** use `composer dev`. You need long-running processes:
 
 | Process | Command | Purpose |
 |---------|---------|---------|
 | Web (PHP-FPM + Nginx) | see [Production](/self-hosting/production#nginx-configuration) | Serve HTTP |
-| **Horizon** | `php artisan horizon` | Queues — publish posts, notifications, webhooks |
+| **Horizon** | `php artisan horizon` | Queues — publish posts, emails, webhooks, analytics, imports |
 | **Reverb** | `php artisan reverb:start` | WebSockets |
-| **Scheduler** | cron → `php artisan schedule:run` | Due posts, token refresh, stuck-post recovery |
+| **Scheduler** | cron → `php artisan schedule:run` | Due posts, token refresh, stuck-post recovery, analytics, retention |
 
 Full Supervisor configs, Nginx (including Reverb `/app/` + `/apps/`), SSL, and caches: [Production setup](/self-hosting/production).
 

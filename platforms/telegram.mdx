@@ -10,17 +10,19 @@ TryPost publishes to Telegram **channels and groups** through a shared TryPost b
 
 ## Connect a channel
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect** on **Telegram**
-3. Add the bot (e.g. **@TryPostBot**) as an **administrator** of your channel or group
-4. Copy the `/connect <code>` command shown in the dialog and post it in that channel
-5. TryPost links the channel automatically — the dialog closes once it's connected
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **Telegram** and click **Connect Telegram**
+3. In the **Connect Telegram** dialog, add the bot shown there as an **administrator** of your channel or group (**Open in Telegram** takes you to it)
+4. Click **Copy command** and post the `/connect <code>` command in that channel or group
+5. The dialog shows *Waiting for the channel to connect…* and moves on as soon as Telegram delivers the command
+
+The command expires after **15 minutes**; click **Generate new command** to get a fresh one. Telegram has no confirmation page: once connected, the channel appears in the sidebar and the dialog asks how many times a week you want to post.
 
 <Note>
-  The bot must be an **administrator** of the channel. Telegram only delivers channel posts (including the `/connect` command and reactions) to bots that are admins, and the bot needs admin rights to publish.
+  The bot must be an **administrator** of the channel. Telegram only delivers channel posts (including the `/connect` command) to bots that are admins, and the bot needs admin rights to publish.
 </Note>
 
-Each channel or group becomes its own account. Connect as many as you want in the same workspace — see [multiple accounts](/knowledge-base/social-accounts#connection-limits).
+Each channel or group becomes its own channel in TryPost. Connect as many as you want in the same workspace — see [Connecting channels](/knowledge-base/channels/connecting).
 
 ## Reconnecting a channel
 
@@ -30,9 +32,9 @@ Posting it somewhere else is rejected with *Post the command in the channel you 
 
 ## Supported content types
 
-| Type | Description |
-|------|-------------|
-| **Post** (`telegram_post`) | Text with up to 10 images/videos (multiple media are sent as an album) |
+| Type | `content_type` | Description |
+|------|----------------|-------------|
+| **Post** | `telegram_post` | Text with up to 10 images/videos (multiple media are sent as an album). GIFs are accepted |
 
 ## Media limits
 
@@ -40,33 +42,34 @@ Posting it somewhere else is rejected with *Post the command in the channel you 
 |----------------|-------|-------|--------|
 | `telegram_post` | 5 MB | 20 MB | JPEG/PNG/GIF/WebP; video MPEG4 (MP4 or MOV) |
 
-These are Telegram's **URL** limits (TryPost does not use multipart). Official specs: [Sending files](https://core.telegram.org/bots/api#sending-files). Full catalog: [Media](/knowledge-base/media).
+These are Telegram's **URL** limits (TryPost does not use multipart). Official specs: [Sending files](https://core.telegram.org/bots/api#sending-files). Full catalog: [Media](/knowledge-base/media#telegram).
 
-Telegram allows up to **4096** characters of text. Media captions are capped at **1024**, so a longer post is sent as the media followed by a separate text message. Formatting (bold, italic, links, `code`) and plain `@username` mentions are preserved — Telegram auto-links public usernames.
+## Text
 
-## Analytics
+Telegram allows up to **4,096** characters of text. Media captions are capped at **1,024**, so a longer post is sent as the media followed by a separate text message. Formatting (bold, italic, links, `code`) and plain `@username` mentions are preserved — Telegram auto-links public usernames.
 
-Telegram's Bot API exposes **no post view counts**. TryPost surfaces what is available:
+## Insights
 
-- **Subscribers** — the channel's member count (shown account-wide and on each post)
-- **Reactions** — per-post reaction counts (👍 ❤️ 🔥 …), pushed in real time by Telegram
+Telegram is not included in [Insights](/knowledge-base/insights/overview): the Bot API exposes no post views, and TryPost does not show Telegram metrics.
 
 ## Self-hosting setup
 
-Telegram uses a single shared bot. Create one with [@BotFather](https://t.me/BotFather), then configure:
+<Accordion title="Configure the Telegram bot">
+  Telegram uses a single shared bot. Create one with [@BotFather](https://t.me/BotFather), then configure:
 
-```env
-TELEGRAM_BOT_TOKEN=123456:ABC...
-TELEGRAM_BOT_USERNAME=YourBot
-TELEGRAM_WEBHOOK_SECRET=a-long-random-string
-```
+  ```env
+  TELEGRAM_BOT_TOKEN=123456:ABC...
+  TELEGRAM_BOT_USERNAME=YourBot
+  TELEGRAM_WEBHOOK_SECRET=a-long-random-string
+  ```
 
-Register the webhook so Telegram can deliver `/connect` commands and reactions:
+  Register the webhook so Telegram can deliver `/connect` commands:
 
-```bash
-php artisan telegram:set-webhook
-```
+  ```bash
+  php artisan telegram:set-webhook
+  ```
 
-<Note>
   The webhook URL is `{WEBHOOK_URL or APP_URL}/telegram/webhook`. That base URL must be a **public HTTPS** address Telegram can reach. If `APP_URL` is private (or you use a tunnel in development), set `WEBHOOK_URL` instead — see [Configuration](/self-hosting/configuration#basic-configuration). Re-run `telegram:set-webhook` whenever it changes.
-</Note>
+
+  The **Open in Telegram** link uses `TELEGRAM_DEEP_LINK` (default `https://t.me`). Hide Telegram with `TELEGRAM_ENABLED=false`.
+</Accordion>

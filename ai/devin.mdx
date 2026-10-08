@@ -15,7 +15,7 @@ This page is for **Devin as an MCP client** — you point Devin at TryPost. It i
 ## Prerequisites
 
 - A [Devin](https://app.devin.ai) account
-- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/plans-and-billing))
+- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/settings/plans-and-billing))
 - On Devin Cloud, the **Manage MCP Servers** permission — required both to add a custom server and to complete OAuth. If you don't have it, ask an organization admin or use **Suggest MCP Integration**.
 
 ## Server URL
@@ -100,10 +100,10 @@ Once authorized, Devin can:
 
 | Task | Examples |
 |------|----------|
-| **Posts** | List, create, update, schedule, publish, preview, delete, fetch metrics |
-| **Media** | Attach from a public URL, upload a local file, reuse an Asset Library item |
-| **Accounts** | List connected social accounts, toggle them, resolve Pinterest boards and Discord channels |
-| **Workspace** | Read the current workspace, manage signatures, labels, and API keys |
+| **Posts** | List, create, update, schedule, queue, publish, preview, delete, approve, fetch metrics |
+| **Media** | Attach from a public URL, upload a local file, reuse a file already on another post |
+| **Accounts** | List connected social accounts, set posting times, manage the queue, resolve Pinterest boards and Discord channels |
+| **Workspace** | Read the current workspace, manage ideas, signatures, labels, webhooks, repurposes, and API keys; read analytics |
 
 Pinterest needs a `board_id`, Discord needs a `channel_id`, and TikTok needs a `privacy_level` before you publish. Ask Devin to list boards or channels first. Details and tool names: [Tools reference](/ai/tools-reference).
 

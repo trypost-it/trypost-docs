@@ -117,7 +117,7 @@
             "required": false,
             "style": "form",
             "explode": true,
-            "description": "Only posts with any of these labels.",
+            "description": "Only posts with any of these labels. Values that are not UUIDs are ignored.",
             "schema": {
               "type": "array",
               "items": {
@@ -177,7 +177,7 @@
                         "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                         "name": "Ana Souza"
                       },
-                      "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                      "content": "We just shipped scheduled threads. Here is how they work.",
                       "media": [
                         {
                           "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -445,7 +445,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -728,7 +728,7 @@
                           "meta": {
                             "width": 1080,
                             "height": 1350,
-                            "alt_text": "Product launch banner"
+                            "alt_text": "Changelog cover"
                           }
                         }
                       ],
@@ -793,9 +793,9 @@
                       "content": "Everything we shipped in October, in one pin.",
                       "media": [
                         {
-                          "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
-                          "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
-                          "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                          "id": "9d3c1f31-9b0c-4d1e-8f2a-3b4c5d6e7f80",
+                          "path": "medias/9d3c1f31-9b0c-4d1e-8f2a-3b4c5d6e7f80.jpg",
+                          "url": "https://media.trypost.it/medias/9d3c1f31-9b0c-4d1e-8f2a-3b4c5d6e7f80.jpg",
                           "type": "image",
                           "mime_type": "image/jpeg",
                           "original_filename": "launch.jpg",
@@ -803,7 +803,7 @@
                           "meta": {
                             "width": 1080,
                             "height": 1350,
-                            "alt_text": "Product launch banner"
+                            "alt_text": "Changelog cover"
                           }
                         }
                       ],
@@ -913,7 +913,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -1150,7 +1150,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads (and a few fixes).",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -1168,8 +1168,8 @@
                     }
                   ],
                   "status": "scheduled",
-                  "schedule_mode": "custom",
-                  "scheduled_at": "2026-10-12 14:00:00",
+                  "schedule_mode": "queue",
+                  "scheduled_at": "2026-10-13 12:00:00",
                   "published_at": null,
                   "approval_requested_by": null,
                   "approval_requested_at": null,
@@ -1187,6 +1187,25 @@
                           {
                             "text": "2/ Replies publish under the first post.",
                             "media": []
+                          },
+                          {
+                            "text": "3/ Full changelog below.",
+                            "media": [
+                              {
+                                "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+                                "path": "medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                                "url": "https://media.trypost.it/medias/9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f.jpg",
+                                "type": "image",
+                                "mime_type": "image/jpeg",
+                                "original_filename": "launch.jpg",
+                                "size": 482113,
+                                "meta": {
+                                  "width": 1080,
+                                  "height": 1350,
+                                  "alt_text": "Product launch banner"
+                                }
+                              }
+                            ]
                           }
                         ]
                       },
@@ -1223,7 +1242,7 @@
                     }
                   ],
                   "created_at": "2026-10-08 13:20:11",
-                  "updated_at": "2026-10-08 13:20:11"
+                  "updated_at": "2026-10-08 15:41:07"
                 }
               }
             }
@@ -1400,17 +1419,17 @@
                 },
                 "example": {
                   "post_id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
-                  "original_content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
-                  "original_length": 66,
+                  "original_content": "We just shipped scheduled threads. Here is how they work.",
+                  "original_length": 57,
                   "platforms": [
                     {
                       "post_platform_id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
                       "platform": "x",
                       "content_type": "x_post",
                       "sanitized_content": "We just shipped scheduled threads. Here is how they work.",
-                      "sanitized_length": 59,
+                      "sanitized_length": 57,
                       "max_content_length": 280,
-                      "truncated": true,
+                      "truncated": false,
                       "thread_replies": [
                         {
                           "text": "2/ Replies publish under the first post.",
@@ -1540,7 +1559,7 @@
         ],
         "summary": "Create post note",
         "operationId": "createPostNote",
-        "description": "Adds an internal note to a post as the API key's user. Notes are never published. Every other workspace member is emailed about it; on a post pending approval, only the approvers and the member who asked are.",
+        "description": "Adds an internal note to a post as the API key's user. Notes are never published. Every other workspace member is emailed about it (unless they turned that email off in their notification preferences); on a post pending approval, only the approvers and the member who asked are.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1763,7 +1782,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -1890,7 +1909,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -1982,6 +2001,9 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           }
         }
       }
@@ -2057,7 +2079,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -2178,7 +2200,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -2283,7 +2305,7 @@
         ],
         "summary": "Upload media",
         "operationId": "uploadPostMedia",
-        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.`",
+        "description": "Uploads one file as `multipart/form-data` and appends it to the post's media. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`). A type the post's channel does not accept fails with `422`: `This file type is not supported by the post's channel.` Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
         "requestBody": {
           "required": true,
           "content": {
@@ -2319,7 +2341,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -2411,6 +2433,9 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           }
         }
       }
@@ -2427,7 +2452,7 @@
         ],
         "summary": "Attach media from upload",
         "operationId": "attachMediaFromUpload",
-        "description": "Appends a file uploaded earlier (`POST /uploads` or a signed upload URL) to the post's media. The token is spent by this post. An unknown or expired token fails with `422` on `upload_token`: `This upload expired. Add the file again.` A type the post's channel does not accept fails with `422`.",
+        "description": "Appends a file uploaded earlier (`POST /uploads` or a signed upload URL) to the post's media. The token is spent by this post. An unknown or expired token fails with `422` on `upload_token`: `This upload expired. Add the file again.` A type the post's channel does not accept fails with `422`. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`",
         "requestBody": {
           "required": true,
           "content": {
@@ -2474,7 +2499,7 @@
                     "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                     "name": "Ana Souza"
                   },
-                  "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                  "content": "We just shipped scheduled threads. Here is how they work.",
                   "media": [
                     {
                       "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -2566,6 +2591,9 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           }
         }
       }
@@ -2582,7 +2610,7 @@
         ],
         "summary": "Attach media from URL",
         "operationId": "attachMediaFromUrl",
-        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
+        "description": "Downloads up to 10 public files and appends them to the post's media. Each URL must serve the file itself: redirects are not followed, and web pages, private-network hosts and files over the type's size cap are refused. Each download must finish within 20 seconds. Only the types the post's channel accepts are kept. URLs that could not be attached are listed in `failed_urls`, and `failures` gives the reason of each. Posts that are publishing, published, partially published or failed cannot take media: `422` on `post` with `This post has already been processed and cannot be re-published. Duplicate it to try again.` Accepted files: JPEG, PNG, GIF and WebP images (HEIC and HEIF too when the server can convert them, stored as JPEG), MP4 and MOV videos, and PDF documents. Size caps: 10 MB per image (and at most 8192 × 8192 pixels), 1 GB per video, 100 MB per PDF. Each network enforces its own, usually smaller, caps when the post is scheduled or published (`GET /content-types`).",
         "requestBody": {
           "required": true,
           "content": {
@@ -2688,7 +2716,7 @@
                       "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
                       "name": "Ana Souza"
                     },
-                    "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+                    "content": "We just shipped scheduled threads. Here is how they work.",
                     "media": [
                       {
                         "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -2792,6 +2820,9 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           }
         }
       }
@@ -3814,7 +3845,8 @@
               "youtube",
               "creativeCommon",
               null
-            ]
+            ],
+            "default": "youtube"
           },
           "notify_subscribers": {
             "type": "boolean",
@@ -4036,7 +4068,7 @@
       },
       "PlatformMeta": {
         "description": "Per-network settings of one destination. Pick the shape of the destination's network. Keys without a rule are dropped. Every known key is validated whatever the network, but only the keys of the destination's network are used when publishing. On update, `meta` is merged with the stored settings: send `null` for a key to clear it; `thread_replies` replaces the whole list. Required to schedule or publish: TikTok `privacy_level`, Pinterest `board_id`, Discord `channel_id`, Google Business `event` on `EVENT`/`OFFER`, YouTube a title (`title` or the first line of the text). `GET /content-types` lists them per network as `required_meta`.",
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/PlatformMetaX"
           },
@@ -4202,7 +4234,7 @@
               "string",
               "null"
             ],
-            "description": "Post text as stored (HTML from the editor or plain text)."
+            "description": "Post text, stored as sent (posts written in the app hold the editor's HTML)."
           },
           "media": {
             "type": [
@@ -4352,7 +4384,7 @@
               "id": "9b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
               "name": "Ana Souza"
             },
-            "content": "<p>We just shipped scheduled threads. Here is how they work.</p>",
+            "content": "We just shipped scheduled threads. Here is how they work.",
             "media": [
               {
                 "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
@@ -4673,7 +4705,7 @@
           },
           "metrics": {
             "type": "object",
-            "description": "Metrics the network reports for this publication, keyed by metric (`reactions`, `comments`, `views`, `impressions`, `reach`, `engagement_rate`, ...). Each value is an object.",
+            "description": "Metrics the network reports for this publication, keyed by metric. An empty array `[]` when no snapshot has been collected yet. Keys (`reactions`, `comments`, `views`, `impressions`, `reach`, `engagement_rate`, ...). Each value is an object.",
             "additionalProperties": {
               "type": "object",
               "properties": {
@@ -4993,7 +5025,7 @@
         }
       },
       "Conflict": {
-        "description": "The channel's queue is busy with another change. Retry the request.",
+        "description": "Another change to this post or its channel's queue is in progress. Retry.",
         "content": {
           "application/json": {
             "schema": {

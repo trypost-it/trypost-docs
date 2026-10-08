@@ -22,7 +22,9 @@ TryPost opens the new channel's **Publish** page and asks how many times a week 
 | Type | `content_type` | Aspect ratio | Description |
 |------|---------------|--------------|-------------|
 | **Video** | `tiktok_video` | 9:16 | One video |
-| **Photo carousel** | `tiktok_photo` | 1:1 | 1 to 35 images |
+| **Photo carousel** | `tiktok_photo` | — | 1 to 35 images |
+
+Photos can be any shape; **Edit Media** offers 4:3, 16:9, 9:16 and 1:1.
 
 There is no post-type picker for TikTok: the attached media decides. A video makes a `tiktok_video`, images make a `tiktok_photo`, and the two never mix in one post.
 
@@ -49,7 +51,7 @@ TikTok allows **2,200 characters** of caption. The editor's TikTok settings (or 
 | **AI-generated** | `is_aigc` | boolean | Video only |
 | **Auto add music** | `auto_add_music` | boolean | Photo only |
 
-The choices you see come from your TikTok account: TikTok can shorten the maximum video length and switch off comments, Duet or Stitch, and TryPost shows those as **Turned off in your TikTok account settings**. The API exposes the same data at `GET /social-accounts/{account}/tiktok-creator-info`.
+The choices you see come from your TikTok account: TikTok can shorten the maximum video length and switch off comments, Duet or Stitch, and TryPost shows those as **Turned off in your TikTok account settings**. The API exposes the same data at [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info) (`GET /social-accounts/{account}/tiktok-creator-info`).
 
 <Note>
   TikTok has no API to delete a post. Deleting a post in TryPost never removes it from TikTok (or any other network) — remove it in the TikTok app.
@@ -85,4 +87,6 @@ TikTok videos and followers appear in [Insights](/knowledge-base/insights/overvi
   ```env
   TIKTOK_SCOPES=user.info.basic,user.info.profile,user.info.stats,video.publish,video.upload
   ```
+
+  Hide TikTok with `TIKTOK_ENABLED=false`.
 </Accordion>

@@ -33,6 +33,8 @@ Every page you manage is listed, and you can connect several at once. Pages that
 | `facebook_reel` | — | 1 GB | 90 seconds | MP4 recommended, 9:16 |
 | `facebook_story` | 10 MB | 1 GB | 60 seconds | Images are fitted to 9:16. MP4 recommended |
 
+Reel and Story videos must be vertical, close to 9:16 (width ÷ height between 0.5 and 0.6), or the post cannot be scheduled.
+
 Images are published at their own aspect ratio; TryPost does not crop them on the server. A Story needs an image or a video. Official specs: [Reels](https://developers.facebook.com/docs/video-api/guides/reels-publishing/), [Stories](https://developers.facebook.com/docs/page-stories-api/), [Video errors](https://developers.facebook.com/docs/video-api/reference/error-codes/). Full catalog: [Media](/knowledge-base/media#facebook).
 
 ## Text and per-post options
@@ -69,4 +71,6 @@ A Facebook page can also be a [Repurpose](/knowledge-base/repurpose) source: Try
   ```
 
   The same app also serves [Instagram via Facebook](/platforms/instagram#self-hosting-setup).
+
+  Hide Facebook with `FACEBOOK_ENABLED=false`.
 </Accordion>

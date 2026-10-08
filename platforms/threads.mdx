@@ -21,7 +21,7 @@ TryPost opens the new channel's **Publish** page and asks how many times a week 
 
 | Type | `content_type` | Description |
 |------|----------------|-------------|
-| **Thread** | `threads_post` | Text with up to 10 optional images **or** 1 video |
+| **Thread** | `threads_post` | Text with up to 10 optional images and videos (several make a carousel) |
 | **Ghost post** | `threads_ghost_post` | Text only, archived after 24 hours. No media and no topic |
 
 ## Media limits
@@ -63,4 +63,6 @@ Threads posts and followers appear in [Insights](/knowledge-base/insights/overvi
   THREADS_CLIENT_SECRET=your_app_secret
   THREADS_CLIENT_REDIRECT="${APP_URL}/accounts/threads/callback"
   ```
+
+  Hide Threads with `THREADS_ENABLED=false`.
 </Accordion>

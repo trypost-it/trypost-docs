@@ -37,6 +37,8 @@ Official specs: [`videos.insert`](https://developers.google.com/youtube/v3/docs/
 
 **Description.** The post text, unless you set **Description** (`meta.description`, plain text, at most 5,000 bytes).
 
+The post text (your description when **Description** is empty) is capped at **5,000 characters**.
+
 | Setting | `meta` key | Values |
 |---------|-----------|--------|
 | **Category** | `category_id` | `1` Film & Animation, `2` Autos & Vehicles, `10` Music, `15` Pets & Animals, `17` Sports, `19` Travel & Events, `20` Gaming, `22` People & Blogs (default), `23` Comedy, `24` Entertainment, `25` News & Politics, `26` Howto & Style, `27` Education, `28` Science & Technology, `29` Nonprofits & Activism |
@@ -76,4 +78,6 @@ YouTube videos and subscribers appear in [Insights](/knowledge-base/insights/ove
   <Note>
     The same Google credentials are used for YouTube and [Google login](/self-hosting/configuration#google). Add both callback URLs to your OAuth client. Google Business Profile uses [its own Google app](/platforms/google-business#self-hosting-setup).
   </Note>
+
+  Hide YouTube with `YOUTUBE_ENABLED=false`.
 </Accordion>

@@ -46,7 +46,7 @@ Either way, TryPost opens the new channel's **Publish** page and asks how many t
 
 | Type | `content_type` | Media | Description |
 |------|----------------|-------|-------------|
-| **Feed Post** | `instagram_feed` | Up to 10 images, or 1 video (required) | Single image, multi-image carousel, or a video (published as a Reel) |
+| **Feed Post** | `instagram_feed` | Up to 10 images and videos (required) | Single image, a carousel of up to 10 images and videos, or a single video (published as a Reel) |
 | **Reel** | `instagram_reel` | 1 video (required) | Short-form vertical video |
 | **Story** | `instagram_story` | 1 image or video (required) | Visible for 24 hours. Stories carry no caption, so the post text is not sent |
 
@@ -60,12 +60,12 @@ There is no separate carousel content type: a multi-image post is an `instagram_
 | `instagram_reel` | — | 300 MB | 15 minutes | — | MOV or MP4 |
 | `instagram_story` | 8 MB | 100 MB | 60 seconds | Images fitted to 9:16 | Same as feed |
 
-A feed image outside 3:4 to 1.91:1 is rejected when you save; use the crop presets (3:4, 4:5, 1:1, 1.91:1) in **Edit Media**. GIFs are not accepted. A single video on `instagram_feed` publishes through the Reels container; the 100 MB / 60 seconds on `instagram_feed` is TryPost's conservative rule (Meta only documents the Reel spec) — use `instagram_reel` for longer clips. Official specs: [IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/). Full catalog: [Media](/knowledge-base/media#instagram).
+A feed image outside 3:4 to 1.91:1 blocks scheduling and publishing; use the crop presets (3:4, 4:5, 1:1, 1.91:1) in **Edit Media**. GIFs are not accepted. A single video on `instagram_feed` publishes through the Reels container; the 100 MB / 60 seconds on `instagram_feed` is TryPost's conservative rule (Meta only documents the Reel spec) — use `instagram_reel` for longer clips. Official specs: [IG User Media](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/). Full catalog: [Media](/knowledge-base/media#instagram).
 
 ## Text and per-post options
 
 - **2,200 characters** per caption.
-- **5 hashtags at most.** A post with more cannot be saved (web, API and MCP). Stories are exempt because they send no caption.
+- **5 hashtags at most.** A post with more cannot be scheduled or published (web, API and MCP); a draft can still be saved. Stories are exempt because they send no caption.
 - **Share to feed** — a Reel also appears on your profile grid by default; turn it off with **Share to feed** (`platforms[].meta.share_to_feed`).
 - **AI-generated** — label the post as made with AI (`platforms[].meta.is_ai_generated`).
 - **Tag people** — tag accounts on feed images in **Edit Media** > **Tag People**.

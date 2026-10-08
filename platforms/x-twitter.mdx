@@ -25,7 +25,7 @@ TryPost opens the new channel's **Publish** page and asks how many times a week 
 
 | Type | `content_type` | Description |
 |------|----------------|-------------|
-| **Post** | `x_post` | Text with up to 4 images or 1 video. Images and a video can be combined; GIFs are accepted |
+| **Post** | `x_post` | Text with up to 4 media items (images, GIFs or videos, which can be combined) |
 
 ## Media limits
 
@@ -80,4 +80,6 @@ X posts and followers appear in [Insights](/knowledge-base/insights/overview). B
   ```
 
   How often TryPost reads X is set by `X_PUBLICATION_DISCOVERY_INTERVAL_HOURS` and `X_EXTERNAL_POSTS_IMPORT_DAYS` — see [Importing posts made outside TryPost](/self-hosting/configuration#importing-posts-made-outside-trypost).
+
+  Hide X with `X_ENABLED=false`.
 </Accordion>

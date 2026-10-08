@@ -1,0 +1,74 @@
+---
+title: "Queue"
+description: "Give each channel posting times and let the queue fill them with posts."
+---
+
+The queue publishes posts at a channel's **posting times** (also called slots). Instead of picking a date for every post, you add it to the queue and TryPost places it in a free slot.
+
+## Set up posting times
+
+Each channel has its own posting times, in its own time zone.
+
+- **The first time:** after you connect a channel, TryPost asks "How many times a week would you like to post?" Pick **Keep it steady** (1 time/week), **Build a presence** (3), **Reach new heights** (5) or **Choose your goal** (up to 28). TryPost then suggests recommended times you can **Customize**.
+- **Any time later:** open the channel and choose **Manage posting times**, or go to its [Channel settings](/knowledge-base/channels/settings). There you set up to 4 times per day, turn days on or off, and generate times from your goal, from TryPost's recommendations, or by copying another channel.
+
+A channel without posting times cannot use the queue: "Add posting times to this channel to use the queue."
+
+## Add a post to the queue
+
+In the [composer](/knowledge-base/publish/composer), choose:
+
+| Option | Where the post goes |
+| --- | --- |
+| **Next available** | The first free slot. Gaps between queued posts are filled first. |
+| **Prioritize** | The first slot not held by a post with a custom time. The queued posts right behind it, up to the next gap, each move one slot later. Nothing else moves. |
+
+From **Drafts**, **Add to queue** puts a draft in the next free slot.
+
+You can also click **+ New** on a free slot in the Queue list or the calendar. The composer opens at that slot's time; if you save without changing the time or the channel, the post takes exactly that slot.
+
+## Posts keep their slot
+
+A queued post stays in its slot. TryPost never moves it on its own.
+
+- **Deleting**, **Move to Drafts**, publishing now or giving it a custom time frees the slot. The posts after it do **not** move up to fill the gap.
+- **Next available** fills that gap the next time you queue a post.
+- Any scheduled post on a slot's time holds that slot, even one scheduled with a custom time. The queue never puts two posts in the same slot.
+
+## Reorder the queue
+
+Drag a queued post onto another, or use **Move up** or **Move down** from the post menu. The posts trade places among the times they already hold; no new slot is taken.
+
+**Move to top** works like **Prioritize**: the post takes the first slot not held by a post with a custom time, and the queued posts right behind it, up to the next gap, each move one slot later. Nothing else moves.
+
+## Posts waiting for approval
+
+When a member who needs approval queues a post, the request holds its slot while it waits. The Queue shows it as a post card at that time:
+
+- approvers see **Add to queue**, which approves it, and **Reject**;
+- the member who asked can edit it;
+- it cannot be dragged.
+
+Approving keeps the post in that slot if the slot still exists and is free; otherwise it takes the first free slot. Rejecting or deleting the request frees the slot. Members who cannot see the request see a gap there, not **+ New**. See [Approvals](/knowledge-base/publish/approvals).
+
+## When posting times or the time zone change
+
+- **Changing posting times** moves only the posts whose slot no longer exists. They go to the first free slots, in order.
+- **Changing the channel's time zone** first moves each queued post to the slot at the same local clock time in the new zone, then fills the first free slots in order. Posts with a custom time keep their moment.
+- If no slot is left, a queued post keeps its time as a custom-time post.
+
+## Show the slots
+
+In the Publish filter menu, turn on **Show posting times** to see the free slots in the Queue list, each with **+ New**. **Manage posting times** opens the channel's settings.
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| Read or change posting times | [Get posting schedule](/api-reference/channels/get-posting-schedule), [Update posting schedule](/api-reference/channels/update-posting-schedule) | `get-posting-schedule-tool`, `update-posting-schedule-tool` |
+| Generate or copy posting times | [Generate posting schedule](/api-reference/channels/generate-posting-schedule), [Copy posting schedule](/api-reference/channels/copy-posting-schedule) | `generate-posting-schedule-tool`, `copy-posting-schedule-tool` |
+| List free slots | [List free queue slots](/api-reference/channels/list-free-queue-slots) | `list-free-slots-tool` |
+| Reorder | [Reorder queue](/api-reference/channels/reorder-queue) | `reorder-queue-tool` |
+| Move a post to a slot | [Move post to queue slot](/api-reference/channels/move-post-to-queue-slot) | `move-post-to-slot-tool` |
+
+To queue a new post through the API, see the [posting guide](/api-reference/guides/posting).

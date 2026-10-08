@@ -1,0 +1,119 @@
+---
+title: "Publish"
+description: "See and manage every post: the queue, approvals, drafts and what was sent, as a list or a calendar."
+icon: "pen-to-square"
+---
+
+**Publish** is where your posts live. Open it from the sidebar for **All channels**, or open one channel in the **Channels** section and pick **Publish** to see only that channel.
+
+Each post belongs to one channel. When you save a post for several channels in the [composer](/knowledge-base/publish/composer), TryPost creates one post per channel, so each can be edited, moved or deleted on its own.
+
+## Tabs
+
+| Tab | What it shows |
+| --- | --- |
+| **Queue** | Scheduled posts, and posts being published right now, in time order. |
+| **Approvals** | Posts waiting for approval. See [Approvals](/knowledge-base/publish/approvals). |
+| **Drafts** | Drafts. |
+| **Sent** | Published, partially published and failed posts. |
+
+Lists load more posts as you scroll.
+
+Published and partially published posts are kept for 2 years, then deleted from TryPost with their media. They stay on the network.
+
+<Note>
+  Self-hosting TryPost? Change this with `POST_HISTORY_RETENTION_DAYS`. See [Configuration](/self-hosting/configuration).
+</Note>
+
+Sent posts show their latest metrics right on the card, with when they were last refreshed ("Refreshed 2 hours ago"). Use the arrows to page through the metrics, and **See post insights** for everything the network reports. Until the first collection a post shows "Metrics have not been collected yet." Networks without analytics (LinkedIn, Telegram, Discord, Google Business) show none; see [Insights](/knowledge-base/insights/overview).
+
+**Sent** also shows posts you published directly on the network, outside TryPost. They are marked "This was published directly from Instagram" (or the channel's network).
+
+## List and Calendar
+
+Switch between **List** and **Calendar**.
+
+- The calendar has **3 days**, **Week** and **Month** views, and a **Status** filter: **All posts**, **Drafts**, **Scheduled** or **Sent**.
+- **Undated drafts** lists drafts without a date.
+- Clicking a time on the calendar opens the composer at that time.
+- Instagram channels have a third view, **Grid**: an approximation of your profile grid.
+
+## Filters and time zone
+
+- **Labels** and **Channels** filter the list and the calendar. **Untagged** shows posts without labels. See [Labels](/knowledge-base/settings/labels).
+- **Time zone** sets the zone the page shows times in. It starts as your own time zone from [Preferences](/knowledge-base/settings/preferences). Changing it only changes what you see; each channel still publishes on its own schedule.
+
+## Post actions
+
+Each post card has buttons and a menu. What you see depends on the post's status and your permissions:
+
+| Action | What it does |
+| --- | --- |
+| **Edit** | Open the post in the composer. |
+| **Publish Now** | Publish a draft right away. |
+| **Add to queue** | Put a draft in the channel's next free queue slot. Needs posting times on that channel. |
+| **Move to top**, **Move up**, **Move down** | Reorder queued posts. See [Queue](/knowledge-base/publish/queue). |
+| **Make Recurring** / **Edit Recurrence** | Repeat a scheduled post. See [Recurring posts](/knowledge-base/publish/recurring-posts). |
+| **Duplicate Post** | Create a draft copy of the post right away and open it in the composer. |
+| **Move to Drafts** | Unschedule a post. |
+| **Edit labels** | Change the post's labels. |
+| **Delete Post** | Delete the post and its media from TryPost. Members who need approval can delete only posts they wrote, or a request they made while it is still pending. |
+| **Open post on Instagram** (or the channel's network) | Open the live post. |
+| **See post insights** | Open the post's metrics. See [Channel insights](/knowledge-base/insights/channel-insights). |
+| **Post Details** | Show the full post, its channels, who created it and, once sent, its metrics. |
+
+Posts that are **Publishing**, **Published**, **Partially Published** or **Failed** cannot be edited or deleted. To try again, duplicate the post. Deleting a post never removes it from the network.
+
+## Statuses
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | Saved, not scheduled. |
+| **Pending approval** | Waiting for an approver. |
+| **Scheduled** | Will publish at its time. |
+| **Publishing** | Being sent to the network now. |
+| **Retrying** | The network had a temporary problem; TryPost tries again at the time shown. |
+| **Published** | Live on the network. |
+| **Partially Published** | Some parts went out and some failed. |
+| **Failed** | Could not be published. |
+
+### Why a post failed
+
+A failed post shows **Why it failed** with a plain reason and the **Message from the network**. The reasons are:
+
+- The network didn't accept the media format, size or length. See [Media](/knowledge-base/media).
+- The network is limiting how often this channel can post.
+- The channel doesn't have permission to publish this post.
+- The network rejected the content under its posting rules.
+- The network had an error, was unavailable, or took too long to respond.
+- The channel's connection expired. Reconnect it in [Channel settings](/knowledge-base/channels/settings).
+- Publishing stopped before the network confirmed the post.
+- We couldn't publish this post. (the network gave no reason TryPost recognizes)
+
+A post that is longer than the network allows fails with a message such as "This post has 312 characters, but X allows 280."
+
+## Notes
+
+Open **Notes** from the notes button on a post card to talk with your team about it. Press <kbd>Enter</kbd> to send. You can **Edit** or **Delete** your own notes; edited notes are marked "edited", and **Load older notes** shows earlier ones. A new note emails every workspace member except its author. On a post pending approval, only the approvers and the member who asked get the email. Each person can turn these emails off with **New note on a post** in [Notifications](/knowledge-base/settings/notifications).
+
+## Channel page extras
+
+When you open **Publish** for a single channel, the header also shows:
+
+- the posting goal, "2/5 posts sent this week", with **Sent**, **Scheduled** and **To do**. The week follows your start of week in [Preferences](/knowledge-base/settings/preferences).
+- **Show posting times** and **Manage posting times** for the channel's [queue](/knowledge-base/publish/queue).
+
+## Empty workspace
+
+A workspace without channels shows "Welcome to TryPost 👋" with a button to connect your first channel. See [Connecting a channel](/knowledge-base/channels/connecting).
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| List posts | [List posts](/api-reference/posts/list-posts) | `list-posts-tool` |
+| Read a post | [Get post](/api-reference/posts/get-post) | `get-post-tool` |
+| Delete a post | [Delete post](/api-reference/posts/delete-post) | `delete-post-tool` |
+| Notes | [List post notes](/api-reference/post-notes/list-post-notes), [Create post note](/api-reference/post-notes/create-post-note), [Update post note](/api-reference/post-notes/update-post-note), [Delete post note](/api-reference/post-notes/delete-post-note) | `list-post-notes-tool`, `create-post-note-tool`, `update-post-note-tool`, `delete-post-note-tool` |
+
+See the [MCP tools reference](/ai/tools-reference).

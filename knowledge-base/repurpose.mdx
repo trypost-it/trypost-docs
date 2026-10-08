@@ -1,0 +1,120 @@
+---
+title: "Repurpose"
+description: "Watch an Instagram or Facebook account and republish every new video to your other networks."
+icon: "arrows-rotate"
+---
+
+A repurpose watches one Instagram or Facebook account for new videos you post **outside** TryPost, and republishes each one to the other channels you pick. Post a Reel on Instagram, and the same video goes to TikTok, YouTube Shorts and the rest without copying it by hand.
+
+**Repurpose** is in the sidebar, marked **Beta**. Only members who publish directly see it: the account owner, admins, and members whose **Publishing** access is **Publishes directly**. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+## Create a repurpose
+
+<Steps>
+  <Step title="New repurpose">
+    In **Repurpose**, click **New repurpose**.
+  </Step>
+  <Step title="Pick the source account">
+    Choose the Instagram or Facebook account TryPost should watch, then click **Create**. Only these networks can be a source, "because they are the only networks that let us download the video."
+  </Step>
+  <Step title="Configure it">
+    On the **Configuration** tab, choose what to watch for, the publishing mode and the destinations. Changes save as you make them (**Saved**).
+  </Step>
+  <Step title="Activate">
+    Click **Activate** at the top of the page. Only posts published after you activate are replicated.
+  </Step>
+</Steps>
+
+A new repurpose starts as a **Draft**, so nothing is replicated until you activate it.
+
+## Source
+
+**Watch for** sets the kind of post that starts a repost: **Reels**, **Videos** or **Stories**.
+
+An account can feed one repurpose per format. Creating a second one for the same account and format opens the existing one; changing an existing one to a taken pair fails with "This account already feeds another repurpose. Edit that one instead."
+
+## Destinations
+
+"Pick the accounts that receive it. Each one publishes in the format you choose."
+
+- Any other connected channel can be a destination, except Google Business: "Google Business cannot be a destination: its posts do not accept video."
+- For each destination you choose its post type, which must carry a video, and the same network settings as in the composer. A Story can become a TikTok video or a YouTube Short; the formats do not have to match.
+- Settings a network needs to publish (the TikTok visibility, the Pinterest board, the Discord channel) must be filled in before you can activate or resume.
+- The source account cannot also be a destination.
+
+The caption of the original is reused. Only a caption longer than a network's limit is changed: it is shortened with AI, or cut at a word when AI is not available. Instagram destinations keep only the first 5 hashtags.
+
+## Publishing
+
+| Option | What happens when a new video is found |
+| --- | --- |
+| **Publish automatically** | "Each new post is scheduled the moment it is found." |
+| **Create as draft** | "Each new post becomes a draft here for you to review and publish." |
+
+Posts created by a repurpose appear in [Publish](/knowledge-base/publish/overview) like any other post.
+
+<Note>
+  Edge case: if the member who created the repurpose later loses direct publishing (their access changes to **Needs approval**), the posts it creates go to [Approvals](/knowledge-base/publish/approvals) instead of being scheduled.
+</Note>
+
+## Status
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | Set up, not watching yet. |
+| **Active** | TryPost checks the account regularly and replicates every new post. |
+| **Paused** | Checks are on hold. **Resume** picks up where it stopped, so nothing posted meanwhile is lost. |
+| **Disabled** | Turned off. **Activate** again starts fresh: whatever you posted while it was off is not replicated. |
+
+The **Activate**, **Pause**, **Resume** and **Disable** buttons are at the top of the repurpose page. The Repurpose list shows each one's **Replicated** count and **Last checked** time.
+
+On TryPost Cloud, an active repurpose checks its source about every 15 minutes. If the network limits requests, the next check waits longer.
+
+<Note>
+  Self-hosting TryPost? The check interval and back-off are set with `REPURPOSE_POLL_INTERVAL_MINUTES` and `REPURPOSE_BACKOFF_MINUTES`, and need the scheduler running. See [Configuration](/self-hosting/configuration).
+</Note>
+
+## When an account stops working
+
+- **The source needs reconnecting:** the repurpose stops by itself and shows "Replication is on hold: the account this repurpose watches needs to be reconnected." [Reconnect](/knowledge-base/channels/connecting#reconnect-a-channel) the account and the repurpose resumes on its own.
+- **No destination is left:** it stops with "Replication is on hold: no destination is available. Add one, then resume it."
+- **A destination needs reconnecting:** the repurpose keeps running. Posts for that channel are still created and fail visibly, so you can retry them after reconnecting.
+- **The source was disconnected:** the repurpose has no source until you pick one. Disconnecting a channel reports how many repurposes were paused. See [Disconnecting a channel](/knowledge-base/channels/disconnecting).
+
+For the other cases, once the problem is fixed the banner says "The problem is fixed. Resume this repurpose to start replicating again." A repurpose that stopped by itself resumes from the moment you resume it, so the videos posted during the outage are not replayed. No email is sent when a repurpose stops.
+
+## Activity
+
+The **Activity** tab lists every source post TryPost has seen ("Posts this account publishes outside TryPost will show up here."), with its status and the posts it created.
+
+| Status | Meaning |
+| --- | --- |
+| **Queued** | Waiting to be downloaded. |
+| **Processing** | Downloading the video or creating the posts. |
+| **Replicated** | Posts created and scheduled. |
+| **Drafted** | Posts created as drafts. |
+| **Skipped** | Not replicated on purpose. |
+| **Failed** | Something went wrong. |
+
+Skipped and failed items give the reason:
+
+- Already published through TryPost: the original was posted from TryPost, so it is not copied back.
+- The network did not share a downloadable file, usually because of copyrighted audio.
+- The video could not be downloaded.
+- Could not create the posts.
+- No destination was available to publish to.
+
+## Delete a repurpose
+
+Open **More actions** at the top of the repurpose page and choose **Delete repurpose**: "Checks stop immediately. Posts already created stay in your calendar."
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| List, read | [List repurposes](/api-reference/repurposes/list-repurposes), [Get repurpose](/api-reference/repurposes/get-repurpose) | `list-repurposes-tool`, `get-repurpose-tool` |
+| Create, edit | [Create repurpose](/api-reference/repurposes/create-repurpose), [Update repurpose](/api-reference/repurposes/update-repurpose) | `create-repurpose-tool`, `update-repurpose-tool` |
+| Activate, pause, resume, disable | [Activate](/api-reference/repurposes/activate-repurpose), [Pause](/api-reference/repurposes/pause-repurpose), [Resume](/api-reference/repurposes/resume-repurpose), [Disable](/api-reference/repurposes/disable-repurpose) | `activate-repurpose-tool`, `pause-repurpose-tool`, `resume-repurpose-tool`, `disable-repurpose-tool` |
+| Activity | [List repurpose items](/api-reference/repurposes/list-repurpose-items) | `list-repurpose-items-tool` |
+| Formats | [List repurpose source formats](/api-reference/repurposes/list-repurpose-source-formats) | `list-repurpose-source-formats-tool` |
+| Delete | [Delete repurpose](/api-reference/repurposes/delete-repurpose) | `delete-repurpose-tool` |

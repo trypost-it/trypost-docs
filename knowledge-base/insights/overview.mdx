@@ -1,0 +1,60 @@
+---
+title: "Insights"
+description: "See how your channels and posts perform across the workspace."
+icon: "chart-line"
+---
+
+**Insights** in the sidebar is the analytics dashboard for the whole workspace. Every member of the workspace can open it. For one channel in depth, open the channel and pick **Insights**; see [Channel insights](/knowledge-base/insights/channel-insights).
+
+## Which networks are included
+
+Insights covers X, TikTok, YouTube, Facebook, Instagram, Threads, Pinterest, Bluesky and Mastodon.
+
+LinkedIn (profile and Page), Telegram, Discord and Google Business are not included: these networks do not share analytics with third-party apps.
+
+Posts published directly on the network, outside TryPost, count too. They are marked **Published on the social network**; posts sent from TryPost are marked **Published via TryPost**. After you connect a channel, TryPost imports its history in the background: "Importing account history. Older posts may appear as collection continues."
+
+## The dashboard
+
+| Section | What it shows |
+| --- | --- |
+| **Summary** | Totals for the period, such as **Posts**, **Total Followers**, **Reactions**, **Comments** and **Eng. Rate**, compared with the previous period. |
+| **Followers** | Followers per channel at the end of the period and how the count changed. Switch the chart between **Line**, **Bar** and **Growth**. |
+| **Posts** | How many posts each channel published in the period. Switch between **Bar** and **Stacked bar**. |
+| **Performance** | Totals per channel for posts published in the period, compared with the previous period. Choose the metrics with **Columns**. |
+| **Top 5 Posts** | Your five posts with the most reactions or comments. Choose which with **Rank posts by**. |
+
+With many channels, the charts show a subset; filter by channel to see others.
+
+Post metrics use the latest saved reading for the posts published in the range. When a network was unavailable, a follower count can show **Last known**.
+
+## Date range
+
+Pick **7 days**, **30 days** (the default), **Month to date** or **Custom**. **Custom** offers quick picks such as **Last 3 months** or **Year to date**. Every number is compared with the previous period of the same length.
+
+Days are calendar days in your time zone, and weekly charts start on your start of week. Both come from [Preferences](/knowledge-base/settings/preferences).
+
+## Filters
+
+Filter the dashboard by channels and by labels. If nothing matches, Insights says so and suggests another range or clearing the filters.
+
+## Export
+
+**Export** downloads the dashboard for the current range and filters as **CSV** or **Markdown**.
+
+## How often data updates
+
+**Sync status** explains it:
+
+- New posts are picked up every 3 hours on each channel, and every 24 hours on X.
+- Post metrics refresh once a day for posts from the last 30 days (20 days on X).
+- Follower counts are saved once a day.
+
+Follower history builds up day by day from when the channel was connected.
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| Workspace report | [Get workspace analytics](/api-reference/analytics/get-workspace-analytics) | `get-analytics-report-tool` |
+| One post's metrics | [Get publication analytics](/api-reference/analytics/get-publication-analytics), [Get post metrics](/api-reference/posts/get-post-metrics) | `get-analytics-publication-tool`, `get-post-metrics-tool` |

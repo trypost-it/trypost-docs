@@ -1,139 +1,195 @@
 ---
 title: "Introduction"
-description: "The TryPost API lets you manage social media posts, the Asset Library, signatures, labels, repurposes, webhooks, and more with a simple REST API."
+description: "Authenticate with a workspace API key and call the TryPost REST API: base URL, permissions, errors, pagination and rate limits."
 icon: "book-open"
 ---
 
-## Base URL
+The TryPost REST API lets scripts and integrations do what you do in the app: create, schedule and publish posts, upload media, manage channel queues and posting schedules, ideas, labels, signatures, webhooks and repurposes, and read analytics.
 
-The TryPost API is available at:
+## Base URL
 
 ```
 https://app.trypost.it/api
 ```
 
-For self-hosted instances, the base URL is your `APP_URL` followed by `/api` (e.g., `https://trypost.yourdomain.com/api`).
+<Note>
+  Self-hosting TryPost? The API lives at your `APP_URL` followed by `/api`, for example `https://trypost.yourdomain.com/api`. Everything on these pages applies the same way.
+</Note>
 
 ## Authentication
 
-All API requests require a Bearer token in the `Authorization` header. You can create API keys (Personal Access Tokens) from [Settings → API Keys](https://app.trypost.it/settings/workspace/api-keys) or via the [`POST /api-keys`](/api-reference/endpoint/create-api-key) endpoint.
+Every request sends a workspace API key as a Bearer token in the `Authorization` header:
 
 ```bash
-Authorization: Bearer YOUR_API_KEY
+curl https://app.trypost.it/api/workspace \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json"
 ```
 
+Always send `Accept: application/json`, as in every example on these pages. Without it, some errors (for example the `409` for a busy channel queue) come back as a redirect instead of a JSON body.
+
+Create a key in the app under **Settings → API Keys → Generate API Key** (see [API keys](/knowledge-base/settings/api-keys)), or with [Create API key](/api-reference/api-keys/create-api-key). The key is shown once, when it is created. Store it right away; if you lose it, generate a new one.
+
 <Warning>
-  Keep your API key secret. Do not expose it in client-side code or public repositories. The plain token value is only shown once at creation — store it immediately.
+  Treat an API key like a password. Do not put it in client-side code or commit it to a repository.
 </Warning>
 
-## Workspace scoping
+API keys authenticate the REST API only. The [MCP server](/ai/introduction) uses OAuth sign-in, and an MCP token sent to the REST API is refused with `403` `Personal access token required.`.
 
-Every API key is bound to a specific workspace at creation time. All requests act on that workspace — you cannot list or modify resources from other workspaces with the same key. To work with multiple workspaces, create one API key per workspace.
+### Who can use API keys
 
-API keys authenticate the REST API only. The [MCP server](/ai/introduction) uses OAuth (`mcp:use`), not Personal Access Tokens.
+API keys work only for **workspace admins**: the account owner and members marked as admin. When the key's owner is not an admin of the workspace, every request returns `403` with `Insufficient workspace permissions.`, and when they have left the workspace, `403` with `Workspace access denied.`. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
 
-## Rate limiting
+### One key, one workspace
 
-API requests are throttled to prevent abuse. When you exceed the limit, the API returns a `429` status code with a `Retry-After` header indicating how many seconds to wait.
+A key is bound to the workspace it was created in. Every request acts on that workspace, whatever workspace you have open in the app, and resources of other workspaces answer `404`. To automate several workspaces, create one key in each.
+
+## Approvals
+
+Admins publish directly, so a post created or edited through the API is never held for approval: `status: scheduled` schedules it and `status: publishing` publishes it right away.
+
+Members who need approval still send requests from the app and the MCP server. Those posts show up in the API with `status: pending_approval`, and you can decide them with [Approve post](/api-reference/approvals/approve-post) and [Reject post](/api-reference/approvals/reject-post). [Get workspace](/api-reference/workspace/get-workspace) returns your own permissions in `me` (`is_admin`, `requires_approval`, `publishes_directly`).
+
+## Subscription
+
+On TryPost Cloud the workspace's account needs an active subscription or trial. Without one, every request returns `402`:
+
+```json
+{
+  "message": "Active subscription required."
+}
+```
+
+<Note>
+  Self-hosted installs have no billing, so they never return `402`.
+</Note>
+
+## AI features
+
+AI writing and image tools are part of the web app only. The API has no AI endpoint, and creating a post through the API never calls AI. A repurpose may shorten a caption that is too long for a destination with AI (see [Create repurpose](/api-reference/repurposes/create-repurpose)).
+
+## Rate limits
+
+Each workspace can make **60 requests per minute**. All keys of a workspace share that budget. Responses carry `X-RateLimit-Limit` and `X-RateLimit-Remaining`.
+
+Four calls that reach a network directly also count against a second limit of **60 requests per minute per user**, shared by the four of them, by all your workspaces, and by the same lookups in the app (channel and board pickers): [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards), [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board), [List Discord channels](/api-reference/social-accounts/list-discord-channels) and [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info).
+
+Over the limit, the API answers `429` with a `Retry-After` header (seconds to wait):
+
+```json
+{
+  "name": "rate_limit_exceeded",
+  "message": "Rate limit exceeded. Please retry after 30 seconds."
+}
+```
 
 ## Errors
 
-The API uses conventional HTTP status codes. All error responses include a `message` field.
+The API uses standard HTTP status codes and always answers JSON with a `message`.
 
-| Status | Description |
-|--------|-------------|
+| Status | Meaning |
+|--------|---------|
 | `200` | Success |
 | `201` | Created |
-| `204` | No content (successful deletion) |
-| `401` | Missing or invalid API key |
-| `402` | Active subscription required (Cloud only — self-hosted instances skip this check) |
-| `403` | Forbidden — e.g. a Viewer calling a create-post or update endpoint (including listing assets) |
-| `404` | Resource not found, or resource not in the key's workspace |
-| `422` | Validation error — including a rejected webhook `endpoint` (`errors.endpoint`) |
+| `204` | Success with no body (deletes except [Remove post recurrence](/api-reference/recurrence/remove-post-recurrence), queue reorder) |
+| `401` | Missing, invalid or expired API key (`Token expired.`) |
+| `402` | Cloud only: no active subscription (`Active subscription required.`) |
+| `403` | Not allowed: the key's owner is not a workspace admin (`Insufficient workspace permissions.`), or the action is not allowed for this resource |
+| `404` | The resource does not exist in this workspace |
+| `409` | Another change to the same post or channel queue is in progress. Retry the request |
+| `422` | Validation failed, or the action does not fit the resource's state (for example, editing a post that was already published) |
 | `429` | Rate limit exceeded |
 
-```json
-{
-  "message": "The name field is required."
-}
-```
-
-## Response shape
-
-Resources are returned **unwrapped** — no `data:` envelope. A single resource looks like:
+Validation errors list the messages of each field under `errors`, with the field path as key:
 
 ```json
 {
-  "id": "9f1a2b3c-...",
-  "name": "...",
-  "...": "..."
-}
-```
-
-A non-paginated collection looks like a plain array:
-
-```json
-[
-  { "id": "9f1a2b3c-...", "name": "..." },
-  { "id": "a1b2c3d4-...", "name": "..." }
-]
-```
-
-The endpoints that wrap in `data:` are the paginated lists: [`GET /posts`](/api-reference/endpoint/list-posts), [`GET /assets`](/api-reference/endpoint/list-assets), [`GET /repurposes`](/api-reference/endpoint/list-repurposes), [`GET /repurposes/{id}/items`](/api-reference/endpoint/list-repurpose-items), and [`GET /webhooks/{id}/logs`](/api-reference/endpoint/list-webhook-logs). [`GET /repurpose-source-formats`](/api-reference/endpoint/list-repurpose-source-formats) wraps in `data:` but is not paginated.
-
-## Pagination
-
-These list endpoints paginate. They use Laravel's standard pagination envelope (`data`, `links`, `meta`) and the `page` query parameter:
-
-| Endpoint | Per page | Notes |
-|---|---|---|
-| [`GET /posts`](/api-reference/endpoint/list-posts) | **15** | Posts only |
-| [`GET /assets`](/api-reference/endpoint/list-assets) | **25** | Asset Library. No `per_page` parameter |
-| [`GET /webhooks/{id}/logs`](/api-reference/endpoint/list-webhook-logs) | **15** | Delivery logs for one webhook. No `per_page` parameter |
-| [`GET /repurposes`](/api-reference/endpoint/list-repurposes) | **25** | Workspace repurposes. No `per_page` parameter |
-| [`GET /repurposes/{id}/items`](/api-reference/endpoint/list-repurpose-items) | **25** | Activity for one repurpose. No `per_page` parameter |
-
-Example envelope for posts:
-
-```json
-{
-  "data": [...],
-  "links": {
-    "first": "https://app.trypost.it/api/posts?page=1",
-    "last":  "https://app.trypost.it/api/posts?page=5",
-    "prev":  null,
-    "next":  "https://app.trypost.it/api/posts?page=2"
-  },
-  "meta": {
-    "current_page": 1,
-    "from": 1,
-    "to": 15,
-    "last_page": 5,
-    "per_page": 15,
-    "total": 72,
-    "path": "https://app.trypost.it/api/posts",
-    "links": [
-      { "url": null, "label": "&laquo; Previous", "page": null, "active": false },
-      { "url": "https://app.trypost.it/api/posts?page=1", "label": "1", "page": 1, "active": true },
-      { "url": null, "label": "Next &raquo;", "page": null, "active": false }
+  "message": "Select a Pinterest board to publish this post.",
+  "errors": {
+    "platforms.0.meta.board_id": [
+      "Select a Pinterest board to publish this post."
     ]
   }
 }
 ```
 
-Use the `page` query parameter to navigate. Other list endpoints (signatures, labels, social accounts, API keys, webhooks) return all items without pagination, as a plain array.
+The key follows the request you sent. A destination's settings, text and media checks on [Create post](/api-reference/posts/create-post) and [Create posts in batch](/api-reference/posts/create-posts-in-batch) are reported under `destinations.N.…` (for example `destinations.0.meta.board_id`), even when you sent `platforms`.
 
-## Quick reference
+Other errors carry only `message`:
 
-| Resource | Endpoints |
-|---|---|
-| Posts | `GET /posts`, `POST /posts`, `GET /posts/{id}`, `PUT /posts/{id}`, `DELETE /posts/{id}`, `POST /posts/{id}/media`, `POST /posts/{id}/media/from-url`, `POST /posts/{id}/media/from-asset`, `GET /posts/{id}/metrics`, `GET /posts/{id}/preview` |
-| Platforms | `GET /content-types` |
-| Workspace | `GET /workspace` |
-| Assets | `GET /assets`, `GET /assets/{id}` |
-| Signatures | `GET /signatures`, `POST /signatures`, `PUT /signatures/{id}`, `DELETE /signatures/{id}` |
-| Labels | `GET /labels`, `POST /labels`, `PUT /labels/{id}`, `DELETE /labels/{id}` |
-| Social accounts | `GET /social-accounts`, `PUT /social-accounts/{id}/toggle`, `GET /social-accounts/{id}/boards` (Pinterest), `GET /social-accounts/{id}/channels` (Discord) |
-| API keys | `GET /api-keys`, `POST /api-keys`, `DELETE /api-keys/{id}` |
-| Repurpose | `GET /repurposes`, `POST /repurposes`, `GET /repurposes/{id}`, `PUT /repurposes/{id}`, `GET /repurposes/{id}/items`, `POST /repurposes/{id}/activate`, `POST /repurposes/{id}/pause`, `POST /repurposes/{id}/resume`, `POST /repurposes/{id}/disable`, `DELETE /repurposes/{id}`, `GET /repurpose-source-formats` |
-| Webhooks | `GET /webhooks`, `POST /webhooks`, `GET /webhooks/{id}`, `PUT /webhooks/{id}`, `DELETE /webhooks/{id}`, `POST /webhooks/{id}/send-test`, `POST /webhooks/{id}/rotate-secret`, `GET /webhooks/{id}/logs`, `POST /webhooks/{id}/logs/{log}/replay` |
+```json
+{
+  "message": "Insufficient workspace permissions."
+}
+```
+
+## Response shape
+
+A single resource comes back as a plain object, with no `data` wrapper:
+
+```json
+{
+  "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41",
+  "content": "We just shipped scheduled threads.",
+  "status": "scheduled"
+}
+```
+
+Lists are paginated (see below). A few responses have their own shape, documented on their page: [List content types](/api-reference/platform/list-content-types) returns `{ "platforms": [...] }`, [List idea stages](/api-reference/idea-stages/list-idea-stages) a plain array, [List repurpose source formats](/api-reference/repurposes/list-repurpose-source-formats) `{ "data": [...] }`, [Create posts in batch](/api-reference/posts/create-posts-in-batch) `{ "posts": [...] }`, and [Create API key](/api-reference/api-keys/create-api-key) `{ "token": {...}, "plain_token": "..." }`.
+
+Posts, notes, ideas, idea stages, labels, signatures and the workspace give their timestamps as `Y-m-d H:i:s` in UTC (`2026-10-12 14:00:00`). API keys, webhooks, webhook logs, repurposes, uploads, free queue slots and channel post performance use ISO 8601. In analytics, top posts use `Y-m-d H:i:s`; publication analytics and coverage use ISO 8601. In requests, send dates as ISO 8601 with an offset or `Z` (`2026-10-12T14:00:00Z`).
+
+## Pagination
+
+Lists such as posts, ideas, labels, signatures, social accounts, API keys, webhooks, webhook logs, repurposes and post notes are paginated. Pick a page with the `page` query parameter:
+
+```bash
+curl "https://app.trypost.it/api/posts?page=2" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json"
+```
+
+The server sets the page size; there is no `per_page` parameter. Read it from `meta.per_page` rather than assuming a number (it is 25 today). The response uses the standard envelope:
+
+```json
+{
+  "data": [
+    { "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41", "...": "..." }
+  ],
+  "links": {
+    "first": "https://app.trypost.it/api/posts?page=1",
+    "last": "https://app.trypost.it/api/posts?page=3",
+    "prev": "https://app.trypost.it/api/posts?page=1",
+    "next": "https://app.trypost.it/api/posts?page=3"
+  },
+  "meta": {
+    "current_page": 2,
+    "from": 26,
+    "last_page": 3,
+    "path": "https://app.trypost.it/api/posts",
+    "per_page": 25,
+    "to": 50,
+    "total": 72,
+    "links": [
+      { "url": "https://app.trypost.it/api/posts?page=1", "label": "&laquo; Previous", "page": 1, "active": false },
+      { "url": "https://app.trypost.it/api/posts?page=1", "label": "1", "page": 1, "active": false },
+      { "url": "https://app.trypost.it/api/posts?page=2", "label": "2", "page": 2, "active": true },
+      { "url": "https://app.trypost.it/api/posts?page=3", "label": "3", "page": 3, "active": false },
+      { "url": "https://app.trypost.it/api/posts?page=3", "label": "Next &raquo;", "page": 3, "active": false }
+    ]
+  }
+}
+```
+
+Keep requesting `links.next` until it is `null`.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Posting" icon="paper-plane" href="/api-reference/guides/posting">
+    Pick a channel, fill its settings, then schedule, queue or publish a post.
+  </Card>
+  <Card title="Media uploads" icon="image" href="/api-reference/guides/media-uploads">
+    Upload files, attach them from URLs and reuse media across posts.
+  </Card>
+</CardGroup>

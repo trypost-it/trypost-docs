@@ -4,12 +4,12 @@ description: "Connect TryPost to Claude Code for AI-powered social media managem
 icon: "/images/ai/claude.svg"
 ---
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI tool for working with Claude directly in your terminal. You can connect it to TryPost's MCP server to manage your social media scheduling with natural language.
+[Claude Code](https://code.claude.com/docs) is Anthropic's CLI tool for working with Claude directly in your terminal. You can connect it to TryPost's MCP server to manage your social media scheduling with natural language.
 
 ## Prerequisites
 
-- Claude Code installed (`npm install -g @anthropic-ai/claude-code`)
-- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/plans-and-billing))
+- Claude Code installed ([install guide](https://code.claude.com/docs/en/setup))
+- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/settings/plans-and-billing))
 
 ## Setup
 
@@ -21,7 +21,7 @@ icon: "/images/ai/claude.svg"
     claude mcp add --transport http trypost https://app.trypost.it/mcp/trypost
     ```
 
-    This registers the server in the project's `.mcp.json`. Append `--scope user` to make it available across all projects.
+    This adds the server for the current project, for you only (local scope). Use `--scope project` to share it through `.mcp.json`, or `--scope user` for every project.
   </Step>
   <Step title="Sign in through your browser">
     Start Claude Code and trigger the first TryPost call:
@@ -34,13 +34,13 @@ icon: "/images/ai/claude.svg"
     List all my scheduled posts
     ```
 
-    Claude Code opens a browser window asking you to sign in to TryPost and authorize the connection. Click **Allow** — Claude Code stores the OAuth token and refreshes it automatically from then on.
+    Claude Code opens a browser window asking you to sign in to TryPost and authorize the connection. Sign in, pick the **Workspace** this connection may use and click **Authorize**. Claude Code stores the OAuth token and refreshes it automatically from then on. To use another workspace, connect again and pick it.
   </Step>
 </Steps>
 
 ## Manual configuration
 
-If you prefer to edit the config file directly, this is what `claude mcp add` writes (no `Authorization` header — OAuth is discovered from the URL):
+If you prefer to edit the config file directly, this is what `claude mcp add --scope project` writes to `.mcp.json` (no `Authorization` header — OAuth is discovered from the URL):
 
 ```json
 {
@@ -53,11 +53,12 @@ If you prefer to edit the config file directly, this is what `claude mcp add` wr
 }
 ```
 
-Drop it in `.mcp.json` for project scope or `~/.claude.json` for user scope.
+Drop it in `.mcp.json` for project scope. With `--scope user` the same block goes under `mcpServers` in `~/.claude.json`.
+
 ## Example prompts
 
 ```
-Create a new post scheduled for tomorrow at 10am
+Create a new post scheduled for tomorrow at 10am New York time
 ```
 
 ```

@@ -1,0 +1,189 @@
+---
+title: "Media uploads"
+description: "Attach images, videos and PDFs to posts through the API: upload a file, attach from a URL, or reuse media from another post."
+icon: "image"
+---
+
+A post's media is a list of files of three types: **image**, **video** and **document** (PDF). You can hand a file to TryPost in several ways; pick the one that fits where the file lives.
+
+| The file is... | Use |
+|---|---|
+| At a public URL | `media[].url` on create or update, or [Attach media from URL](/api-reference/media-and-uploads/attach-media-from-url) |
+| On your machine or server, post not created yet | [Create upload](/api-reference/media-and-uploads/create-upload), then `media[].upload_token` |
+| On your machine or server, post already exists | [Upload media](/api-reference/media-and-uploads/upload-media), or [Create upload](/api-reference/media-and-uploads/create-upload) + [Attach media from upload](/api-reference/media-and-uploads/attach-media-from-upload) |
+| Already on another post of the workspace | `media[].id` |
+
+## Accepted files
+
+| Type | Formats | Size cap |
+|---|---|---|
+| Image | JPEG, PNG, GIF, WebP | 10 MB, at most about 67 megapixels (8192 × 8192 pixels in total) |
+| Video | MP4, MOV | 1 GB |
+| Document | PDF | 100 MB |
+
+HEIC and HEIF photos are accepted too when the server can convert them, and are stored as JPEG.
+
+These are the caps for any upload. Each network has its own, usually smaller, limits on count, size, duration and aspect ratio, checked when the post is scheduled or published. [List content types](/api-reference/platform/list-content-types) returns them per content type (`max_media_count`, `max_image_bytes`, `max_video_bytes`, `max_video_duration_sec`, …), and each network page lists them, for example [Instagram](/platforms/instagram), [TikTok](/platforms/tiktok) or [LinkedIn](/platforms/linkedin). A file whose type the channel does not accept is refused with `422`.
+
+## Media on create and update
+
+[Create post](/api-reference/posts/create-post), [Create posts in batch](/api-reference/posts/create-posts-in-batch) and [Update post](/api-reference/posts/update-post) take a `media` list. Each item gives **exactly one** source:
+
+| Key | Source |
+|---|---|
+| `url` | A public `http` or `https` URL of the file itself. TryPost downloads it once |
+| `upload_token` | A token from [Create upload](/api-reference/media-and-uploads/create-upload) or a signed upload URL |
+| `id` | A media item already in this workspace, such as `media[].id` of another post. The file is copied |
+
+```bash
+curl -X POST https://app.trypost.it/api/posts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Behind the scenes of our autumn shoot.",
+    "media": [
+      { "url": "https://example.com/shoot-1.jpg", "alt": "Model on a rooftop at sunset" },
+      { "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b" },
+      { "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f" }
+    ],
+    "platforms": [
+      { "social_account_id": "7a2e9c14-5b8d-4f3a-b6e1-0c9d8a7f6e52", "content_type": "instagram_feed" }
+    ]
+  }'
+```
+
+The order of the list is the order of the media in the post. On [Update post](/api-reference/posts/update-post), `media` replaces the post's media; omit it to keep the current media.
+
+## Upload a file
+
+[Create upload](/api-reference/media-and-uploads/create-upload) takes one file as `multipart/form-data`, without a post, and returns an `upload_token`:
+
+```bash
+curl -X POST https://app.trypost.it/api/uploads \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -F media=@launch-video.mp4
+```
+
+```json
+{
+  "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b",
+  "type": "video",
+  "mime_type": "video/mp4",
+  "size": 48213377,
+  "original_filename": "launch-video.mp4",
+  "url": "https://media.trypost.it/medias/9d3c1f31-2b3c-4d5e-8f9a-0b1c2d3e4f5a.mp4",
+  "expires_at": "2026-10-09T14:00:00+00:00"
+}
+```
+
+Use the token as a media item (`{ "upload_token": "..." }`) on create or update, or attach it to an existing post with [Attach media from upload](/api-reference/media-and-uploads/attach-media-from-upload):
+
+```bash
+curl -X POST https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/media/from-upload \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{ "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b" }'
+```
+
+- A token is **single use**: the first post that takes it consumes it. To put the same file on a second post, pass that post's `media[].id`.
+- Use it before `expires_at`, 24 hours after the upload. Unused uploads are then deleted, and a spent or expired token fails with `422`: `This upload expired. Add the file again.`
+
+To upload straight to a post that already exists, [Upload media](/api-reference/media-and-uploads/upload-media) does both steps in one call:
+
+```bash
+curl -X POST https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/media \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -F media=@launch.jpg
+```
+
+Both append the file to the end of the post's media and return the post.
+
+## Attach from URLs
+
+[Attach media from URL](/api-reference/media-and-uploads/attach-media-from-url) downloads **1 to 10** files and appends them to a post:
+
+```bash
+curl -X POST https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41/media/from-url \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "urls": [
+      { "url": "https://example.com/launch.jpg", "alt": "Product launch banner" },
+      { "url": "https://example.com/teaser.mp4" }
+    ]
+  }'
+```
+
+Each URL must serve the file itself. Redirects are not followed, web pages and private-network hosts are refused, and each download has **20 seconds** to finish. Only types the post's channel accepts are kept. The call succeeds even when some URLs fail, so check the result:
+
+```json
+{
+  "post": { "id": "9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41", "...": "..." },
+  "attached_count": 1,
+  "failed_urls": ["https://example.com/teaser.mp4"],
+  "failures": [
+    {
+      "url": "https://example.com/teaser.mp4",
+      "reason": "too_large",
+      "message": "..."
+    }
+  ]
+}
+```
+
+`reason` is one of `unreachable`, `type_not_allowed`, `too_large` or `host_not_allowed`.
+
+A `media[].url` item on create or update is downloaded the same way: no redirects, no private-network hosts. Unlike this call, a URL that fails there fails the whole request with `422`.
+
+## Reuse media from another post
+
+There is no separate media library in the API. To reuse a file, take the `id` of an item in another post's `media` (from [Get post](/api-reference/posts/get-post) or [List posts](/api-reference/posts/list-posts)) and pass it as `{ "id": "..." }`. TryPost copies the file, so deleting either post leaves the other's media intact.
+
+## Signed upload URLs
+
+AI assistants connected through the [MCP server](/ai/introduction) cannot send file bytes over MCP. The `request-media-upload-tool` gives them a one-time signed URL instead, and the file goes to [Upload to signed URL](/api-reference/media-and-uploads/upload-to-signed-url) **without** an API key; the signature authorizes the request:
+
+```bash
+curl -X POST "<upload_url>" \
+  -H "Accept: application/json" \
+  -F media=@launch.jpg
+```
+
+- The URL works once, until it expires (15 minutes by default). A second upload to it returns `409`.
+- The response holds an `upload_token`, used like a token from [Create upload](/api-reference/media-and-uploads/create-upload).
+
+Scripts holding an API key do not need this flow: use [Create upload](/api-reference/media-and-uploads/create-upload).
+
+## Alt text and media settings
+
+Each media item takes optional settings:
+
+| Key | Use |
+|---|---|
+| `alt` | Alt text shorthand, up to 2000 characters. Images only |
+| `meta.alt_text` | Alt text, up to 2000 characters. Wins over `alt` when both are sent. Each network cuts it to its own cap |
+| `meta.user_tags` | Up to 20 people tagged on an Instagram image: `{ "username", "x", "y" }`, with `x` and `y` from 0 to 1 |
+| `meta.cover_offset_ms` | The video frame used as the cover, in milliseconds from the start |
+
+```json
+{
+  "media": [
+    {
+      "url": "https://example.com/team.jpg",
+      "meta": {
+        "alt_text": "Our team at the autumn offsite",
+        "user_tags": [{ "username": "trypostit", "x": 0.42, "y": 0.6 }]
+      }
+    }
+  ]
+}
+```
+
+## Which posts take media
+
+Media can be added and replaced until the post goes out. Posts that are `publishing`, `published`, `partially_published` or `failed` cannot take media: the API answers `422` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`

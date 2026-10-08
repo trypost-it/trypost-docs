@@ -1,0 +1,75 @@
+---
+title: "Members and permissions"
+description: "Invite teammates to a workspace, make them admins, and decide whose posts need approval."
+icon: "users"
+---
+
+Invite as many people as you want to a workspace, on every plan. Each workspace has its own members: inviting someone to one workspace does not give them access to the others.
+
+## Two settings per member
+
+There are no roles to pick. Each member has two settings:
+
+- **Admin** — *Can manage members and workspace settings.* Admins manage members, channels, webhooks, API keys and the workspace's general settings.
+- **Publishing** — **Publishes directly** or **Needs approval**. *Posts from members who need approval wait for an admin or a member who publishes directly.*
+
+Admins always publish directly. The **account owner** is always an admin, publishes directly, and is the only one who can manage billing and create or delete workspaces.
+
+The members list shows each person as **Owner**, **Admin**, **Member** (publishes directly) or **Needs approval**.
+
+## What each person can do
+
+| Action | Needs approval | Publishes directly | Admin | Owner |
+|--------|:--:|:--:|:--:|:--:|
+| Write posts, ideas and templates; add notes | ✓ | ✓ | ✓ | ✓ |
+| Use signatures and labels | ✓ | ✓ | ✓ | ✓ |
+| Connect their own AI assistant through [MCP](/knowledge-base/settings/mcp) | ✓ | ✓ | ✓ | ✓ |
+| Schedule, queue and publish without approval | | ✓ | ✓ | ✓ |
+| Approve or reject other members' posts | | ✓ | ✓ | ✓ |
+| Delete other members' posts | | ✓ | ✓ | ✓ |
+| Make a post [recurring](/knowledge-base/publish/recurring-posts) | | ✓ | ✓ | ✓ |
+| Use [Repurpose](/knowledge-base/repurpose) | | ✓ | ✓ | ✓ |
+| Connect, configure and disconnect channels | | | ✓ | ✓ |
+| Invite, edit and remove members | | | ✓ | ✓ |
+| Manage webhooks and [API keys](/knowledge-base/settings/api-keys) | | | ✓ | ✓ |
+| Rename the workspace and change its logo | | | ✓ | ✓ |
+| Create and delete workspaces, manage billing | | | | ✓ |
+
+Members who need approval can delete only posts they wrote, or a request they made while it is still pending.
+
+A member who needs approval saves posts with **Save and request approval**. The post waits as **Pending approval** until someone who publishes directly approves it. This applies to posts created through MCP as well. See [Approvals](/knowledge-base/publish/approvals).
+
+## Invite a member
+
+<Steps>
+  <Step title="Open Members">
+    Go to **Settings → Members**, or click **New** → **Invite a team member** in the sidebar.
+  </Step>
+  <Step title="Invite Member">
+    Enter the person's **Email**, set **Admin** and **Publishing**, then click **Send Invite**.
+  </Step>
+  <Step title="They accept">
+    The invitation email opens the invite page, where they **Accept Invite** (logging in or creating an account first) or **Decline Invite**.
+  </Step>
+</Steps>
+
+The invitation email is sent in your interface language. Waiting invitations are listed with the members, marked **Pending Invites**, with the access they will get.
+
+An email that already belongs to another TryPost account cannot be invited: ask for a dedicated work email instead.
+
+## Change a member's access
+
+Open the member's menu (⋮) and choose **Edit access**, change **Admin** or **Publishing**, then **Save**. You cannot change your own access or the account owner's.
+
+## Remove a member or cancel an invitation
+
+- **Remove** (from the same menu) — the member loses access to every resource of this workspace. Type the member's email address to confirm.
+- **Cancel invitation** — the invite link stops working. Type the invited email address to confirm.
+
+You cannot remove yourself or the account owner.
+
+Removing a member also revokes the API keys and MCP connections they created for this workspace. A member who no longer belongs to any workspace of the account is permanently deleted. The posts they created stay in the workspace.
+
+## Waiting for the account owner
+
+On TryPost Cloud, if the account has no active subscription, members see **Waiting for the account owner** until the owner finishes checkout. The page updates on its own once the subscription is active. See [Plans and billing](/knowledge-base/settings/plans-and-billing).

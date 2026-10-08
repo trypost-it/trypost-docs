@@ -1,0 +1,106 @@
+---
+title: "Google Business Profile"
+description: "Connect a Google Business Profile location to TryPost and publish posts to it."
+icon: "google"
+---
+
+# Google Business Profile
+
+TryPost publishes posts to your Google Business Profile — updates, events and offers that appear on your Business Profile in Google Search and Maps. Each connected channel is one business **location**.
+
+## Connect your account
+
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **Google Business Profile** and click **Connect Google Business Profile**
+3. Sign in with the Google account that manages your business and allow every permission
+4. On the **Select accounts** page, tick the locations you want (each card is marked **Location**) and click **Finish connection**
+
+Every location of every Business account that login manages is listed, except locations Google does not allow to post. If none is found, TryPost shows *No Google Business Profile locations found. Verify your business first.* After you finish, TryPost opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
+
+<Tip>
+  Managing locations from more than one Google login? Use **Switch account** on the confirmation page: Google asks which account to use again.
+</Tip>
+
+## Supported content types
+
+| Type | `content_type` | Description |
+|------|----------------|-------------|
+| **Post** | `google_business_post` | Text with an optional image. Appears on your Business Profile in Search and Maps |
+
+## Media limits
+
+| `content_type` | Image | Video | Format |
+|----------------|-------|-------|--------|
+| `google_business_post` | 1 image, 10 MB | — | JPEG/PNG/WebP. At least 250 × 250 px. No GIF, no PDF |
+
+TryPost converts the image to JPEG (up to 2048 px wide, under 5 MB) before sending it. **Edit Media** offers the crop presets 4:3 and 1:1. Full catalog: [Media](/knowledge-base/media#google-business-profile).
+
+## Post types and options
+
+**Text.** Up to **1,500 characters**, sent as plain text. The text and the image are each optional.
+
+**Post type** (`platforms[].meta.topic_type`):
+
+| Post type | `topic_type` | What it needs |
+|-----------|--------------|---------------|
+| **What's New** (default) | `STANDARD` | Nothing extra. News and updates about your business |
+| **Event** | `EVENT` | **Event title** (up to 58 characters), **Start** and **End** dates. Optional start and end times, in the location's local time |
+| **Offer** | `OFFER` | **Offer title** (up to 58 characters), **Start** and **End** dates. Optional coupon code, redeem link and terms (up to 5,000 characters). Google adds a **View offer** button |
+
+On the API, the dates go in `meta.event` (`title`, `start_date`, `end_date` as `YYYY-MM-DD`, `start_time`, `end_time` as `HH:MM`) and the offer details in `meta.offer` (`coupon_code`, `redeem_online_url`, `terms_conditions`). The end date must be on or after the start date, and a same-day end time must be after the start time.
+
+**Button** (`meta.call_to_action`, not available on offers):
+
+| Button | `action_type` | Needs a link |
+|--------|---------------|--------------|
+| **None** (default) | `NONE` | — |
+| **Book** | `BOOK` | Yes |
+| **Order online** | `ORDER` | Yes |
+| **Buy** | `SHOP` | Yes |
+| **Learn more** | `LEARN_MORE` | Yes |
+| **Sign up** | `SIGN_UP` | Yes |
+| **Call now** | `CALL` | No — Google uses the location's phone number |
+
+The **Button link** (`meta.call_to_action.url`, http or https, up to 2,048 characters) is required for every button except **None** and **Call now**. An event or offer without its title and dates, or a button without its link, cannot be scheduled or published.
+
+**Language.** Google receives the post in the language of the author's TryPost interface.
+
+## Review by Google
+
+Google reviews every post before it goes live. While it does, the post shows **In review by Google**; TryPost checks every 5 minutes and marks it published once Google puts it live.
+
+- If Google rejects it, the post fails with *Google rejected this post in review. Edit the content or image and try again.* A rejected post cannot be retried — duplicate it, fix it and schedule the copy.
+- If Google has not confirmed the post after 24 hours, it fails with *Google never confirmed this post. Check your Business Profile and try again.*
+
+TryPost cannot edit or delete a post on Google after it is published. Deleting it in TryPost leaves it on your Business Profile.
+
+## Insights
+
+Google Business Profile is not included in [Insights](/knowledge-base/insights/overview), and it cannot be a [Repurpose](/knowledge-base/repurpose) destination.
+
+## OAuth scopes
+
+`https://www.googleapis.com/auth/userinfo.profile`, `https://www.googleapis.com/auth/userinfo.email`, `https://www.googleapis.com/auth/business.manage`
+
+`business.manage` is the scope TryPost needs to publish.
+
+## Self-hosting setup
+
+<Accordion title="Configure Google Business Profile API credentials">
+  Google Business Profile uses its **own** Google OAuth client, separate from the one for YouTube and Google login, so the sensitive `business.manage` scope never sends your YouTube app back into Google's review.
+
+  1. In the [Google Cloud Console](https://console.cloud.google.com/), create or choose a project
+  2. Request access to the Business Profile APIs. Google approves it manually and the API quota stays at 0 until it does; check Google's current eligibility rules (a verified, active Business Profile) before you apply
+  3. Enable the **My Business Account Management API**, the **My Business Business Information API** and the Google My Business API (v4), which is the only API for Local Posts
+  4. Configure the OAuth consent screen with the three scopes listed above
+  5. Create OAuth 2.0 credentials with the redirect URL `{APP_URL}/accounts/google-business/callback`
+  6. Add to your `.env`:
+
+  ```env
+  GOOGLE_BUSINESS_CLIENT_ID=your_client_id
+  GOOGLE_BUSINESS_CLIENT_SECRET=your_client_secret
+  GOOGLE_BUSINESS_CLIENT_REDIRECT="${APP_URL}/accounts/google-business/callback"
+  ```
+
+  Hide Google Business Profile with `GOOGLE_BUSINESS_ENABLED=false`. The scheduler must be running for posts to leave **In review by Google** — see [Production setup](/self-hosting/production#scheduled-tasks-cron).
+</Accordion>

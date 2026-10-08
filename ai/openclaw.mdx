@@ -9,7 +9,7 @@ icon: "/images/ai/openclaw.svg"
 ## Prerequisites
 
 - OpenClaw installed ([getting started](https://docs.openclaw.ai/start/getting-started))
-- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/plans-and-billing))
+- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/settings/plans-and-billing))
 
 ## Setup
 
@@ -34,7 +34,7 @@ icon: "/images/ai/openclaw.svg"
     openclaw mcp login trypost
     ```
 
-    OpenClaw prints an authorization URL and stores a temporary PKCE verifier. Open the URL in a browser, sign in to TryPost, and click **Allow**. After approval, pass the returned code back:
+    OpenClaw prints an authorization URL and stores a temporary PKCE verifier. Open the URL in a browser, sign in to TryPost, pick the **Workspace** this connection may use and click **Authorize** (to use another workspace, connect again and pick it). After approval, pass the returned code back:
 
     ```bash
     openclaw mcp login trypost --code YOUR_CODE
@@ -95,7 +95,7 @@ Show me all my connected social media accounts
 ```
 
 ```
-Create a draft LinkedIn post for tomorrow at 9am
+Create a draft LinkedIn post for tomorrow at 9am New York time
 ```
 
 ```

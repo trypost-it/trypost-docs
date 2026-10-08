@@ -10,7 +10,7 @@ icon: "/images/ai/github-copilot.svg"
 
 - VS Code with the GitHub Copilot extension installed
 - Copilot agent mode enabled
-- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/plans-and-billing))
+- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/settings/plans-and-billing))
 
 ## Setup (IDE agent mode)
 
@@ -35,7 +35,7 @@ icon: "/images/ai/github-copilot.svg"
     Reload the window to load the new MCP configuration.
   </Step>
   <Step title="Sign in through your browser">
-    Open Copilot Chat in agent mode. VS Code prompts you to sign in to TryPost. Approve the request in the browser and the server flips to **Connected**.
+    Open Copilot Chat in agent mode. VS Code prompts you to sign in to TryPost. In the browser, pick the **Workspace** this connection may use and click **Authorize**; the server flips to **Connected**. To use another workspace, connect again and pick it.
   </Step>
   <Step title="Verify the connection">
     Ask Copilot:
@@ -54,7 +54,7 @@ icon: "/images/ai/github-copilot.svg"
 
 GitHub's **coding agent** (the one that runs on GitHub's infrastructure to handle issues and PRs) does not yet support OAuth for remote MCP servers. TryPost's MCP endpoint requires OAuth (`mcp:use`) and **rejects** Personal Access Tokens, so cloud coding agent MCP is not supported today.
 
-Use Copilot's **IDE agent mode** (above) for MCP, or call the [REST API](/api-reference/introduction) from Actions / scripts with an API key from **Settings → API Keys**.
+Use Copilot's **IDE agent mode** (above) for MCP, or call the [REST API](/api-reference/introduction) from Actions / scripts with an API key (workspace admins only) from **Settings → API Keys**.
 
 ## Global IDE configuration
 
@@ -63,7 +63,7 @@ To make TryPost available across all projects in your IDE, open the command pale
 ## Example prompts
 
 ```
-Create a new post scheduled for tomorrow
+Create a new post scheduled for tomorrow at 9am New York time
 ```
 
 ```

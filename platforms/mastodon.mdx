@@ -6,20 +6,23 @@ icon: "mastodon"
 
 # Mastodon
 
-TryPost supports posting to any Mastodon instance.
+TryPost publishes posts and threads to any Mastodon instance.
 
 ## Connect your account
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect Mastodon**
-3. Enter your Mastodon instance URL (e.g., `mastodon.social`)
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **Mastodon** and click **Connect Mastodon**
+3. On the **Connect Mastodon** form, enter your **Instance URL** (for example `mastodon.social`) and click **Continue with Mastodon**
 4. Authorize TryPost on your instance
+5. On the confirmation page, check the account and click **Finish connection**
+
+TryPost opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
 
 ## Supported content types
 
-| Type | Description |
-|------|-------------|
-| **Post** | Text with up to 4 optional images or 1 video |
+| Type | `content_type` | Description |
+|------|----------------|-------------|
+| **Post** | `mastodon_post` | Text with up to 4 optional images or 1 video |
 
 ## Media limits
 
@@ -27,12 +30,33 @@ TryPost supports posting to any Mastodon instance.
 |----------------|-------|-------|--------|
 | `mastodon_post` | 10 MB | 40 MB | JPEG/PNG/GIF/WebP; video MP4 or MOV |
 
-Official specs: [Attachments](https://docs.joinmastodon.org/user/posting/#attachments), [`Instance.media_attachments`](https://docs.joinmastodon.org/entities/Instance/). Full catalog: [Media](/knowledge-base/media).
+Official specs: [Attachments](https://docs.joinmastodon.org/user/posting/#attachments), [`Instance.media_attachments`](https://docs.joinmastodon.org/entities/Instance/). Full catalog: [Media](/knowledge-base/media#mastodon).
+
+## Text and per-post options
+
+- **500 characters** per post, **including the content warning**. TryPost uses the default Mastodon limit even if your instance allows more.
+- **Content warning** — hide the post behind a warning (`platforms[].meta.spoiler_text`, up to 500 characters). In a thread, the warning is repeated on every reply.
+- **Threads** — click **Start thread** to add replies under the post, up to **24**. Each reply has its own text and up to 4 media items.
+- **Alt text** — up to 1,500 characters per image.
+
+## Insights
+
+Mastodon posts and followers appear in [Insights](/knowledge-base/insights/overview).
 
 ## OAuth scopes
 
-`read:accounts`, `write:statuses`, `write:media`
+`read:accounts`, `read:statuses`, `write:statuses`, `write:media`
 
 ## Self-hosting setup
 
-No API credentials or environment variables are required for Mastodon. TryPost dynamically registers an OAuth app on each Mastodon instance the first time a user connects from there.
+No API credentials are required for Mastodon. TryPost registers an OAuth app on each instance the first time someone connects from it.
+
+<Accordion title="Optional Mastodon settings">
+  Each account remembers the instance it connected from. `MASTODON_DEFAULT_INSTANCE` is only the fallback for an account that has no stored instance; you rarely need to change it:
+
+  ```env
+  MASTODON_DEFAULT_INSTANCE=https://mastodon.social
+  ```
+
+  Hide Mastodon with `MASTODON_ENABLED=false`.
+</Accordion>

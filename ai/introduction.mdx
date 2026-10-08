@@ -4,7 +4,7 @@ description: "Connect AI coding assistants to your TryPost account using the Mod
 icon: "book-open"
 ---
 
-TryPost provides a built-in [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that lets AI coding assistants manage your social media scheduling directly. Your AI assistant can create and publish posts, manage signatures, labels, webhooks, and repurposes, fetch metrics, and more — all through natural language.
+TryPost provides a built-in [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that lets AI assistants manage your social media scheduling directly. Your assistant can create, schedule, queue and publish posts, handle approvals, organize ideas, read analytics, and manage signatures, labels, posting times, webhooks, repurposes and API keys — all through natural language.
 
 ## What is MCP?
 
@@ -12,36 +12,40 @@ MCP is an open protocol that connects AI assistants to external tools and data s
 
 ## Available tools
 
-TryPost exposes a full set of MCP tools for end-to-end content workflows. See the [Tools reference](/ai/tools-reference) for parameters and examples.
+The server exposes 81 tools. See the [Tools reference](/ai/tools-reference) for every argument and the recommended workflow.
 
-| Category | Tools | Description |
-|----------|-------|-------------|
-| **Posts** | List, Get, Create, Update, Publish, Delete, Attach Media from URL, Request Media Upload, Attach Media from Upload, Preview, Get Metrics | Create, schedule, publish, and analyze posts across all connected platforms — including local-file uploads via signed URLs |
-| **Assets** | List, Get, Attach Existing | Browse the workspace Asset Library and attach an existing item to a draft or scheduled post |
-| **Platforms** | List Content Types | Discover valid `content_type` values and per-platform limits |
-| **Signatures** | List, Create, Update, Delete | Manage reusable text blocks (hashtag sets, CTAs, link callouts) |
-| **Labels** | List, Create, Update, Delete | Manage color-coded labels for organizing posts |
-| **Social Accounts** | List, List Pinterest Boards, List Discord Channels, Toggle | View connected accounts, resolve Pinterest `board_id` / Discord `channel_id`, toggle active/inactive |
-| **Workspace** | Get | Get current workspace details |
-| **API Keys** | List, Create, Delete | Manage API keys |
-| **Webhooks** | List, Get, Create, Update, Delete, Send Test, Rotate Secret, List Logs, Replay | Subscribe to post events and inspect signed deliveries |
-| **Repurpose** | List, Get, Create, Update, Activate, Pause, Resume, Disable, Delete, List Items, List Source Formats | Watch Instagram or Facebook and republish new videos to other networks |
+| Category | What your assistant can do |
+|----------|----------------------------|
+| **Posts** | List, get, create (one channel or several at once), update, preview, publish, delete; schedule at a time or in the channel queue; threads on X, Bluesky and Mastodon; attach media from a URL or a local upload; notes; approvals; recurrence; metrics |
+| **Ideas** | List, create, update, duplicate, move and delete ideas; manage the board's stages |
+| **Analytics** | Workspace report, a publication's metrics, channel insights and a channel's best posts |
+| **Social accounts and queue** | List channels; read and set posting times; list free queue slots, reorder the queue, move a post to a slot; Pinterest boards, Discord channels and TikTok creator info |
+| **Repurpose** | Watch Instagram or Facebook and republish new videos to other networks |
+| **Labels and signatures** | Manage color-coded labels and reusable text blocks |
+| **Webhooks** | Subscribe to post events, test, rotate secrets, read and replay deliveries |
+| **API keys** | List, create and revoke REST API keys |
+| **Workspace and platforms** | Read the workspace and your permissions in it; list content types and each network's rules |
+
+### What MCP cannot do
+
+- **Generate content with AI.** There is no MCP tool for generating or rewriting content. Your assistant writes the text itself and sends it to TryPost; the built-in AI writing assistant is available in the web app. Repurpose may shorten captions with AI in the background, including for rules created through MCP.
+- Connect, reconnect or disconnect channels, turn ideas into posts, manage templates, members, invites or billing. Use the [web app](https://app.trypost.it) for these.
 
 ## How it works
 
 <Note>
-  MCP access on **TryPost Cloud** requires an active subscription. New accounts pay **$1 for the first month** during welcome. See [Plans & billing](/knowledge-base/plans-and-billing) for details. Self-hosted instances skip this check.
+  MCP on **TryPost Cloud** needs an account with access to the app (an active subscription). See [Plans & billing](/knowledge-base/settings/plans-and-billing). Self-hosted instances skip this check.
 </Note>
 
 <Steps>
   <Step title="Add the TryPost MCP server in your assistant">
     Use your assistant's MCP configuration to add a remote HTTP server pointing to `https://app.trypost.it/mcp/trypost`. Each [client guide](#next-steps) below has the exact command or settings file.
   </Step>
-  <Step title="Sign in through your browser">
-    The first time the assistant calls a tool, TryPost opens a browser window asking you to sign in and authorize the connection. Click **Allow** and you're done — the assistant holds the OAuth token from then on, with automatic refresh.
+  <Step title="Sign in and pick a workspace">
+    The first time the assistant connects, TryPost opens a browser window. Sign in, choose the **Workspace** this connection may use, and click **Authorize**. The assistant holds the OAuth token from then on, with automatic refresh.
   </Step>
   <Step title="Start using natural language">
-    Ask your assistant to manage your TryPost account. For example: "Create a new post for LinkedIn next Tuesday at 9am" or "List all my scheduled posts."
+    Ask your assistant to manage your TryPost account. For example: "Queue a LinkedIn post for my next free slot" or "List my posts waiting for approval."
   </Step>
 </Steps>
 
@@ -51,13 +55,30 @@ TryPost exposes a full set of MCP tools for end-to-end content workflows. See th
 https://app.trypost.it/mcp/trypost
 ```
 
+<Note>
+  Self-hosting TryPost? The server lives at `{APP_URL}/mcp/trypost` on your instance.
+</Note>
+
 ## Authentication
 
-TryPost's MCP server uses **OAuth 2.1** with Dynamic Client Registration (DCR), PKCE, and the `mcp:use` scope. Modern MCP clients (Claude, Claude Code, Claude Desktop, ChatGPT, Muse Code, Perplexity, Cursor, Windsurf, VS Code, GitHub Copilot in IDE, Gemini CLI, OpenCode, OpenClaw, Codex) detect this automatically from the `.well-known` discovery endpoints — you only point them at the URL and the browser sign-in handles the rest.
+TryPost's MCP server uses **OAuth 2.1** with Dynamic Client Registration (DCR), PKCE, and the `mcp:use` scope. Modern MCP clients detect this automatically from the `.well-known` discovery endpoints — you only point them at the URL and the browser sign-in handles the rest.
+
+Each connection is bound to the workspace you chose on the consent screen ("This connection will only access the selected workspace."). To work in another workspace, connect again and pick it. Manage or disconnect connected assistants under workspace **Settings → MCP**.
 
 <Warning>
-  Personal Access Tokens from **Settings → API Keys** authenticate the [REST API](/api-reference/introduction) only. They are **not** accepted on `/mcp/trypost`. MCP requires an OAuth grant with the `mcp:use` scope (browser sign-in from a supported client). Manage connected assistants under workspace **Settings → MCP**.
+  Personal Access Tokens from **Settings → API Keys** authenticate the [REST API](/api-reference/introduction) only. They are **not** accepted on `/mcp/trypost`. MCP requires an OAuth grant with the `mcp:use` scope (browser sign-in from a supported client).
 </Warning>
+
+## Permissions
+
+Every member of the workspace can connect an assistant, not only admins (the REST API accepts admin API keys only). The assistant can do what you can do in the app:
+
+- **Any member** can write posts, notes, ideas, labels and signatures and read analytics.
+- **Members who need approval**: posts they schedule, queue or publish wait as `pending_approval` until a member who publishes directly approves them. Ask the assistant to call `get-workspace-tool` to see which applies to you.
+- **Members who publish directly** can also approve and reject posts, manage the queue order, set recurrence and run repurposes.
+- **Admins** can also change posting times and manage webhooks and API keys.
+
+See [Members and permissions](/knowledge-base/settings/members-and-permissions) and [Approvals](/knowledge-base/publish/approvals).
 
 ## Troubleshooting
 
@@ -66,22 +87,25 @@ TryPost's MCP server uses **OAuth 2.1** with Dynamic Client Registration (DCR), 
     Your OAuth grant is valid and the config is correct — the account behind it just doesn't have an active subscription. Open [app.trypost.it](https://app.trypost.it), pick a plan, then reconnect the MCP server. Self-hosted instances skip this check.
   </Accordion>
   <Accordion title="HTTP 401 — Unauthenticated">
-    The OAuth session expired and refresh failed, or the access token is missing/malformed/revoked. Re-run the assistant's connect flow to sign in again.
+    The OAuth session expired and refresh failed, the access token is missing, malformed or revoked (removing you from the workspace revokes it), or the workspace it was bound to was deleted (`No workspace selected.`). Re-run the assistant's connect flow to sign in again.
   </Accordion>
   <Accordion title="HTTP 403 — MCP OAuth authorization required">
-    The request used a Personal Access Token (API key) or an OAuth token without the `mcp:use` scope. Remove any `Authorization: Bearer …` API key from the MCP config and connect with OAuth instead. For scripts and CI, call the [REST API](/api-reference/introduction) with an API key — not the MCP endpoint.
+    The request used a Personal Access Token (API key) or an OAuth token without the `mcp:use` scope. Remove any `Authorization: Bearer …` API key from the MCP config and connect with OAuth instead. For scripts and CI, call the [REST API](/api-reference/introduction) with an API key (workspace admins only) — not the MCP endpoint.
+  </Accordion>
+  <Accordion title="HTTP 403 — Workspace access denied">
+    The connection is bound to a workspace you can no longer access. Reconnect and pick a workspace you belong to.
   </Accordion>
   <Accordion title="Server shows as “Failed to connect”">
-    Run the connection probe your assistant exposes (for example `claude mcp list` or `devin mcp list`). The HTTP status from the probe tells you which case you're in: `402` → see above; `401` → re-authenticate; `403` → use OAuth (not an API key); anything else → open an issue on [GitHub](https://github.com/trypostit/trypost/issues).
+    Run the connection probe your assistant exposes (for example `claude mcp list` or `devin mcp list`). The HTTP status from the probe tells you which case you're in: `402` → see above; `401` → re-authenticate; `403` → see the two 403 entries above (use OAuth, not an API key; or reconnect to a workspace you belong to); anything else → open an issue on [GitHub](https://github.com/trypostit/trypost/issues).
   </Accordion>
   <Accordion title="Browser doesn't open during sign-in">
-    Some clients print the authorize URL to the terminal instead of launching the browser when running over SSH or inside a container. Copy the URL into a local browser, complete the flow, and the assistant will pick up the callback automatically. If the callback port is blocked, use a client that can finish OAuth locally, or drive TryPost through the [REST API](/api-reference/introduction) with an API key.
+    Some clients print the authorize URL to the terminal instead of launching the browser when running over SSH or inside a container. Copy the URL into a local browser, complete the flow, and the assistant will pick up the callback automatically. If the callback port is blocked, use a client that can finish OAuth locally, or drive TryPost through the [REST API](/api-reference/introduction) with an API key (workspace admins only).
   </Accordion>
 </AccordionGroup>
 
 ## Next steps
 
-Every Build with AI page is linked here — the tools reference plus all 16 setup guides.
+Every Build with AI page is linked here — the tools reference plus all 18 setup guides.
 
 <CardGroup cols={3}>
   <Card title="Tools reference" icon="wrench" href="/ai/tools-reference">

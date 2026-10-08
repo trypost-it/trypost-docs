@@ -1,0 +1,49 @@
+---
+title: "Authentication"
+description: "Manage your password, Google and GitHub sign-in, active sessions, and delete your account."
+icon: "lock"
+---
+
+Everything about signing in lives in **Settings → Authentication**. These settings are personal and apply to every workspace you belong to.
+
+## Password
+
+- **Update password** — enter your **Current password**, a **New password** and **Confirm password**, then **Save password**.
+- **Set a password** — shown when you signed up with Google or GitHub and never set one. Adding a password lets you sign in without a connected provider.
+
+Forgot your password? Use **Forgot password?** on the sign-in page; TryPost emails you a link to choose a new one.
+
+## Connected accounts
+
+Sign in faster with Google or GitHub. Each provider shows **Connected** or **Not connected**, with **Connect** or **Disconnect**.
+
+You cannot disconnect your only sign-in method: set a password or connect the other provider first. A Google or GitHub account that is already linked to another TryPost user cannot be connected.
+
+<Note>
+  Self-hosting TryPost? Google and GitHub sign-in need their own credentials — see [Social login](/self-hosting/configuration#social-login).
+</Note>
+
+## Active sessions
+
+**Active sessions** lists every browser and device signed in to your account, with its browser, operating system, IP address and last activity. The one you are using shows **Active now**.
+
+If you notice anything suspicious, click **Log out other devices**. Confirm with your current password, or by typing your email address if your account has no password. Every other session is signed out.
+
+## Email verification
+
+New accounts verify their email address through a link TryPost sends at signup. After you change your email in [Profile](/knowledge-base/settings/profile), the new address needs to be verified too.
+
+## Delete account
+
+**Delete account** permanently deletes your user and everything that belongs to it. Confirm with your password, or by typing your email address if your account has no password.
+
+What it removes depends on whether you own the account:
+
+- **You are the account owner** — on TryPost Cloud your subscription is cancelled first; if that fails, nothing is deleted. Then every workspace of the account is deleted with its posts, channels and media, and every invited member of the account is permanently deleted too.
+- **You are an invited member** — you leave every workspace you belong to and your user is deleted. The workspaces and their posts stay.
+
+Posts already published on the networks stay there.
+
+<Warning>
+  This cannot be undone. If you only want to stop paying, cancel your subscription from [Billing](/knowledge-base/settings/plans-and-billing) instead.
+</Warning>

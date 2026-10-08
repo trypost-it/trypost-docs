@@ -1,0 +1,100 @@
+---
+title: "Connecting a channel"
+description: "Connect your social accounts to a workspace, pick which ones TryPost publishes to, and reconnect a channel that lost its connection."
+icon: "plug"
+---
+
+A **channel** is one social account connected to a workspace: a LinkedIn profile, a Facebook Page, a YouTube channel, a Discord server, and so on. TryPost publishes to channels, imports what they post directly on the network, and reads their analytics.
+
+Only the account owner and workspace admins can connect, reconnect or disconnect channels. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+## Supported networks
+
+| Network | What you connect | Guide |
+|---------|------------------|-------|
+| LinkedIn | Page or Profile | [LinkedIn](/platforms/linkedin) |
+| X | Profile | [X (Twitter)](/platforms/x-twitter) |
+| TikTok | Business or Personal | [TikTok](/platforms/tiktok) |
+| YouTube | Channel | [YouTube](/platforms/youtube) |
+| Facebook | Page | [Facebook](/platforms/facebook) |
+| Instagram | Business or Creator (Professional) account | [Instagram](/platforms/instagram) |
+| Threads | Profile | [Threads](/platforms/threads) |
+| Pinterest | Profile | [Pinterest](/platforms/pinterest) |
+| Bluesky | Profile | [Bluesky](/platforms/bluesky) |
+| Mastodon | Profile | [Mastodon](/platforms/mastodon) |
+| Telegram | Channel or group | [Telegram](/platforms/telegram) |
+| Discord | Server | [Discord](/platforms/discord) |
+| Google Business | Business profile | [Google Business Profile](/platforms/google-business) |
+
+Each network's guide covers its requirements, post types and media rules.
+
+## Connect a channel
+
+<Steps>
+  <Step title="Open Connect a new channel">
+    Click **New** → **Connect a new channel** in the sidebar. You can also click **Connect channel** in **Settings → Channels**.
+  </Step>
+  <Step title="Pick the network">
+    Choose the network, then **Connect** with the network's name (for example **Connect LinkedIn**). The same panel lists what the network supports and links to its guide.
+  </Step>
+  <Step title="Sign in on the network">
+    TryPost sends you to the network's own sign-in page in the same tab. Sign in and accept every permission, especially the permission to publish.
+  </Step>
+  <Step title="Choose the accounts">
+    You come back to a confirmation page: **Connect your account** when the login offers one account, or **Select accounts** when it offers several (for example your LinkedIn profile and the Pages you manage). Pick one or more, or use **Select all**, then click **Finish connection**.
+  </Step>
+</Steps>
+
+After **Finish connection** you land on the new channel's **Publish** page, which asks how many times a week you want to post and sets up posting times for the [queue](/knowledge-base/publish/queue). You can change both later in [Channel settings](/knowledge-base/channels/settings).
+
+There is no popup: every network that signs in through its own website uses a full-page redirect.
+
+### Accounts that are already connected
+
+If the login offers an account that is already a channel in this workspace, the confirmation page still lists it, but locked: it shows **Connected** instead of a checkbox, is never pre-selected and is skipped by **Select all**. **Finish connection** stays disabled until you pick a new account. When every account on the login is already connected, the page says **All your LinkedIn accounts are already connected.** (with the network's name)
+
+### Switch account
+
+Signed in to the wrong profile? Click **Switch account** at the top of the confirmation page. The **Connect a different account** step tells you to switch accounts on the network's website, then **Connect to** *network* restarts the sign-in. Where the network supports it (Google Business, Facebook, Instagram through Facebook, Mastodon), TryPost asks the network to show its account chooser again.
+
+### When the connection stops
+
+The confirmation page explains what happened and offers **Try again**:
+
+| Message | What happened |
+|---------|---------------|
+| **Connection cancelled** | You cancelled on the network. Nothing was connected. |
+| **Permission needed** | The permission to publish was unchecked. Connect again and keep it checked. |
+| **This connection expired** | More than 15 minutes passed between signing in and finishing. Start again. |
+| **Could not connect** | The network returned an error, or the login has nothing TryPost can publish to (for example no Facebook Page you manage). |
+
+## Networks with their own steps
+
+- **Bluesky** — enter your **Handle or email** and an **App Password** (create one at [bsky.app/settings/app-passwords](https://bsky.app/settings/app-passwords)), not your main password.
+- **Mastodon** — enter your **Instance URL** (for example `mastodon.social`), then sign in on that instance.
+- **Telegram** — a dialog asks you to add the TryPost bot as an administrator of your channel or group, then post the command it shows there. The command expires after 15 minutes; **Generate new command** gives you a fresh one.
+- **Instagram** — choose **Connect to Instagram** for a Professional (Business or Creator) account, or **Connect Instagram through Facebook** if your Instagram account is linked to a Facebook Page. The second path requires a Business or Creator account linked to a Page, logged in as a Page admin with full control, and every permission selected.
+
+## Multiple accounts per network
+
+A workspace can connect as many accounts as you want on the same network: two LinkedIns, three Instagrams, and so on.
+
+Connecting an account that is already a channel never creates a second channel. It refreshes the existing one. The same identity also cannot sit twice under two connection types of one network, such as an Instagram account connected directly and through Facebook.
+
+The same social account can be connected in several workspaces; each workspace manages its own channel.
+
+## Reconnect a channel
+
+TryPost checks every channel's connection once a day. When a network stops accepting the connection (password changed, access revoked, token expired), the channel shows **Connection lost** with **Reconnect this channel to keep publishing.** The account owner gets an email; see [Notifications](/knowledge-base/settings/notifications).
+
+To fix it, click **Reconnect** on the channel in **Settings → Channels**. Use **Refresh connection** from the channel's menu to renew a connection that still works but misbehaves. Both run the same sign-in, and the confirmation page shows only that channel, already selected. Sign in as the same account: authorizing a different one is rejected with **That is a different account. Authorize the one you are reconnecting.**
+
+Reconnecting keeps the channel's posts, queue and settings.
+
+<Note>
+  Self-hosting TryPost? Every network except Bluesky and Mastodon needs your own developer app credentials — see [Social platforms](/self-hosting/configuration#social-platforms).
+</Note>
+
+## Via the API and MCP
+
+Connecting happens in the browser only. Once a channel is connected, the API and MCP can list it: [`GET /social-accounts`](/api-reference/social-accounts/list-social-accounts) or `list-social-accounts-tool`.

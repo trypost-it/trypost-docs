@@ -1,6 +1,6 @@
 # TryPost Docs
 
-Documentation for [TryPost](https://github.com/trypost-it/trypost) — open source social media scheduling.
+Documentation for [TryPost](https://github.com/trypostit/trypost) — open source social media scheduling.
 
 ## Development
 
@@ -25,16 +25,18 @@ Changes pushed to the `main` branch are deployed automatically via the [Mintlify
 ## Structure
 
 ```
-├── getting-started/    # Installation, configuration, first steps
-├── platforms/          # LinkedIn, X, Facebook, Instagram, TikTok, YouTube, Threads, Pinterest, Bluesky, Mastodon
-├── features/           # Scheduling, workspaces, team management
-├── self-hosting/       # Requirements, production, Docker
-├── contributing.mdx    # Contributing guide
-└── docs.json           # Mintlify configuration
+├── index.mdx, getting-started/   # Home and quickstart
+├── knowledge-base/               # How the app works (mirrors the app sidebar)
+├── platforms/                    # One page per network (13)
+├── api-reference/ + openapi.json # REST API (operation pages generated from openapi.json)
+├── ai/                           # MCP server and client setup
+├── self-hosting/                 # Requirements, install, Docker, production, upgrading
+├── contributing.mdx, support.mdx
+└── docs.json                     # Navigation, OpenAPI, redirects
 ```
 
 ## Links
 
-- [TryPost](https://github.com/trypost-it/trypost)
-- [Issues](https://github.com/trypost-it/trypost/issues)
-- [Discussions](https://github.com/trypost-it/trypost/discussions)
+- [TryPost](https://github.com/trypostit/trypost)
+- [Issues](https://github.com/trypostit/trypost/issues)
+- [Discussions](https://github.com/trypostit/trypost/discussions)

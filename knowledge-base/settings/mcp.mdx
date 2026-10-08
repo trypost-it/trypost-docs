@@ -1,0 +1,53 @@
+---
+title: "MCP"
+description: "Connect Claude, ChatGPT, Cursor and other AI assistants to your workspace, and disconnect them."
+icon: "plug-circle-bolt"
+---
+
+MCP (Model Context Protocol) lets an AI assistant work in your workspace: create and schedule posts, read metrics, manage ideas, labels and more. Open **Settings → MCP** to connect one.
+
+Every member of the workspace can connect their own assistant. It acts as you, with your permissions: if your posts need approval, posts created through your assistant need approval too. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+## Connect an assistant
+
+<Steps>
+  <Step title="Copy your TryPost server URL">
+    Click **Copy URL**. On TryPost Cloud the URL is:
+
+    ```
+    https://app.trypost.it/mcp/trypost
+    ```
+  </Step>
+  <Step title="Open your AI assistant">
+    - **Claude** — open Settings → Connectors, add a custom connector, then paste the URL.
+    - **ChatGPT** — open Settings → Apps & Connectors, create a custom connector, then paste the URL.
+
+    **Connect Claude** and **Connect ChatGPT** open those settings for you. Under **Other apps**, TryPost shows the name, URL or config to paste into **Cursor**, **VS Code**, **Claude Code** or any other client that reads an `mcpServers` config. That snippet names the server `TryPost`; the setup guides use `trypost`. If you paste the snippet, use `TryPost` in commands such as `codex mcp login TryPost`.
+  </Step>
+  <Step title="Authorize">
+    The first time the assistant connects, your browser opens **Authorize** *assistant name*. Pick the **Workspace** and click **Authorize**. This connection will only access the selected workspace.
+  </Step>
+</Steps>
+
+To use the assistant with another workspace, connect it again and pick that workspace.
+
+Step-by-step guides for each assistant, and the list of every tool, are in [Build with AI](/ai/introduction).
+
+<Note>
+  Self-hosting TryPost? Use `{APP_URL}/mcp/trypost` as the server URL.
+</Note>
+
+## Connected apps
+
+**Connected apps** lists the assistants you've signed in with for this workspace, with when each was **Last used**. Each person sees only their own.
+
+To remove one, click **Disconnect** and type the app's name to confirm. This signs the app out of TryPost: it will need to reconnect before it can use MCP again.
+
+Removing a member from the workspace also disconnects their apps.
+
+## What an assistant can and cannot do
+
+- It can do what the [tools](/ai/tools-reference) allow, within your permissions in the workspace.
+- TryPost's AI writing features (the composer's and idea editor's AI assistant, **Generate ideas**, alt text) are not available over MCP; your assistant writes the text itself.
+- On TryPost Cloud, the account needs an active subscription.
+- API keys don't work for MCP, and MCP connections don't work for the REST API. For scripts and CI, use [API keys](/knowledge-base/settings/api-keys).

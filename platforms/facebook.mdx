@@ -6,40 +6,56 @@ icon: "facebook"
 
 # Facebook
 
-TryPost supports posting to Facebook pages.
+TryPost publishes posts, reels and stories to the Facebook pages you manage.
 
 ## Connect your account
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect Facebook**
-3. Authorize TryPost on Facebook
-4. Select the page you want to manage. If you administer only one, TryPost connects it without asking. To add another page, connect Facebook again and pick a different one.
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **Facebook** and click **Connect Facebook**
+3. Authorize TryPost on Facebook and keep every permission checked
+4. On the **Select accounts** page, tick the pages you want and click **Finish connection**
+
+Every page you manage is listed, and you can connect several at once. Pages that are already connected show as **Connected**. TryPost then opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
 
 ## Supported content types
 
-| Type | Aspect ratio | Description |
-|------|-------------|-------------|
-| **Post** | — | Text with up to 10 images or 1 video |
-| **Reel** | 9:16 | Short-form vertical video |
-| **Story** | 9:16 | Temporary content (24 hours) |
+| Type | `content_type` | Aspect ratio | Description |
+|------|----------------|--------------|-------------|
+| **Post** | `facebook_post` | — | Text with up to 10 images or 1 video |
+| **Reel** | `facebook_reel` | 9:16 | Short-form vertical video |
+| **Story** | `facebook_story` | 9:16 | One image or video, visible for 24 hours. Stories carry no caption, so the post text is not sent |
+
+The composer lets you mix images and a video on a Post, but Facebook gets only one kind: the video when it is the first file (the images are dropped), otherwise the images (the video is dropped).
 
 ## Media limits
 
 | `content_type` | Image | Video | Duration | Format |
 |----------------|-------|-------|----------|--------|
-| `facebook_post` | 4 MB | 1 GB | 240 minutes | Feed photos cropped to JPEG. Video MP4 or MOV |
-| `facebook_reel` | — | 1 GB | 90 seconds | MP4 recommended |
-| `facebook_story` | — | 1 GB | 60 seconds | MP4 recommended |
+| `facebook_post` | 4 MB | 1 GB | 240 minutes | JPEG/PNG/WebP (no GIF). Video MP4 or MOV |
+| `facebook_reel` | — | 1 GB | 90 seconds | MP4 recommended, 9:16 |
+| `facebook_story` | 10 MB | 1 GB | 60 seconds | Images are fitted to 9:16. MP4 recommended |
 
-Official specs: [Reels](https://developers.facebook.com/docs/video-api/guides/reels-publishing/), [Stories](https://developers.facebook.com/docs/page-stories-api/), [Video errors](https://developers.facebook.com/docs/video-api/reference/error-codes/). Full catalog: [Media](/knowledge-base/media).
+Reel and Story videos must be vertical, close to 9:16 (width ÷ height between 0.5 and 0.6), or the post cannot be scheduled.
+
+Images are published at their own aspect ratio; TryPost does not crop them on the server. A Story needs an image or a video. Official specs: [Reels](https://developers.facebook.com/docs/video-api/guides/reels-publishing/), [Stories](https://developers.facebook.com/docs/page-stories-api/), [Video errors](https://developers.facebook.com/docs/video-api/reference/error-codes/). Full catalog: [Media](/knowledge-base/media#facebook).
+
+## Text and per-post options
+
+- **10,000 characters** per post.
+- **Link preview** — the first link in a post gets a preview card. Remove it with the **×** on the card (`platforms[].meta.link_preview: false` on the API), or use **Replace link preview with media**.
+- **Alt text** — up to 1,000 characters per image.
+
+## Insights
+
+Facebook page metrics and followers appear in [Insights](/knowledge-base/insights/overview).
+
+A Facebook page can also be a [Repurpose](/knowledge-base/repurpose) source: TryPost watches it for new Reels, videos or Stories you publish outside TryPost and republishes them to the channels you pick.
 
 ## OAuth scopes
 
-`public_profile`, `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `read_insights`
+`public_profile`, `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `read_insights`, `business_management`
 
-The `read_insights` scope powers per-post and per-page metrics in **Analytics**.
-
-A Facebook Page can be a [repurpose](/knowledge-base/repurposes) source. TryPost watches it for new Reels, videos, or Stories you publish outside TryPost and republishes them to the destinations you pick.
+`read_insights` powers page and post metrics in Insights.
 
 ## Self-hosting setup
 
@@ -47,7 +63,7 @@ A Facebook Page can be a [repurpose](/knowledge-base/repurposes) source. TryPost
   1. Go to [Meta for Developers](https://developers.facebook.com/) and create an app
   2. Add the **Facebook Login** product
   3. Set the redirect URL to `{APP_URL}/accounts/facebook/callback`
-  4. Request permissions: `public_profile`, `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `read_insights`
+  4. Request permissions: `public_profile`, `pages_show_list`, `pages_read_engagement`, `pages_manage_posts`, `read_insights`, `business_management`
   5. Add to your `.env`:
 
   ```env
@@ -55,4 +71,8 @@ A Facebook Page can be a [repurpose](/knowledge-base/repurposes) source. TryPost
   FACEBOOK_CLIENT_SECRET=your_app_secret
   FACEBOOK_CLIENT_REDIRECT="${APP_URL}/accounts/facebook/callback"
   ```
+
+  The same app also serves [Instagram via Facebook](/platforms/instagram#self-hosting-setup).
+
+  Hide Facebook with `FACEBOOK_ENABLED=false`.
 </Accordion>

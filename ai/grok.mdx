@@ -54,7 +54,7 @@ https://app.trypost.it/mcp/trypost
 
     1. Sign in to your TryPost account
     2. Review the permissions
-    3. Click **Allow**
+    3. Pick the **Workspace** this connection may use and click **Authorize** (to use another workspace, connect again and pick it)
 
     After that, Grok discovers the TryPost tools and makes them available in conversations — the same way it uses built-in and catalog connectors. You do not need to paste an API key.
   </Step>
@@ -67,7 +67,7 @@ https://app.trypost.it/mcp/trypost
 
     Grok should call TryPost tools instead of guessing. If it answers without tools, say you want it to use the **TryPost** connector.
 
-    See the [Tools reference](/ai/tools-reference) for every tool and the recommended create → attach media → publish workflow.
+    See the [Tools reference](/ai/tools-reference) for every tool and the recommended workflow (pick channel and content type, create with media, preview, publish).
   </Step>
 </Steps>
 
@@ -87,10 +87,12 @@ Once the connector is authorized, Grok can:
 
 | Task | Examples |
 |------|----------|
-| **Posts** | List, create, update, schedule, publish, preview, delete, fetch metrics |
-| **Media** | Attach from a public URL, upload a local file, reuse an Asset Library item |
-| **Accounts** | List connected social accounts, toggle them, resolve Pinterest boards and Discord channels |
-| **Workspace** | Read the current workspace, manage signatures, labels, and API keys |
+| **Posts** | List, create, update, schedule, queue, publish, preview, delete, approve, fetch metrics |
+| **Media** | Attach from a public URL, upload a local file (you run the upload command; CLI agents can run it themselves; not possible from the Grok mobile app), reuse a file already on another post |
+| **Accounts** | List connected social accounts, set posting times, manage the queue, resolve Pinterest boards and Discord channels |
+| **Workspace** | Read the current workspace, manage ideas, signatures, labels, webhooks, repurposes, and API keys; read analytics |
+
+Some of these depend on your permissions in the workspace (approving needs direct publishing; posting times, webhooks and API keys need an admin). See [Permissions](/ai/introduction#permissions).
 
 Pinterest needs a `board_id`, Discord needs a `channel_id`, and TikTok needs a `privacy_level` before you publish. Ask Grok to list boards or channels first. Details and tool names: [Tools reference](/ai/tools-reference).
 
@@ -132,7 +134,7 @@ On these plans, members cannot add a custom connector until a team admin provisi
     You may have pasted the wrong URL. Use `https://app.trypost.it/mcp/trypost` — not `/oauth/authorize`, not `/api`, and not a trailing slash. Remove the connector and add it again, then allow pop-ups so the OAuth window can open.
   </Accordion>
   <Accordion title="The connector is added but Grok does not call TryPost tools">
-    Finish OAuth. Grok can list a custom server before you have authorized it. Open **[grok.com/connectors](https://grok.com/connectors)**, connect TryPost, and click **Allow** on the TryPost screen. Then start a **new** chat and ask it to use the TryPost connector.
+    Finish OAuth. Grok can list a custom server before you have authorized it. Open **[grok.com/connectors](https://grok.com/connectors)**, connect TryPost, then pick the workspace and click **Authorize** on the TryPost screen. Then start a **new** chat and ask it to use the TryPost connector.
   </Accordion>
   <Accordion title="Grok says it cannot reach the server">
     Cloud TryPost is already public. If you self-host, Grok must reach the URL from the internet. `localhost` and private IPs fail. Use a public HTTPS URL or a tunnel.
@@ -158,7 +160,7 @@ Show me all my connected social media accounts
 ```
 
 ```
-Create a draft LinkedIn post for tomorrow at 9am
+Create a draft LinkedIn post for tomorrow at 9am New York time
 ```
 
 ```
@@ -166,7 +168,7 @@ What posts do I have scheduled for this week?
 ```
 
 ```
-Attach https://example.com/photo.jpg to my draft, then preview it before publishing
+Attach the image at <a public image URL> to my draft, then show me the exact text each network will get
 ```
 
 ```

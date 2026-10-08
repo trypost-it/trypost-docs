@@ -6,46 +6,66 @@ icon: "tiktok"
 
 # TikTok
 
-TryPost supports posting videos and photo carousels to TikTok.
+TryPost publishes videos and photo carousels to TikTok.
 
 ## Connect your account
 
-1. Go to **Accounts** in the TryPost dashboard
-2. Click **Connect TikTok**
+1. In the sidebar, open **Channels** and click **Connect channel** (or use **New** > **Connect a new channel**)
+2. Choose **TikTok** and click **Connect TikTok**
 3. Authorize TryPost on TikTok
+4. On the confirmation page, check the account and click **Finish connection**
+
+TryPost opens the new channel's **Publish** page and asks how many times a week you want to post. See [Connecting channels](/knowledge-base/channels/connecting) for the full flow.
 
 ## Supported content types
 
 | Type | `content_type` | Aspect ratio | Description |
 |------|---------------|--------------|-------------|
-| **Video** | `tiktok_video` | 9:16 | Short or long-form video (1 video, required) |
-| **Photo carousel** | `tiktok_photo` | 1:1 | Multi-image post — up to 35 images per carousel |
+| **Video** | `tiktok_video` | 9:16 | One video |
+| **Photo carousel** | `tiktok_photo` | — | 1 to 35 images |
+
+Photos can be any shape; **Edit Media** offers 4:3, 16:9, 9:16 and 1:1.
+
+There is no post-type picker for TikTok: the attached media decides. A video makes a `tiktok_video`, images make a `tiktok_photo`, and the two never mix in one post.
 
 ## Media limits
 
 | `content_type` | Image | Video | Duration | Format |
 |----------------|-------|-------|----------|--------|
-| `tiktok_video` | — | 1 GB (Cloud cap; TikTok allows 4 GB) | 10 minutes, or less if `creator_info` says so | MP4 or MOV (TryPost does not accept WebM uploads) |
+| `tiktok_video` | — | 1 GB (Cloud cap; TikTok allows 4 GB) | 10 minutes, or less if your TikTok account allows less | MP4 or MOV (TryPost does not accept WebM uploads) |
 | `tiktok_photo` | 10 MB | — | — | JPEG/WebP, up to 35 images |
 
-Official specs: [Media Transfer Guide](https://developers.tiktok.com/doc/content-posting-api-media-transfer-guide). Full catalog: [Media](/knowledge-base/media).
+Official specs: [Media Transfer Guide](https://developers.tiktok.com/doc/content-posting-api-media-transfer-guide). Full catalog: [Media](/knowledge-base/media#tiktok).
 
-## Per-post options
+## Text and per-post options
 
-TikTok exposes extra publishing options that you can set per post in the editor sidebar (or via `platforms[].meta` on the API):
+TikTok allows **2,200 characters** of caption. The editor's TikTok settings (or `platforms[].meta` on the API) hold the options TikTok requires you to show:
 
-| Option | Values | Applies to |
-|--------|--------|------------|
-| `privacy_level` | `PUBLIC_TO_EVERYONE`, `MUTUAL_FOLLOW_FRIENDS`, `FOLLOWER_OF_CREATOR`, `SELF_ONLY` | Video + Photo |
-| `disable_comment` | boolean | Video + Photo |
-| `disable_duet` / `disable_stitch` | boolean | Video only — ignored for photo carousels |
-| `brand_content_toggle` / `brand_organic_toggle` | boolean (required if your post contains branded content per TikTok policy) | Video only |
+| Setting | `meta` key | Values | Applies to |
+|---------|-----------|--------|------------|
+| **Visibility** | `privacy_level` | `PUBLIC_TO_EVERYONE`, `MUTUAL_FOLLOW_FRIENDS`, `FOLLOWER_OF_CREATOR`, `SELF_ONLY` | Video + Photo. **Required to schedule** — there is no default |
+| **Allow comments** | `allow_comments` | boolean, default off | Video + Photo |
+| **Allow Duet** / **Allow Stitch** | `allow_duet` / `allow_stitch` | boolean, default off | Video only |
+| **Disclose video content** | `disclose` | boolean | Video + Photo. When on, pick **Your brand**, **Branded content** or both, or the post cannot be scheduled |
+| **Your brand** / **Branded content** | `brand_organic_toggle` / `brand_content_toggle` | boolean | Video + Photo. Branded content cannot be **Only me** (`SELF_ONLY`) |
+| **AI-generated** | `is_aigc` | boolean | Video only |
+| **Auto add music** | `auto_add_music` | boolean | Photo only |
+
+The choices you see come from your TikTok account: TikTok can shorten the maximum video length and switch off comments, Duet or Stitch, and TryPost shows those as **Turned off in your TikTok account settings**. The API exposes the same data at [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info) (`GET /social-accounts/{account}/tiktok-creator-info`).
+
+<Note>
+  TikTok has no API to delete a post. Deleting a post in TryPost never removes it from TikTok (or any other network) — remove it in the TikTok app.
+</Note>
+
+## Insights
+
+TikTok videos and followers appear in [Insights](/knowledge-base/insights/overview).
 
 ## OAuth scopes
 
 `user.info.basic`, `user.info.profile`, `user.info.stats`, `video.publish`, `video.upload`, `video.list`
 
-`user.info.stats` and `video.list` are required for the **Analytics** dashboard's TikTok view.
+`user.info.stats` and `video.list` are required for TikTok metrics in Insights.
 
 ## Self-hosting setup
 
@@ -61,4 +81,12 @@ TikTok exposes extra publishing options that you can set per post in the editor 
   TIKTOK_CLIENT_SECRET=your_client_secret
   TIKTOK_CLIENT_REDIRECT="${APP_URL}/accounts/tiktok/callback"
   ```
+
+  If your TikTok app lacks a product (for example, the Display API for `video.list`), trim the scopes TryPost requests with a comma-separated list:
+
+  ```env
+  TIKTOK_SCOPES=user.info.basic,user.info.profile,user.info.stats,video.publish,video.upload
+  ```
+
+  Hide TikTok with `TIKTOK_ENABLED=false`.
 </Accordion>

@@ -1,0 +1,67 @@
+---
+title: "Approvals"
+description: "Review and approve posts from members whose posts need approval."
+---
+
+Approvals let a team review posts before they go out. Whether a member's posts need approval is set per member in Settings › [Members](/knowledge-base/settings/members-and-permissions), under **Publishing**:
+
+- **Publishes directly**: their posts are scheduled, queued or published as soon as they save.
+- **Needs approval**: "Posts from members who need approval wait for an admin or a member who publishes directly."
+
+The account owner and admins always publish directly.
+
+## Request approval
+
+A member who needs approval writes the post in the [composer](/knowledge-base/publish/composer) as usual. The save button reads **Save and request approval**. Instead of being scheduled or published, the post becomes **Pending approval** and appears in the **Approvals** tab of [Publish](/knowledge-base/publish/overview).
+
+The request remembers what the member asked for: a date and time, a queue slot, or publishing now.
+
+While it waits, the member can:
+
+- edit it;
+- **Revert approval request**, which turns it back into a draft.
+
+If a member who needs approval edits a post that was already approved or scheduled, including someone else's, the post goes back to **Pending approval**. The member who made that change is the requester.
+
+## Approve or reject
+
+Approvers are the account owner, admins and members who publish directly. On a pending post they see:
+
+| Button | When | What it does |
+| --- | --- | --- |
+| **Schedule** | The requested time is still ahead. | Approves and schedules it at that time. |
+| **Add to queue** | It was a queue request. | Approves it and keeps its slot (see below). |
+| **Approve** | The requested time has passed ("Time has passed") or it was a publish-now request. | Asks you to pick a new time, or publish now. |
+| **Reject** | Always. | Returns the post to **Draft**. |
+
+Approving or rejecting a post that someone else already handled fails with "This post is no longer waiting for approval."
+
+## Who sees what
+
+- Approvers see every pending post in the Approvals tab and on the calendar.
+- A member who needs approval sees only their own requests.
+- Notes on a pending post email only the approvers and the requester.
+
+## Queue requests hold their slot
+
+A queued request reserves its slot while it waits, so nobody else's post lands there. Approving keeps it in that slot if the slot still exists and is free; otherwise it takes the first free slot. Rejecting or deleting the request frees the slot. See [Queue](/knowledge-base/publish/queue#posts-waiting-for-approval).
+
+## Emails
+
+- A new request emails every approver except the requester. It lists only the posts still pending when it is sent.
+- Decisions are grouped: posts saved together reach the requester in one email per approver, not one email per channel.
+- Each person controls these emails with the **Collaboration** switch in [Notifications](/knowledge-base/settings/notifications).
+
+## Recurring posts and Repurpose
+
+- Once a [recurring post](/knowledge-base/publish/recurring-posts) is approved and scheduled, its next occurrences keep publishing without new approvals.
+- Only members who publish directly can make a post recurring or use [Repurpose](/knowledge-base/repurpose).
+
+## API and MCP
+
+Approvals apply everywhere posts are created, not only in the web app.
+
+- **MCP:** any workspace member can connect. A member who needs approval gets `pending_approval` posts from `create-post-tool`, `update-post-tool` and `publish-post-tool`. Approvers decide with `approve-post-tool` and `reject-post-tool`.
+- **REST API:** the API only accepts keys that belong to the owner or an admin, who publish directly, so posts created through the API do not wait for approval. Posts waiting for approval, from the web or MCP, can be decided with [Approve post](/api-reference/approvals/approve-post) and [Reject post](/api-reference/approvals/reject-post).
+
+See the [MCP tools reference](/ai/tools-reference).

@@ -9,7 +9,7 @@ icon: "/images/ai/gemini.svg"
 ## Prerequisites
 
 - Gemini CLI installed
-- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/plans-and-billing))
+- A TryPost Cloud account with an active subscription ([plans and billing](/knowledge-base/settings/plans-and-billing))
 
 ## Setup
 
@@ -33,7 +33,7 @@ icon: "/images/ai/gemini.svg"
     With `oauth.enabled`, Gemini CLI discovers TryPost's OAuth metadata from the URL and registers dynamically. For project-level configuration, create `.gemini/settings.json` in your project root instead.
   </Step>
   <Step title="Restart Gemini CLI and sign in">
-    Close and reopen Gemini CLI. The first TryPost call prompts you to sign in — Gemini CLI prints the authorize URL or opens your browser. Approve and return to the terminal.
+    Close and reopen Gemini CLI. The first TryPost call prompts you to sign in — Gemini CLI prints the authorize URL or opens your browser. Sign in, pick the **Workspace** this connection may use and click **Authorize**, then return to the terminal. To use another workspace, connect again and pick it.
   </Step>
   <Step title="Verify the connection">
     Ask Gemini to interact with your TryPost account:

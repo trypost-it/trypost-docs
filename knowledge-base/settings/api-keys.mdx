@@ -1,0 +1,66 @@
+---
+title: "API keys"
+description: "Create, regenerate and delete the keys that authenticate requests to the TryPost REST API."
+icon: "key"
+---
+
+An API key gives a script, integration or CI job access to one workspace through the [REST API](/api-reference/introduction). Find them in **Settings → API Keys**.
+
+Only the account owner and workspace admins can create and use API keys. A key acts as the person who created it, in the workspace it was created in: if that person stops being an admin of the workspace, or is removed from it, the key stops working.
+
+Each person sees only the keys they created for the current workspace.
+
+<Note>
+  API keys do not work with the MCP server. AI assistants connect through **Settings → MCP**, which signs in through the browser. See [MCP](/knowledge-base/settings/mcp).
+</Note>
+
+## Generate a key
+
+<Steps>
+  <Step title="Generate API Key">
+    In **Settings → API Keys**, click **Generate API Key**.
+  </Step>
+  <Step title="Name and expiration">
+    Enter a **Name** (for example "Production API Key") and, optionally, an **Expiration date**. Without one, the key never expires.
+  </Step>
+  <Step title="Copy the key">
+    The **API Key Generated** dialog shows the key once. Copy it and store it somewhere safe: you won't be able to see it again.
+  </Step>
+</Steps>
+
+Treat a key like a password: don't share it publicly, add it to Git, or include it in client-side code.
+
+## Use a key
+
+Send it as a Bearer token in the `Authorization` header:
+
+```bash
+curl https://app.trypost.it/api/workspace \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+On TryPost Cloud, requests need an active subscription on the account. See the [API reference](/api-reference/introduction) for endpoints, errors and rate limits.
+
+The API does not include TryPost's AI features; those are only in the web app.
+
+## The key list
+
+Each key shows when it expires (**Never expires**, **Expires** *date* or **Expired** *date*), when it was last used, and when it was created. A dot marks its status: active, expiring within 7 days, or expired. An expired key returns `401` until you regenerate or delete it.
+
+## Regenerate a key
+
+**Regenerate** creates a new key with the same name. It keeps the expiration date if that date is still in the future; an expired key comes back with no expiration. The current key stops working immediately, so update every application that uses it. Type `REGENERATE` to confirm.
+
+## Delete a key
+
+**Delete** revokes the key; any application using it loses access immediately. Type `DELETE` to confirm.
+
+In another interface language, both keywords are translated and stay in capital letters; type the word the dialog shows.
+
+## Via the API and MCP
+
+| Task | REST | MCP |
+|------|------|-----|
+| List | [List API keys](/api-reference/api-keys/list-api-keys) | `list-api-keys-tool` |
+| Create | [Create API key](/api-reference/api-keys/create-api-key) | `create-api-key-tool` |
+| Delete | [Delete API key](/api-reference/api-keys/delete-api-key) | `delete-api-key-tool` |

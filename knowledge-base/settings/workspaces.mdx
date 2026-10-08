@@ -1,0 +1,71 @@
+---
+title: "Workspaces"
+description: "Create, switch, rename and delete workspaces — one for each brand or client."
+icon: "building"
+---
+
+A workspace is one brand or client, kept separate from the rest: its own channels, posts, ideas, signatures, labels, analytics, members and permissions, API keys, webhooks and MCP connections.
+
+Every workspace belongs to an **account**. The person who created the account is its **owner**; everyone else joins its workspaces by invitation. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+## Switch workspaces
+
+Open the workspace menu at the bottom of the sidebar and pick a workspace under **Workspaces**.
+
+You only see the workspaces you are a member of. The account owner sees all of them.
+
+## Create a workspace
+
+Only the account owner can create workspaces.
+
+<Steps>
+  <Step title="Open the workspace menu">
+    In the workspace menu, click **Create workspace**.
+  </Step>
+  <Step title="Name it">
+    On **Set up your workspace**, enter the **Workspace name** and click **Create workspace**. You can rename it later.
+  </Step>
+  <Step title="Connect channels">
+    The new workspace starts empty. [Connect a channel](/knowledge-base/channels/connecting) to start posting.
+  </Step>
+</Steps>
+
+How many workspaces you can have depends on your plan: **Socials** includes one workspace and **Workspaces** includes unlimited workspaces. At the limit, creating a workspace opens **Upgrade to add workspaces**. See [Plans and billing](/knowledge-base/settings/plans-and-billing).
+
+<Note>
+  Self-hosting TryPost? There is no workspace limit.
+</Note>
+
+## General settings
+
+**Settings → General** holds the workspace's identity. The account owner and workspace admins can change it:
+
+- **Workspace logo** — upload an image (square works best, up to 2 MB), crop it, and **Save**; or remove the current one.
+- **Workspace name** — rename the workspace, then **Save**.
+
+## Delete a workspace
+
+Only the account owner can delete a workspace, from **Settings → General** → **Delete this workspace**.
+
+<Steps>
+  <Step title="Delete workspace">
+    Click **Delete workspace**. The dialog tells you how many other members will lose access.
+  </Step>
+  <Step title="Type the workspace name">
+    Type the workspace's exact name to confirm, then confirm the deletion.
+  </Step>
+</Steps>
+
+Deleting a workspace permanently deletes it and everything in it: posts, ideas, connected channels, media, labels, signatures and webhooks. Its API keys and MCP connections stop working. Posts already published on the networks stay there.
+
+Members lose access to the deleted workspace. An invited member who is left without any workspace in the account is permanently deleted; members who still belong to another workspace of the account keep their user.
+
+You cannot delete your only workspace: **You cannot delete your only workspace. Cancel your subscription in billing to stop paying, or delete your account in Authentication settings to cancel billing and permanently remove everything.** See [Plans and billing](/knowledge-base/settings/plans-and-billing) and [Delete account](/knowledge-base/settings/authentication#delete-account).
+
+<Note>
+  Self-hosting TryPost? The last workspace can be deleted too.
+</Note>
+
+## Via the API and MCP
+
+API keys and MCP connections are tied to one workspace. [`GET /workspace`](/api-reference/workspace/get-workspace) and `get-workspace-tool` return the workspace they belong to. Creating, renaming and deleting workspaces is available in the web app only.

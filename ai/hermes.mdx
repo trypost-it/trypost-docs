@@ -49,7 +49,7 @@ Pick **one** way to add the server. Do not run `login` after a successful `add` 
 
     `--auth` only accepts `oauth` or `header`. Use **`oauth`**.
 
-    1. Sign in to TryPost, review permissions, click **Allow**
+    1. Sign in to TryPost, pick the **Workspace** this connection may use and click **Authorize** (to use another workspace, connect again and pick it)
     2. When it asks `Enable all N tools? [Y/n/select]`, answer **Y**. **n** cancels and does **not** save the server. **select** writes a `tools.include` list and hides everything else (including publish/delete)
 
     If connect fails, Hermes may ask **Save config anyway?** and store the entry with `enabled: false`. Set `enabled: true` in `config.yaml`, then run login below.
@@ -94,7 +94,7 @@ Pick **one** way to add the server. Do not run `login` after a successful `add` 
 
     Hermes registers each tool as `mcp__<server>__<tool>` ([config reference](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference)). Hyphens become underscores, so `list-posts-tool` is `mcp__trypost__list_posts_tool`. You do not type that name — ask in plain language. If Hermes answers without tools, tell it to use the **trypost** MCP server.
 
-    See the [Tools reference](/ai/tools-reference) for every tool and the recommended create → attach media → publish workflow.
+    See the [Tools reference](/ai/tools-reference) for every tool and the recommended workflow (pick channel and content type, create with media, preview, publish).
   </Step>
 </Steps>
 
@@ -124,10 +124,12 @@ Once the server is authorized, Hermes can:
 
 | Task | Examples |
 |------|----------|
-| **Posts** | List, create, update, schedule, publish, preview, delete, fetch metrics |
-| **Media** | Attach from a public URL, upload a local file, reuse an Asset Library item |
-| **Accounts** | List connected social accounts, toggle them, resolve Pinterest boards and Discord channels |
-| **Workspace** | Read the current workspace, manage signatures, labels, and API keys |
+| **Posts** | List, create, update, schedule, queue, publish, preview, delete, approve, fetch metrics |
+| **Media** | Attach from a public URL, upload a local file (you run the upload command; CLI agents can run it themselves), reuse a file already on another post |
+| **Accounts** | List connected social accounts, set posting times, manage the queue, resolve Pinterest boards and Discord channels |
+| **Workspace** | Read the current workspace, manage ideas, signatures, labels, webhooks, repurposes, and API keys; read analytics |
+
+Some of these depend on your permissions in the workspace (approving needs direct publishing; posting times, webhooks and API keys need an admin). See [Permissions](/ai/introduction#permissions).
 
 Pinterest needs a `board_id`, Discord needs a `channel_id`, and TikTok needs a `privacy_level` before you publish. Ask Hermes to list boards or channels first. Details and original tool names (use these in `tools.include` / `tools.exclude`, not the sanitized `mcp__…` names): [Tools reference](/ai/tools-reference).
 
@@ -203,7 +205,7 @@ Escalation from [OAuth over SSH](https://hermes-agent.nousresearch.com/docs/guid
 </Accordion>
 
 <Accordion title="Paste the redirect URL back">
-  On an interactive terminal, `hermes mcp login trypost` prints the authorize URL and asks you to paste the redirect. Open the URL on your laptop, click **Allow**, then copy the full URL from the address bar (the page may show a connection error — that is expected) and paste it at the Hermes prompt. A bare `?code=…&state=…` string works too. Official walkthrough: [OAuth over SSH / Remote Hosts](https://hermes-agent.nousresearch.com/docs/guides/oauth-over-ssh).
+  On an interactive terminal, `hermes mcp login trypost` prints the authorize URL and asks you to paste the redirect. Open the URL on your laptop, pick the workspace and click **Authorize**, then copy the full URL from the address bar (the page may show a connection error — that is expected) and paste it at the Hermes prompt. A bare `?code=…&state=…` string works too. Official walkthrough: [OAuth over SSH / Remote Hosts](https://hermes-agent.nousresearch.com/docs/guides/oauth-over-ssh).
 </Accordion>
 
 <Accordion title="SSH port forward">
@@ -299,7 +301,7 @@ Show me all my connected social media accounts
 ```
 
 ```
-Create a draft LinkedIn post for tomorrow at 9am
+Create a draft LinkedIn post for tomorrow at 9am New York time
 ```
 
 ```
@@ -307,7 +309,7 @@ What posts do I have scheduled for this week?
 ```
 
 ```
-Attach https://example.com/photo.jpg to my draft, then preview it before publishing
+Attach the image at <a public image URL> to my draft, then show me the exact text each network will get
 ```
 
 ```

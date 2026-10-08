@@ -20,17 +20,28 @@ This guide covers the requirements for self-hosting TryPost.
 
 ### Required
 
-- **PHP 8.2+** with extensions:
+- **PHP 8.4.1+** (8.4 or 8.5; the Docker image ships 8.4) with extensions:
   - BCMath, Ctype, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML
+  - **cURL**, **Fileinfo**, **Sodium**, **POSIX**, **DOM** / **SimpleXML** (cURL is a separate package on Debian and Ubuntu)
   - **pdo_pgsql** or **pdo_mysql**, matching the database you chose — without it the app fails at boot with *could not find driver*
   - **pcntl** (required by Horizon)
   - **intl**, **zip**, **exif**, **sockets**
-  - GD or Imagick (for image processing)
-  - Redis extension (or use Predis via Composer — the Redis **service** is still required)
+  - **GD** (required). **Imagick** is optional: it enables HEIC conversion and better blurred-background fits (both ship in the Docker image). HEIC/HEIF uploads are converted to JPEG only when Imagick is built with HEIC support; without it they are rejected with a clear message and every other format still works
+  - No PHP Redis extension needed (Predis is bundled); set `REDIS_CLIENT=phpredis` to use the extension. The Redis **service** is still required
+
+  On Debian or Ubuntu with the Ondřej Surý PHP packages: `sudo apt install php8.4-{cli,fpm,curl,mbstring,xml,zip,intl,bcmath,gd,imagick,pgsql,mysql,redis}`
 - **Composer** 2.x
-- **Node.js** 20+ and npm (Vite 7 + Vue 3 require Node 20 or newer) — not needed if you only run the published Docker image
-- **PostgreSQL** 14+ **or MySQL** 8+ — both are fully supported; see [choosing a database](/self-hosting/configuration#database)
-- **Redis** 6+
+- **Node.js** 22.12+ and npm (24 LTS works) — not needed if you only run the published Docker image
+- **PostgreSQL** or **MySQL** — both are fully supported (MySQL from TryPost 2.0); see [choosing a database](/self-hosting/configuration#database)
+- **Redis** — queues, cache and locks (the Compose files ship Redis 7)
+
+### Long-running processes
+
+TryPost needs three processes besides the web server. The [Docker image](/self-hosting/docker) starts them for you; on bare metal see [Production setup](/self-hosting/production).
+
+- **Horizon** — the queue workers that publish posts, send email and webhooks, and collect analytics
+- **Reverb** — WebSockets for live updates in the app
+- **Scheduler** — `php artisan schedule:run` every minute (or `schedule:work`)
 
 ### Optional
 
@@ -49,7 +60,7 @@ memory_limit = 512M
 max_execution_time = 600
 ```
 
-Match these to your reverse-proxy body-size limit (`client_max_body_size` in Nginx, etc.). The published Docker image uses a 1G cap.
+Match these to your reverse-proxy body-size limit (`client_max_body_size` in Nginx, etc.). The published Docker image uses the same 1G upload cap with a lower `memory_limit = 256M` and `max_execution_time = 60`; the higher values above give large video uploads and image processing more headroom on bare metal.
 
 ## Supported Operating Systems
 

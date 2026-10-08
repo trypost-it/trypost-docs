@@ -1,0 +1,68 @@
+---
+title: "Channel insights"
+description: "Track one channel's followers, reach and the performance of each post."
+---
+
+Each channel has its own analytics page. In the sidebar's **Channels** section, open a channel and pick **Insights**. The page is titled **Insights · *channel name***. Every member of the workspace can open it.
+
+For the whole workspace at once, see [Insights](/knowledge-base/insights/overview).
+
+## Networks without analytics
+
+LinkedIn (profile and Page), Telegram, Discord and Google Business show **No analytics for this network**: "LinkedIn does not share analytics with third-party apps, so there is nothing to show here yet."
+
+## Range and filters
+
+- Date range: **7 days**, **30 days** (default), **Month to date** or **Custom**, compared with the previous period. Days follow your time zone from [Preferences](/knowledge-base/settings/preferences).
+- Filter by labels and by **Post type** (for example Reel, Story, Video).
+
+## Summary
+
+The top of the page shows the channel's totals for the period, such as posts, followers, reactions, comments and engagement rate, next to the previous period.
+
+## Metrics
+
+The **Metrics** card charts one view at a time:
+
+| View | Shows |
+| --- | --- |
+| **Content Impact** | Posts and Followers: whether your posting activity is growing your audience. |
+| **Audience Growth** | Followers over time. |
+| **Visibility** | Profile Views and Followers: how many people who discover your profile follow you. |
+| **Follower Growth Rate** | How fast your followers grew each month over the last 12 months. Date and label filters don't apply to this chart. |
+
+You can also change the metric shown (**Followers**, **Net New Followers**, **Reach**, **Views**, **Impressions**, **Profile Views**, **Posts**) and compare **This Period**, **Previous Period** or **Both**. Each chart has a one-line reading such as "Your audience grew this period."
+
+Reach, views, impressions and profile visits add up the lifetime totals of the posts published each day. A new channel may show "Not enough history yet": follower counts build up day by day.
+
+The metrics available depend on what each network shares.
+
+## Performance per Post
+
+**Performance per Post** lists every post the channel published in the period, ranked by the column you sort by.
+
+- 10 posts per page, with numbered pages. Changing the sort, the period or a filter goes back to page 1.
+- **Columns** chooses which metrics are shown.
+- The row menu has **View details**, **View Post** and **Copy link**.
+
+**View details** shows everything the network reports for that post. Depending on the network and post type this includes watch time, average watch time, video quartiles (25%, 50%, 75%, 100% watched), story taps and exits, saves, link clicks and profile visits. A post whose metrics have not been collected yet shows "Metrics have not been collected yet."
+
+Posts published directly on the network are listed too.
+
+## Export
+
+**Export** downloads the channel's report as **CSV** or **Markdown**.
+
+## How often data updates
+
+**Sync status** explains the schedule: new posts are picked up every 3 hours (every 24 hours on X), post metrics refresh daily for posts from the last 30 days (20 on X), and follower counts are saved once a day.
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| Channel report | [Get channel insights](/api-reference/analytics/get-channel-insights) | `get-channel-insights-tool` |
+| Per-post table | [List channel post performance](/api-reference/analytics/list-channel-post-performance) | `list-channel-publications-tool` |
+| One post's details | [Get publication analytics](/api-reference/analytics/get-publication-analytics) | `get-analytics-publication-tool` |
+
+The API and MCP return the per-post list with the standard page size instead of 10 per page.

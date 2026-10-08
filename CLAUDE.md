@@ -151,7 +151,7 @@ Do not confuse with `media[].meta.alt_text` (media accessibility, max 2000). Pin
 - Asset JSON (`AssetResource`): `id`, `original_filename`, `type`, `mime_type`, `size`, `url`, `meta`, `created_at`. **No `path`.** `url` is the stored public file URL, not a signed preview.
 - Attach (`POST /posts/{post}/media/from-asset` / `attach-existing-asset-tool`): `{ asset_id, alt? }`. Draft/scheduled only. Foreign post → API `404` / MCP `Post not found.` Foreign/missing/non-library asset → `Asset not found.` Type not allowed by enabled platforms → `This file type is not supported by the platforms enabled on the post.` Repeat same post+asset → no duplicate and **does not change alt**. **Omit `alt`** → keep library `alt_text`. Set `alt` → override on images only.
 - MCP list: `limit` 1–100 (default **50**), `{ assets, has_more }`. No cursor/offset — cannot page past the first `limit` items.
-- Auth: list/get require `createPost` (viewers 403 / `Not authorized to view assets.`). Attach requires `update` on the post.
+- Auth: list/get require `createPost`, which every workspace member has. Attach requires `update` on the post.
 
 ## MCP Server
 
@@ -161,7 +161,7 @@ Do not confuse with `media[].meta.alt_text` (media accessibility, max 2000). Pin
 - Plus: `list-content-types-tool` (Platforms), `list-signatures-tool` / `create-signature-tool` / `update-signature-tool` / `delete-signature-tool`, `list-labels-tool` / `create-label-tool` / `update-label-tool` / `delete-label-tool`, `list-social-accounts-tool` / `list-pinterest-boards-tool` / `list-discord-channels-tool` / `toggle-social-account-tool`, `get-workspace-tool`, `list-api-keys-tool` / `create-api-key-tool` / `delete-api-key-tool`, `list-repurpose-source-formats-tool` / `list-repurposes-tool` / `get-repurpose-tool` / `create-repurpose-tool` / `update-repurpose-tool` / `list-repurpose-items-tool` / `activate-repurpose-tool` / `pause-repurpose-tool` / `resume-repurpose-tool` / `disable-repurpose-tool` / `delete-repurpose-tool`, `list-webhooks-tool` / `get-webhook-tool` / `create-webhook-tool` / `update-webhook-tool` / `delete-webhook-tool` / `send-webhook-test-tool` / `rotate-webhook-secret-tool` / `list-webhook-logs-tool` / `replay-webhook-log-tool`.
 - `create-post-tool` accepts `platforms[]` (each with `social_account_id`, `content_type`, optional `meta`), `scheduled_at`, `label_ids` — same fields as REST `POST /posts` **except** MCP does **not** accept inline `media[]` (use attach tools). `update-post-tool` uses `platforms[].id` (post_platform UUID), not `social_account_id`.
 - `create-api-key-tool` returns plain secret as `token` (REST create returns `plain_token`).
-- Before publishing Pinterest/Discord, resolve IDs via `list-pinterest-boards-tool` / `list-discord-channels-tool` (REST: `GET /social-accounts/{account}/boards|channels`). Those MCP tools authorize with `createPost` — Viewers get `Not authorized to manage posts.` (Owner / Admin / Member OK).
+- Before publishing Pinterest/Discord, resolve IDs via `list-pinterest-boards-tool` / `list-discord-channels-tool` (REST: `GET /social-accounts/{account}/boards|channels`). Those MCP tools authorize with `createPost`, which every workspace member has (there are no roles).
 - `publish-post-tool` is a separate, destructive tool (annotated `IsDestructive`); REST clients use `PUT /posts/{id}` with `status=publishing` instead.
 - Server route: `Mcp::web('/mcp/trypost', TryPostServer::class)->middleware(['auth:api', 'workspace.token:mcp'])`. The `workspace.token:mcp` middleware (`LoadWorkspaceFromToken`) requires an OAuth grant with `mcp:use` (not a Personal Access Token) and returns `402 Active subscription required` on Cloud accounts without app access.
 
@@ -254,16 +254,11 @@ Allowed MIME types: images = `image/jpeg`, `image/png`, `image/gif`, `image/webp
 
 No wildcard. Test ping type is `webhook.test` (not a subscribeable event).
 
-### Notification types (9 values)
-`post_published`, `post_failed`, `post_partially_published`, `post_ready`, `account_disconnected`, `invite_received`, `member_joined`, `member_removed`, `mentioned_in_comment`
+### Notification types (email only)
+`post_published`, `post_failed`, `account_disconnected`, `post_at_risk`, `post_note_added`, `collaboration` (approval requests and decisions). `post_ready` and `mentioned_in_comment` exist only so 1.x queued jobs finish; never document them. There is no in-app notification center and no notification channel setting: every notification is an email.
 
-### Notification channels
-`email`, `in_app`, `both`
-
-### Workspace roles (3 values)
-`admin`, `member`, `viewer`
-
-There is no `owner` role — the workspace owner is the user on `workspaces.owner_id`. Roles only apply to additional members joined via invites.
+### Member permissions (no roles)
+A membership (`user_workspace`) and an invite carry two flags: `is_admin` (manages members, settings, channels) and `requires_approval` (the member's posts need approval; always false for admins). The Admin / Member / Viewer roles were removed in 2.0. The account owner is always an admin and publishes directly. Every member can create posts.
 
 ## Emails Sent by TryPost
 

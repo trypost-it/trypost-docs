@@ -1,45 +1,62 @@
 ---
-title: "Post templates"
-description: "Pre-built post structures you can apply to a draft in one click."
+title: "Templates"
+description: "Reusable post texts: TryPost's library plus your team's and your own."
 icon: "clone"
 ---
 
-## What are templates?
+A template is a reusable post text. **Create › Templates** keeps TryPost's library next to the templates your team and you write. Using a template puts its text in the composer; from there it is a normal post you can change freely.
 
-Templates are pre-built post structures — caption skeleton, slide layouts for carousels, suggested image keywords — that you can apply to a draft and customize. They're a starting point, not a final post.
+Every member of the workspace can use and create templates.
 
-Each template is keyed to a platform and content type (e.g. `instagram_feed`, `linkedin_post`, `instagram_carousel` for multi-image Instagram templates). When applied, TryPost fills in the matching fields on your draft post. There is no `linkedin_carousel` template key — LinkedIn multi-image posts use `linkedin_post` / `linkedin_page_post`.
+## Scopes
 
-## Browsing templates
+| Tab | What it holds |
+| --- | --- |
+| **Discover** | TryPost's library, marked **By TryPost**. Read-only. |
+| **Team** | Templates visible to everyone in this workspace. Anyone in the workspace can edit them. |
+| **Personal** | Templates only you can see. |
 
-Open **Templates** from the sidebar. The library is filterable by:
+**Discover** has a search box and four filters:
 
-- **Platform** — LinkedIn, Instagram, X, Facebook, etc.
-- **Category** — Educational, Promotional, Engagement, Storytelling, Announcement, etc.
-- **Search** — case-insensitive substring match on template name and description
+- **Type**: Tip, Case study, Story, How-to, Question, Opinion, List, Behind the scenes
+- **Made for**: Business, Individual
+- **Format**: Single text, Threaded
+- **Goal**: Engagement, Connection, Reflection, Expertise, Promotion, Education, Celebration
 
-Templates are content-managed — the catalog is locale-aware (English, Portuguese, Spanish), and TryPost falls back to English if a template isn't translated for your workspace's content language.
+## Use a template
 
-## Applying a template
+<Steps>
+  <Step title="Open it">
+    Click a template card to see its full text.
+  </Step>
+  <Step title="Use or copy">
+    **Use template** opens the [composer](/knowledge-base/publish/composer) with the template's text. **Copy template** copies the text to your clipboard.
+  </Step>
+</Steps>
 
-1. Open or create a post
-2. Click **Apply template**
-3. Pick the template that matches your platform and intent
-4. The post's content (and slide layouts, for carousels) is filled with the template's structure
-5. Edit freely — the template is just the starting scaffold
+Inside the composer, the **Templates** button opens the same three tabs in a side panel. Picking a template there inserts its text into the post you are writing.
 
-Applied templates don't lock the post in any way. Once applied, the post is yours to edit, and changes to the template definition later don't affect existing posts.
+## Create a template
 
-## What a template carries
+Click **New template** and fill in:
 
-| Piece | Notes |
-|-------|-------|
-| Caption skeleton | The body text with placeholders like topic / value prop / CTA |
-| Slide layouts (carousels) | Title + body for each slide |
-| Image keywords | Suggested terms for the AI image generator or a stock-photo search |
-| Category &amp; platform | Used by the filter; not editable on a post |
+- an emoji
+- **Title**
+- **Description**: "A line for your future self about when to use this template."
+- **Body**: the text that goes into the composer
+- **Visibility**: **Only me** (Personal) or **My team** (Team)
 
-## Limitations
+Click **Create template**. Only the creator can change a template's visibility.
 
-- The template library is curated — you can't create custom templates from the UI today.
-- Templates only cover formats that work with text + images. Video formats (TikTok, Reels, Shorts) aren't in the catalog yet.
+## Duplicate, edit and delete
+
+From a template's menu:
+
+- **Duplicate** makes a copy and asks where to save it: **Only me** or **My team**. This is how you start from a library template and adapt it.
+- **Edit** and **Delete** appear on templates you can edit: every Team template, and your own Personal ones.
+
+Deleting a template does not change posts already created from it.
+
+<Note>
+  Templates are web only. There is no API endpoint or MCP tool for them.
+</Note>

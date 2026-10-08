@@ -1,108 +1,95 @@
 ---
 title: "Introduction"
-description: "Everything you need to know about using TryPost to manage your social media"
+description: "How TryPost is organized: Create, Publish, Insights, Repurpose, Channels and Settings."
 icon: "book-open"
 ---
 
 ## What is TryPost?
 
-TryPost is a social media scheduling platform that lets you create, schedule, and publish posts across 12 social networks from a single dashboard. It's open-source and available as a managed cloud service or self-hosted on your own infrastructure.
+TryPost is an open-source social media scheduler. You write a post once, adapt it for each network, and publish or schedule it to LinkedIn, X, TikTok, YouTube, Facebook, Instagram, Threads, Pinterest, Bluesky, Mastodon, Telegram, Discord and Google Business from one place. Use it on [TryPost Cloud](https://app.trypost.it) or [host it yourself](/self-hosting/overview).
 
-## Core concepts
+## Getting started
 
-<Columns cols={2}>
-  <Card title="Posts" icon="pen-to-square" href="/knowledge-base/posts">
-    The content you create and publish. Each post fans out to one platform entry per connected account, with its own status, media, and per-platform metadata.
-  </Card>
-  <Card title="Social Accounts" icon="share-nodes" href="/knowledge-base/social-accounts">
-    Your connected social media profiles and pages. Connect once, post everywhere.
-  </Card>
-  <Card title="Workspaces" icon="building" href="/knowledge-base/workspaces">
-    Isolated environments for different brands, clients, or projects. Each workspace has its own accounts, posts, and team.
-  </Card>
-  <Card title="Team & Roles" icon="users" href="/knowledge-base/team">
-    Invite collaborators with role-based permissions: Admin, Member, or Viewer. The workspace creator is the owner separately.
-  </Card>
-</Columns>
+<Steps>
+  <Step title="Create your account">
+    Sign up at [app.trypost.it/register](https://app.trypost.it/register) with your email, Google or GitHub.
+  </Step>
+  <Step title="Answer the welcome steps">
+    **About you** → **Your goals** → **Plan**. The plan step takes you to Stripe Checkout. See [Plans and billing](/knowledge-base/settings/plans-and-billing).
+  </Step>
+  <Step title="Connect a channel">
+    **New** → **Connect a new channel**. See [Connecting a channel](/knowledge-base/channels/connecting).
+  </Step>
+  <Step title="Write your first post">
+    **New** → **Post** opens the [composer](/knowledge-base/publish/composer).
+  </Step>
+</Steps>
 
-## Content organization
+<Note>
+  If you were invited to an account whose owner has not subscribed yet, you see **Waiting for the account owner** until the subscription is active. The page updates by itself. Self-hosted installs have no plan step.
+</Note>
 
-<Columns cols={2}>
-  <Card title="Repurpose" icon="arrows-rotate" href="/knowledge-base/repurposes">
-    Watch an Instagram or Facebook account and republish every new video to your other networks.
-  </Card>
-  <Card title="Labels" icon="tag" href="/knowledge-base/labels">
-    Color-coded tags to categorize and filter posts by campaign, topic, or priority.
-  </Card>
-  <Card title="Signatures" icon="hashtag" href="/knowledge-base/signatures">
-    Reusable text blocks — hashtag sets, newsletter CTAs, link callouts — appended to posts with one click.
-  </Card>
-  <Card title="Media" icon="image" href="/knowledge-base/media">
-    Images and videos. Each platform has specific format requirements and limits.
-  </Card>
-  <Card title="Asset library" icon="photo" href="/knowledge-base/assets">
-    Reusable workspace media plus on-demand search across Unsplash and Giphy.
-  </Card>
-  <Card title="Notifications" icon="bell" href="/knowledge-base/notifications">
-    Stay informed about publishing results, account issues, and team activity via in-app and email alerts.
-  </Card>
-</Columns>
+## How the app is organized
 
-## Working with AI
+The sidebar mirrors this Knowledge Base.
 
-<Columns cols={2}>
-  <Card title="AI features" icon="sparkles" href="/knowledge-base/ai-features">
-    Generate captions, review drafts, and create end-to-end posts (text + images) from a single prompt.
-  </Card>
-  <Card title="Brand profile" icon="palette" href="/knowledge-base/brand-profile">
-    The voice, tone, and visual settings the AI uses to keep every generated post on-brand.
-  </Card>
-  <Card title="Post templates" icon="bookmarks" href="/knowledge-base/templates">
-    Pre-built post structures you can apply to a draft in one click.
-  </Card>
-  <Card title="Analytics" icon="chart-line" href="/knowledge-base/analytics">
-    Per-account metrics from each platform, with date-range filtering.
-  </Card>
-</Columns>
+| Area | What it is for |
+| --- | --- |
+| **New** | Quick menu: **Post**, **Idea**, and, for the owner and admins, **Connect a new channel** and **Invite a team member**. |
+| **Create** | [Ideas](/knowledge-base/create/ideas), [Templates](/knowledge-base/create/templates) and [Feeds](/knowledge-base/create/feeds): where content starts. |
+| **Publish** | Your posts for all channels: [Queue, Approvals, Drafts and Sent](/knowledge-base/publish/overview), as a list or a calendar. |
+| **Insights** | [Analytics](/knowledge-base/insights/overview) for the workspace and [for each channel](/knowledge-base/insights/channel-insights). |
+| **Repurpose** (Beta) | [Republish](/knowledge-base/repurpose) every new Instagram or Facebook video to your other networks. Shown only to members who publish directly. |
+| **Channels** | One entry per connected channel, each with its own **Publish** and **Insights** pages. |
+| **Settings** | Personal (Profile, Preferences, Authentication, Notifications), Workspace (General, Channels, Members), Features (Signatures, Labels, Webhooks), Developers (API Keys, MCP) and Account (Billing). |
 
-## Account &amp; billing
+Press <kbd>⌘</kbd> <kbd>K</kbd> (or <kbd>Ctrl</kbd> <kbd>K</kbd>) to open the command palette: "Search channels, pages and actions."
 
-<Columns cols={2}>
-  <Card title="Account &amp; security" icon="user-shield" href="/knowledge-base/account-and-security">
-    Profile, language, password, active sessions, and connected logins.
-  </Card>
-  <Card title="Plans &amp; billing" icon="credit-card" href="/knowledge-base/plans-and-billing">
-    Cloud plans, the $1 first month, and managing your subscription.
-  </Card>
-  <Card title="API keys" icon="key" href="/knowledge-base/api-keys">
-    Authenticate REST API requests with workspace-scoped Personal Access Tokens.
-  </Card>
-  <Card title="Webhooks" icon="webhook" href="/knowledge-base/webhooks">
-    Receive signed HTTP notifications when posts are created, scheduled, published, or fail.
-  </Card>
-</Columns>
+## Workspaces
+
+A workspace is one brand or client. It has its own channels, posts, ideas, signatures, labels, analytics, members and MCP connection. Switch between workspaces from the menu at the bottom of the sidebar. See [Workspaces](/knowledge-base/settings/workspaces).
+
+## Who can do what
+
+There are no roles to pick. Each member of a workspace is either an **admin** or not, and either **Publishes directly** or **Needs approval**. The account owner is always an admin and always publishes directly.
+
+- Everyone can write posts, ideas and templates.
+- Publishing without review, approving other people's posts and Repurpose need **Publishes directly**.
+- Channels, members, webhooks, API keys and workspace settings need an admin.
+
+See [Members and permissions](/knowledge-base/settings/members-and-permissions) and [Approvals](/knowledge-base/publish/approvals).
 
 ## How publishing works
 
 <Steps>
-  <Step title="You schedule a post">
-    Create a post, write content for each platform, and set a date and time. The scheduler runs every minute looking for posts that are due.
+  <Step title="You save a post">
+    Saving creates one post per selected channel. Each one can be edited, moved or deleted on its own.
   </Step>
-  <Step title="TryPost publishes to each platform">
-    When the scheduled time arrives, TryPost dispatches a background job for each enabled platform. Each platform is published independently — if one fails, the others still go through.
+  <Step title="TryPost publishes it on time">
+    At its time (a custom time or a [queue slot](/knowledge-base/publish/queue)), TryPost sends the post to the network. Each channel is published on its own; if one fails, the others still go out.
   </Step>
-  <Step title="You get notified">
-    After all platforms finish, you receive a notification (in-app and/or email) with the result: published, partially published, or failed.
+  <Step title="You get an email">
+    Notifications are sent by email. Choose which ones in [Notifications](/knowledge-base/settings/notifications).
   </Step>
 </Steps>
+
+## AI in TryPost
+
+AI helps in three places, all in the web app:
+
+- The composer's **AI Assistant** writes a post or rephrases, shortens, expands or changes the tone of your text. See [Composer](/knowledge-base/publish/composer#ai-assistant).
+- **Generate ideas** on the [Ideas](/knowledge-base/create/ideas#generate-ideas) board.
+- **Generate with AI** for image alt text in the [media editor](/knowledge-base/media#alt-text).
+
+New text is written in your interface language. AI is not available through the REST API or the MCP server.
 
 ## Integrations
 
 <Columns cols={2}>
   <Card title="REST API" icon="code" href="/api-reference/introduction">
-    Manage posts, signatures, labels, accounts, repurposes, webhooks, and API keys programmatically.
+    Manage posts, ideas, channels, analytics, repurposes and webhooks from your own code.
   </Card>
-  <Card title="MCP Server" icon="microchip-ai" href="/ai/introduction">
-    Connect AI assistants (Claude, Copilot, Cursor, etc.) to manage TryPost with natural language.
+  <Card title="MCP server" icon="microchip-ai" href="/ai/introduction">
+    Connect Claude, ChatGPT, Cursor and other assistants to your workspace.
   </Card>
 </Columns>

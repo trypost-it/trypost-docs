@@ -3,4 +3,74 @@ title: "Ideas"
 description: "Collect, organize and develop post ideas on a board before they become posts."
 ---
 
-Content in progress.
+**Create › Ideas** is where content starts. Capture an idea, move it through your own groups, and turn it into a post when it is ready. Open it from the sidebar, or capture an idea from anywhere with **New** → **Idea**.
+
+Every member of the workspace can add and edit ideas.
+
+## Board and Gallery
+
+Switch views with **Board** and **Gallery**.
+
+- **Board** shows one column per group. A new workspace starts with **To Do**, **In Progress** and **Done**. Ideas without a group sit in **Unassigned**.
+- **Gallery** shows every idea as a card and loads more as you scroll.
+
+On the board, each column loads 10 ideas at a time as you scroll it. The count on each column is the real total, not just the cards loaded so far.
+
+## Groups
+
+- **New group** adds a column.
+- **Rename** or drag a column's handle to reorder it.
+- **Delete** removes the group, not its ideas: "Its ideas are not deleted. They move to "Unassigned"."
+
+## Write an idea
+
+<Steps>
+  <Step title="Open the editor">
+    Click **New idea** (or **New** → **Idea**).
+  </Step>
+  <Step title="Fill it in">
+    Give it a title, write the body and add media. Pick a **Group** and **Labels** if you like. An idea needs a title, some text or media to be saved.
+  </Step>
+  <Step title="Save">
+    Click **Save idea**.
+  </Step>
+</Steps>
+
+In the editor you can also click **Use the AI assistant** to help write the body, or **Create post** to open the [composer](/knowledge-base/publish/composer) with the idea's content.
+
+## Organize ideas
+
+- Drag a card to another place or column.
+- From a card's menu: **Duplicate**, **Move to group** or **Delete**.
+- **Select** several ideas, then **Delete :count ideas** to remove them together.
+- Filter by label. While a label filter is on, dragging is disabled: "Clear the label filter to reorder ideas."
+
+Ideas saved from an article in [Feeds](/knowledge-base/create/feeds) with **Save as idea** land here.
+
+## Generate ideas
+
+**Generate ideas** uses AI to suggest ideas from three questions:
+
+1. **What is your business about?**
+2. **Who is your audience?**
+3. **Anything else? (optional)**: tone, topics to cover or avoid, upcoming launches.
+
+Pick **Use this idea** to keep a suggestion, or **Generate again** for new ones. Ideas are written in your interface language (Settings › [Preferences](/knowledge-base/settings/preferences)).
+
+<Note>
+  Self-hosting TryPost? AI features need an AI provider key. See [AI](/self-hosting/ai).
+</Note>
+
+## API and MCP
+
+Ideas and groups are available through the API and MCP. Generating ideas with AI is web only.
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| List, read ideas | [List ideas](/api-reference/ideas/list-ideas), [Get idea](/api-reference/ideas/get-idea) | `list-ideas-tool`, `get-idea-tool` |
+| Create, edit | [Create idea](/api-reference/ideas/create-idea), [Update idea](/api-reference/ideas/update-idea) | `create-idea-tool`, `update-idea-tool` |
+| Move, duplicate | [Move idea](/api-reference/ideas/move-idea), [Duplicate idea](/api-reference/ideas/duplicate-idea) | `move-ideas-tool`, `duplicate-idea-tool` |
+| Delete | [Delete idea](/api-reference/ideas/delete-idea), [Delete ideas](/api-reference/ideas/delete-ideas) | `delete-ideas-tool` |
+| Groups | [Idea stages](/api-reference/idea-stages/list-idea-stages) | `list-idea-stages-tool`, `create-idea-stage-tool`, `update-idea-stage-tool`, `reorder-idea-stages-tool`, `delete-idea-stage-tool` |
+
+In the API and MCP, groups are called *idea stages*. See the [MCP tools reference](/ai/tools-reference).

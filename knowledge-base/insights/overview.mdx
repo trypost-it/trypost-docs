@@ -1,53 +1,58 @@
 ---
-title: "Analytics"
-description: "See how your published posts and connected accounts are performing across each platform."
+title: "Insights"
+description: "See how your channels and posts perform across the workspace."
 icon: "chart-line"
 ---
 
-## What it shows
+**Insights** in the sidebar is the analytics dashboard for the whole workspace. Every member of the workspace can open it. For one channel in depth, open the channel and pick **Insights**; see [Channel insights](/knowledge-base/insights/channel-insights).
 
-The **Analytics** dashboard pulls per-account engagement metrics straight from each platform's API and displays them in one place. Each connected account gets its own tab; the metrics shown depend on what the platform exposes.
+## Which networks are included
 
-Supported platforms today:
+Insights covers X, TikTok, YouTube, Facebook, Instagram, Threads, Pinterest, Bluesky and Mastodon.
 
-| Platform | Account-level metrics | Date-range filter |
-|----------|-----------------------|-------------------|
-| Instagram (Standalone & Facebook Business) | Yes | Yes |
-| Facebook | Yes | Yes |
-| LinkedIn Page | Yes | Yes |
-| Pinterest | Yes | Yes |
-| Threads | Yes | Yes |
-| X (Twitter) | Yes | Yes |
-| YouTube | Yes | Yes |
-| TikTok | Yes | No (TikTok API rolling window only) |
-| Telegram | Subscribers only | No (single live count) |
-| Discord | Members only | No (single live count) |
+LinkedIn (profile and Page), Telegram, Discord and Google Business are not included: these networks do not share analytics with third-party apps.
 
-Personal LinkedIn, Bluesky, and Mastodon don't expose account-level analytics — those accounts won't show up in the sidebar. Telegram's tab shows only its subscriber count and Discord's only its server member count (neither Bot API exposes view metrics); per-post reactions — plus thread replies (comments) for Discord — appear on each published post's metrics instead.
+Posts published directly on the network, outside TryPost, count too. They are marked **Published on the social network**; posts sent from TryPost are marked **Published via TryPost**. After you connect a channel, TryPost imports its history in the background: "Importing account history. Older posts may appear as collection continues."
+
+## The dashboard
+
+| Section | What it shows |
+| --- | --- |
+| **Summary** | Totals for the period, such as **Posts**, **Total Followers**, **Reactions**, **Comments** and **Eng. Rate**, compared with the previous period. |
+| **Followers** | Followers per channel at the end of the period and how the count changed. Switch the chart between **Line**, **Bar** and **Growth**. |
+| **Posts** | How many posts each channel published in the period. |
+| **Performance** | Totals per channel for posts published in the period, compared with the previous period. |
+| **Top 5 Posts** | Your five posts with the most reactions or comments. Choose which with **Rank posts by**. |
+
+Post metrics use the latest saved reading for the posts published in the range. When a network was unavailable, a follower count can show **Last known**.
 
 ## Date range
 
-Most platforms accept a date-range picker (default: last 7 days). Pick any custom window and the dashboard refetches metrics. TikTok ignores the picker — it returns its rolling window regardless.
+Pick **7 days**, **30 days** (the default), **Month to date** or **Custom**. Every number is compared with the previous period of the same length.
 
-## Per-post metrics
+Days are calendar days in your time zone, and weekly charts start on your start of week. Both come from [Preferences](/knowledge-base/settings/preferences).
 
-Account-level analytics live in the **Analytics** dashboard. **Per-post** metrics (likes, comments, shares per published post) are available from:
+## Filters
 
-- The post editor → Metrics tab on a `published` post
-- API: [`GET /posts/{post}/metrics`](/api-reference/endpoint/get-post-metrics)
-- MCP: `get-post-metrics-tool`
+Filter the dashboard by channels and by labels. If nothing matches, Insights says so and suggests another range or clearing the filters.
 
-Per-post metrics are cached for 5 minutes per platform entry to keep API calls within rate limits.
+## Export
 
-## What to watch
+**Export** downloads the dashboard for the current range and filters as **CSV** or **Markdown**.
 
-- **Audience growth** — followers gained over the period
-- **Reach / impressions** — unique users exposed to your content
-- **Engagement** — likes, comments, shares, saves (varies per platform)
-- **Top posts** — best-performing posts in the window (where the platform exposes them)
+## How often data updates
 
-## Limitations
+**Sync status** explains it:
 
-- Metrics depend on each platform's API stability. Outages or rate-limit hits may show stale or partial data.
-- Some platforms (notably TikTok) only expose a fixed rolling window — historical comparison isn't always possible.
-- Disconnected or token-expired accounts can't fetch metrics. Reconnect them from **Accounts**.
+- New posts are picked up every 3 hours on each channel, and every 24 hours on X.
+- Post metrics refresh once a day for posts from the last 30 days (20 days on X).
+- Follower counts are saved once a day.
+
+Follower history builds up day by day from when the channel was connected.
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| Workspace report | [Get workspace analytics](/api-reference/analytics/get-workspace-analytics) | `get-analytics-report-tool` |
+| One post's metrics | [Get publication analytics](/api-reference/analytics/get-publication-analytics), [Get post metrics](/api-reference/posts/get-post-metrics) | `get-analytics-publication-tool`, `get-post-metrics-tool` |

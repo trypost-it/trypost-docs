@@ -1,6 +1,69 @@
 ---
 title: "Feeds"
-description: "Follow RSS, Atom and JSON feeds and organize them in collections."
+description: "Follow RSS, Atom and JSON feeds and turn articles into posts or ideas."
 ---
 
-Content in progress.
+**Create › Feeds** is a reader for the blogs and news sites you follow. Read the latest articles, then turn one into a post or save it as an idea.
+
+Feeds belong to the workspace. Every member can add, organize and read them.
+
+## Add a feed
+
+<Steps>
+  <Step title="Open the form">
+    Click **New feed** → **Add feed**.
+  </Step>
+  <Step title="Paste the URL">
+    Enter the **RSS URL**. RSS, Atom and JSON feeds work. You can also paste the address of a page that links to its feed, and TryPost finds the feed for you.
+  </Step>
+  <Step title="Save">
+    Click **Add feed**. Its articles appear after the first refresh.
+  </Step>
+</Steps>
+
+A feed is refused when:
+
+- the URL is not a feed and the page does not link to one;
+- the feed is already in the workspace;
+- it points to a private or local address ("This URL points to a private or unsupported address.");
+- the workspace already has 50 feeds ("You've reached the limit of :max feeds in this workspace.").
+
+### Explore feeds
+
+**Explore feeds** opens a directory of curated feeds by category: **Favorites**, **Tech**, **News**, **Business**, **Art & Media**, **Entertainment** and **Science**. Add a feed from the list, or remove one you already follow.
+
+## Collections
+
+Group feeds into collections to read them together.
+
+- **New collection** creates one.
+- **Add to collection** (from the collection's menu) or **Move to** (from a feed) places a feed in it.
+- **Rename** or **Delete** a collection. Deleting a collection keeps its feeds; they move back to **Feeds**.
+
+**All feeds** shows the articles of every feed in the workspace.
+
+## Refreshing
+
+- TryPost checks every feed for new articles every 8 hours.
+- **Refresh feeds** checks them now. A feed already checked in the last 5 minutes is skipped.
+- Each feed keeps its latest 100 articles.
+- A feed that cannot be read shows "We couldn't refresh this feed." with the reason.
+
+<Note>
+  Self-hosting TryPost? These numbers are defaults you can change with the `RSS_FEEDS_*` variables. See [Configuration](/self-hosting/configuration).
+</Note>
+
+## Turn an article into content
+
+On an article:
+
+- **Create post** opens the [composer](/knowledge-base/publish/composer) with the article's title and link, plus its image when the site has one.
+- **Save as idea** adds the article to [Ideas](/knowledge-base/create/ideas). The button changes to **Saved**.
+
+## Rename and delete a feed
+
+From a feed's menu, **Rename** changes the name shown in TryPost. **Delete** removes the feed and its articles from the workspace. Ideas saved from it are kept.
+
+<Note>
+  Feeds are web only. There is no API endpoint or MCP tool for them.
+</Note>

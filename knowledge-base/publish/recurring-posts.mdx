@@ -3,4 +3,50 @@ title: "Recurring posts"
 description: "Publish the same post again on a repeating schedule."
 ---
 
-Content in progress.
+A recurring post publishes again on a fixed rhythm: every day, every two weeks, on the same day each month, and so on.
+
+## Make a post recurring
+
+<Steps>
+  <Step title="Schedule the post">
+    Only scheduled posts can repeat. Schedule it at the date and time of the first occurrence.
+  </Step>
+  <Step title="Open the post menu">
+    On the post card in [Publish](/knowledge-base/publish/overview), choose **Make Recurring**.
+  </Step>
+  <Step title="Set the rhythm">
+    **Repeat every** 1 to 365 **Day(s)**, **Week(s)**, **Month(s)** or **Year(s)**, **for** 1 to 100 times.
+  </Step>
+  <Step title="Save">
+    Click **Save**. The card shows a **Recurring** marker.
+  </Step>
+</Steps>
+
+"We'll schedule future occurrences based on this post's date and time." The post then shows a banner such as "This post will be shared every Monday at 9:00 AM, until … (3 posts left)."
+
+The number of times is how many occurrences come after this post. The last occurrence must be before 2038.
+
+Only members who publish directly see **Make Recurring**. See [Members and permissions](/knowledge-base/settings/members-and-permissions).
+
+## How occurrences are created
+
+- When a post of the series publishes, or fails, TryPost creates the next occurrence as a new scheduled post on the same channel.
+- Each occurrence is counted from the start of the series in the channel's time zone, so the local time stays the same across daylight saving changes, and a series on the 31st or on 29 February does not drift.
+- If an occurrence's time has already passed, TryPost skips to the next one still in the future.
+- An approved series keeps publishing without asking for approval again.
+
+## Change or stop
+
+From the post menu:
+
+- **Edit Recurrence** changes the rhythm or the number of times.
+- **Stop Recurring** keeps this post and ends the series after it.
+
+Only the next occurrence exists at any time. Once created, it is a normal post: edit, move or delete it like any other.
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| Set or change | [Set post recurrence](/api-reference/recurrence/set-post-recurrence) | `set-post-recurrence-tool` |
+| Stop | [Remove post recurrence](/api-reference/recurrence/remove-post-recurrence) | `clear-post-recurrence-tool` |

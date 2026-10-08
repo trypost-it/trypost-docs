@@ -3,4 +3,162 @@ title: "Composer"
 description: "Write a post once, customize it for each network and choose when it publishes."
 ---
 
-Content in progress.
+The composer is where you write posts. Open it with:
+
+- **New** → **Post** in the sidebar;
+- **New post** on the [Publish](/knowledge-base/publish/overview) page;
+- **+ New** on a free [queue slot](/knowledge-base/publish/queue), or a click on the calendar, which opens it at that time.
+
+## Write the post
+
+<Steps>
+  <Step title="Pick the channels">
+    Select one or more connected channels. Saving creates one post per channel.
+  </Step>
+  <Step title="Write and add media">
+    Write the text in the shared editor and add images, videos or a PDF. See [Media](/knowledge-base/media).
+  </Step>
+  <Step title="Choose when">
+    Pick a scheduling option (see [When it publishes](#when-it-publishes)).
+  </Step>
+  <Step title="Customize for each network">
+    With more than one network selected, click **Customize for each network** to review each one. With a single network you are already there.
+  </Step>
+  <Step title="Save">
+    Click **Schedule posts**, **Add to queue** or **Publish posts**, or **Save draft(s)** at any point.
+  </Step>
+</Steps>
+
+Tick **Create another** to keep the composer open for the next post.
+
+### Step 1: one shared editor
+
+The first step is one editor for every selected network. Your text, media and links go to all of them.
+
+### Step 2: one card per network
+
+**Customize for each network** opens one card per network, in the same order as your channel list. Each card starts as a copy of the shared text, and you can change the text, media, **Post Type** and network settings for that network only.
+
+<Warning>
+  Going back to step 1 discards every per-network change, including post types and settings. TryPost asks first: "You may lose your changes."
+</Warning>
+
+Pinterest, Discord and TikTok settings (board, channel, privacy) stay per account. Every other setting applies to all accounts of that network.
+
+### Post types and network settings
+
+Each network offers its own post types, such as **Feed Post**, **Reel** and **Story** on Instagram, or **Photo**, **Video** and **Carousel** on Pinterest. Some networks have extra settings:
+
+| Network | Settings |
+| --- | --- |
+| TikTok | **Visibility** (required), **Allow comments**, **Allow Duet**, **Allow Stitch**, **Auto add music**, **Disclose video content** |
+| Pinterest | Board (required), **Title**, **Destination link** |
+| Discord | **Channel** (required), **Mentions**, **Embeds** |
+| YouTube | **Title**, **Description**, **Category**, **Visibility**, **License**, **Notify subscribers**, **Allow embedding**, **Made for kids** |
+| Google Business | **Post type** (What's New, Event, Offer), **Button** |
+| Mastodon | **Content warning** |
+| Threads | **Topic**, and the **Ghost post** type (text only, archived after 24 hours) |
+| LinkedIn | **Document title** for PDF posts |
+| Instagram | **Share to feed** (Reels) |
+
+Instagram, TikTok videos, X and YouTube also offer the **AI-generated** switch: "Tell viewers your content was generated or edited with AI."
+
+Each network has its own page under **Platforms**, for example [TikTok](/platforms/tiktok) and [Google Business](/platforms/google-business).
+
+**YouTube:** without a **Title**, the first non-empty line of your text becomes the title (up to 100 characters, without `<` or `>`). A post with no title and no text cannot be scheduled or published on YouTube.
+
+## Character limits
+
+The composer counts characters for each channel and warns before you save.
+
+- Limits are per account. An X account with long posts (a Basic, Premium or Premium+ subscription, or a verified business) gets 25,000 characters instead of 280.
+- No post can be longer than 25,000 characters, not even a draft.
+- Every character counts once, emoji included.
+- Mastodon's content warning counts toward its 500 characters.
+- Instagram allows up to 5 hashtags. The counter shows "# Remaining: :count".
+- Instagram and Facebook Stories send no caption, so their text is not measured.
+
+The network limits are checked when you schedule or publish, not when you save a draft. Each network's limit is on its page in the **Platforms** section of the docs, for example [X (Twitter)](/platforms/x-twitter) or [Instagram](/platforms/instagram).
+
+<Note>
+  On TryPost Cloud, links in the X version of a post may be shown without being clickable. See [X (Twitter)](/platforms/x-twitter).
+</Note>
+
+## Threads of posts
+
+On X, Bluesky and Mastodon you can publish a thread:
+
+- **Start thread** adds a reply under the first post; **Add to thread** adds another.
+- A thread has up to 24 replies.
+- Each reply has its own text and media, and needs one of the two. Its media appears under that reply only.
+- Each reply is measured against the account's character limit.
+
+Other networks show "Threads of posts are not available on this network."
+
+## Link previews
+
+When your text has a link, the composer shows a link preview card.
+
+- The × (**Remove link preview**) publishes the post without the card. Facebook posts, Bluesky and LinkedIn honour it.
+- Threads always shows a card for the first link, so it has no ×.
+- **Replace link preview with media** adds the card's image to the post as media.
+
+## When it publishes
+
+| Option | What happens |
+| --- | --- |
+| **Now** | "Publish your post right away." |
+| **Next available** | "Add after the posts already in the queue." Takes the first free queue slot. |
+| **Prioritize** | "Put this post at the top of the queue." |
+| **Set date and time** | "Choose a specific time to publish." |
+
+The queue options need posting times on every selected channel. If one has none, the composer says which ("No posting times: :channels") and links to **Manage posting times**. See [Queue](/knowledge-base/publish/queue).
+
+The option the composer starts with is your **Default posting action** in [Preferences](/knowledge-base/settings/preferences).
+
+### Time zone
+
+Times in the composer are shown in the composer zone, labelled next to the time:
+
+- if every selected channel has the same time zone, that zone;
+- otherwise, your own time zone from Preferences.
+
+With exactly one channel selected, the date and time picker offers that channel's posting times for the day, and greys out the ones another post already holds.
+
+## Members who need approval
+
+If your access is **Needs approval**, the save button reads **Save and request approval**. The post waits in [Approvals](/knowledge-base/publish/approvals) instead of being scheduled or published.
+
+## AI Assistant
+
+The **AI Assistant** helps you write:
+
+- **Generate** writes a post from a prompt ("What do you want to write about?").
+- **Rephrase**, **Shorten**, **Expand**, **More casual** and **More formal** rewrite your current text.
+
+Then **Insert**, **Replace** your text, or **Regenerate**. The suggestion is tailored to the channel's character limit. New text is written in your interface language; rewrites keep the language of your text.
+
+The assistant is part of the web app only; it is not available through the API or MCP.
+
+<Note>
+  Self-hosting TryPost? The assistant needs an AI provider key. See [AI](/self-hosting/ai).
+</Note>
+
+## Also in the composer
+
+- **Templates** opens your [templates](/knowledge-base/create/templates); picking one inserts its text.
+- Insert a [signature](/knowledge-base/settings/signatures) from the signature picker.
+- Add [labels](/knowledge-base/settings/labels) to the post.
+- **Post previews** show each network's version. "Previews are an approximation. Each network decides the final look of your post."
+- If you close the composer without saving, the next time you open it TryPost asks **Resume unfinished post?** Choose **Resume post** or **Discard**.
+
+## API and MCP
+
+| Task | REST API | MCP tool |
+| --- | --- | --- |
+| Create a post | [Create post](/api-reference/posts/create-post), [Create posts in batch](/api-reference/posts/create-posts-in-batch) | `create-post-tool`, `create-posts-tool` |
+| Edit a post | [Update post](/api-reference/posts/update-post) | `update-post-tool` |
+| Publish, schedule or queue a stored post | [Update post](/api-reference/posts/update-post) | `publish-post-tool` |
+| Preview | [Get post preview](/api-reference/posts/get-post-preview) | `preview-post-tool` |
+
+The [posting guide](/api-reference/guides/posting) covers per-network settings, threads and scheduling modes over the API. See also the [MCP tools reference](/ai/tools-reference).

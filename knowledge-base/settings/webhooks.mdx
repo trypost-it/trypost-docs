@@ -169,7 +169,7 @@ One entry per channel of the post:
 
 ## Test event
 
-From the webhook's page, open the actions menu and click **Send test event**. TryPost sends a signed `webhook.test` delivery and waits up to 5 seconds. Your endpoint must answer with `2xx`; otherwise the test fails with the reason (**The endpoint is not reachable.** or **The endpoint returned HTTP :status.**).
+From the webhook's page, open the actions menu and click **Send test event**. TryPost sends a signed `webhook.test` delivery and waits up to 5 seconds. Your endpoint must answer with `2xx`; otherwise the test fails with the reason (**The endpoint is not reachable.** or **The endpoint returned HTTP 500.**).
 
 A test works even when the webhook is disabled or paused. It is not added to **Deliveries** and does not affect the webhook's status.
 

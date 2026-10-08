@@ -25,7 +25,7 @@ Every member of the workspace can connect their own assistant. It acts as you, w
     **Connect Claude** and **Connect ChatGPT** open those settings for you. Under **Other apps**, TryPost shows the name, URL or config to paste into **Cursor**, **VS Code**, **Claude Code** or any other client that reads an `mcpServers` config.
   </Step>
   <Step title="Authorize">
-    The first time the assistant connects, your browser opens **Authorize :client**. Pick the **Workspace** and click **Authorize**. This connection will only access the selected workspace.
+    The first time the assistant connects, your browser opens **Authorize** *assistant name*. Pick the **Workspace** and click **Authorize**. This connection will only access the selected workspace.
   </Step>
 </Steps>
 
@@ -48,6 +48,6 @@ Removing a member from the workspace also disconnects their apps.
 ## What an assistant can and cannot do
 
 - It can do what the [tools](/ai/tools-reference) allow, within your permissions in the workspace.
-- TryPost's AI writing features (the composer's AI assistant, **Generate ideas**, alt text) are not available over MCP; your assistant writes the text itself.
+- TryPost's AI writing features (the composer's and idea editor's AI assistant, **Generate ideas**, alt text) are not available over MCP; your assistant writes the text itself.
 - On TryPost Cloud, the account needs an active subscription.
 - API keys don't work for MCP, and MCP connections don't work for the REST API. For scripts and CI, use [API keys](/knowledge-base/settings/api-keys).

@@ -75,7 +75,7 @@ The composer counts characters for each channel and warns before you save.
 - No post can be longer than 25,000 characters, not even a draft.
 - Every character counts once, emoji included.
 - Mastodon's content warning counts toward its 500 characters.
-- Instagram allows up to 5 hashtags. The counter shows "# Remaining: :count".
+- Instagram allows up to 5 hashtags. The counter shows how many hashtags you have left.
 - Instagram and Facebook Stories send no caption, so their text is not measured.
 
 The network limits are checked when you schedule or publish, not when you save a draft. Each network's limit is on its page in the **Platforms** section of the docs, for example [X (Twitter)](/platforms/x-twitter) or [Instagram](/platforms/instagram).
@@ -112,7 +112,7 @@ When your text has a link, the composer shows a link preview card.
 | **Prioritize** | "Put this post at the top of the queue." |
 | **Set date and time** | "Choose a specific time to publish." |
 
-The queue options need posting times on every selected channel. If one has none, the composer says which ("No posting times: :channels") and links to **Manage posting times**. See [Queue](/knowledge-base/publish/queue).
+The queue options need posting times on every selected channel. If one has none, the composer says which ("No posting times:" followed by the channel names) and links to **Manage posting times**. See [Queue](/knowledge-base/publish/queue).
 
 The option the composer starts with is your **Default posting action** in [Preferences](/knowledge-base/settings/preferences).
 
@@ -160,5 +160,8 @@ The assistant is part of the web app only; it is not available through the API o
 | Edit a post | [Update post](/api-reference/posts/update-post) | `update-post-tool` |
 | Publish, schedule or queue a stored post | [Update post](/api-reference/posts/update-post) | `publish-post-tool` |
 | Preview | [Get post preview](/api-reference/posts/get-post-preview) | `preview-post-tool` |
+| Pinterest boards | [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards), [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board) | `list-pinterest-boards-tool`, `create-pinterest-board-tool` |
+| Discord channels | [List Discord channels](/api-reference/social-accounts/list-discord-channels) | `list-discord-channels-tool` |
+| TikTok options (visibility and allowed interactions) | [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info) | `get-tiktok-creator-info-tool` |
 
 The [posting guide](/api-reference/guides/posting) covers per-network settings, threads and scheduling modes over the API. See also the [MCP tools reference](/ai/tools-reference).

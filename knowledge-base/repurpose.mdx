@@ -76,12 +76,12 @@ On TryPost Cloud, an active repurpose checks its source about every 15 minutes. 
 
 ## When an account stops working
 
-- **The source needs reconnecting:** the repurpose stops by itself and shows "Replication is on hold: the account this repurpose watches needs to be reconnected." [Reconnect](/knowledge-base/channels/settings) the account and the repurpose resumes on its own.
+- **The source needs reconnecting:** the repurpose stops by itself and shows "Replication is on hold: the account this repurpose watches needs to be reconnected." [Reconnect](/knowledge-base/channels/connecting#reconnect-a-channel) the account and the repurpose resumes on its own.
 - **No destination is left:** it stops with "Replication is on hold: no destination is available. Add one, then resume it."
 - **A destination needs reconnecting:** the repurpose keeps running. Posts for that channel are still created and fail visibly, so you can retry them after reconnecting.
 - **The source was disconnected:** the repurpose has no source until you pick one. Disconnecting a channel reports how many repurposes were paused. See [Disconnecting a channel](/knowledge-base/channels/disconnecting).
 
-When the problem is fixed, the banner says "The problem is fixed. Resume this repurpose to start replicating again." A repurpose that stopped by itself resumes from the moment you resume it, so the videos posted during the outage are not replayed. No email is sent when a repurpose stops.
+For the other cases, once the problem is fixed the banner says "The problem is fixed. Resume this repurpose to start replicating again." A repurpose that stopped by itself resumes from the moment you resume it, so the videos posted during the outage are not replayed. No email is sent when a repurpose stops.
 
 ## Activity
 

@@ -19,7 +19,13 @@ Each post belongs to one channel. When you save a post for several channels in t
 
 Lists load more posts as you scroll.
 
-**Sent** also shows posts you published directly on the network, outside TryPost. They are marked "This was published directly from :network".
+Published and partially published posts are kept for 2 years, then deleted from TryPost with their media. They stay on the network.
+
+<Note>
+  Self-hosting TryPost? Change this with `POST_HISTORY_RETENTION_DAYS`. See [Configuration](/self-hosting/configuration).
+</Note>
+
+**Sent** also shows posts you published directly on the network, outside TryPost. They are marked "This was published directly from Instagram" (or the channel's network).
 
 ## List and Calendar
 
@@ -50,7 +56,7 @@ Each post card has buttons and a menu. What you see depends on the post's status
 | **Move to Drafts** | Unschedule a post. |
 | **Edit labels** | Change the post's labels. |
 | **Delete Post** | Delete the post and its media from TryPost. |
-| **Open post on :network** | Open the live post. |
+| **Open post on Instagram** (or the channel's network) | Open the live post. |
 | **See post insights** | Open the post's metrics. See [Channel insights](/knowledge-base/insights/channel-insights). |
 | **Post Details** | Show the full post with its notes. |
 
@@ -89,7 +95,7 @@ Use **Notes** on a post to talk with your team about it. A new note emails every
 
 When you open **Publish** for a single channel, the header also shows:
 
-- the posting goal, ":sent/:goal posts sent this week", with **Sent**, **Scheduled** and **To do**. The week follows your start of week in [Preferences](/knowledge-base/settings/preferences).
+- the posting goal, "2/5 posts sent this week", with **Sent**, **Scheduled** and **To do**. The week follows your start of week in [Preferences](/knowledge-base/settings/preferences).
 - **Show posting times** and **Manage posting times** for the channel's [queue](/knowledge-base/publish/queue).
 
 ## Empty workspace
@@ -103,6 +109,6 @@ A workspace without channels shows "Welcome to TryPost 👋" with a button to co
 | List posts | [List posts](/api-reference/posts/list-posts) | `list-posts-tool` |
 | Read a post | [Get post](/api-reference/posts/get-post) | `get-post-tool` |
 | Delete a post | [Delete post](/api-reference/posts/delete-post) | `delete-post-tool` |
-| Notes | [List post notes](/api-reference/post-notes/list-post-notes), [Create post note](/api-reference/post-notes/create-post-note) | `list-post-notes-tool`, `create-post-note-tool`, `update-post-note-tool`, `delete-post-note-tool` |
+| Notes | [List post notes](/api-reference/post-notes/list-post-notes), [Create post note](/api-reference/post-notes/create-post-note), [Update post note](/api-reference/post-notes/update-post-note), [Delete post note](/api-reference/post-notes/delete-post-note) | `list-post-notes-tool`, `create-post-note-tool`, `update-post-note-tool`, `delete-post-note-tool` |
 
 See the [MCP tools reference](/ai/tools-reference).

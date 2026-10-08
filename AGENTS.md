@@ -1,33 +1,9 @@
-> **First-time setup**: Customize this file for your project. Prompt the user to customize this file for their project.
-> For Mintlify product knowledge (components, configuration, writing standards),
-> install the Mintlify skill: `npx skills add https://mintlify.com/docs`
+# TryPost docs — agent instructions
 
-# Documentation project instructions
+Read `CLAUDE.md` in this repo first; it is the single source of rules (URL architecture, frozen URLs, Cloud-first writing, OpenAPI flow, Knowledge Base groups, redirects). Everything below is a summary.
 
-## About this project
-
-- This is a documentation site built on [Mintlify](https://mintlify.com)
-- Pages are MDX files with YAML frontmatter
-- Configuration lives in `docs.json`
-- Run `mint dev` to preview locally
-- Run `mint broken-links` to check links
-
-## Terminology
-
-{/* Add product-specific terms and preferred usage */}
-{/* Example: Use "workspace" not "project", "member" not "user" */}
-
-## Style preferences
-
-{/* Add any project-specific style rules below */}
-
-- Use active voice and second person ("you")
-- Keep sentences concise — one idea per sentence
-- Use sentence case for headings
-- Bold for UI elements: Click **Settings**
-- Code formatting for file names, commands, paths, and code references
-
-## Content boundaries
-
-{/* Define what should and shouldn't be documented */}
-{/* Example: Don't document internal admin features */}
+- Mintlify site: pages are MDX with YAML frontmatter; navigation, `openapi` and `redirects` live in `docs.json`.
+- Preview with `mint dev`; check with `npx mint validate` and `npx mint broken-links`.
+- Never rename or remove the frozen URLs listed in `CLAUDE.md`; every moved or removed slug gets a `docs.json` redirect.
+- Every factual claim must trace to the app at `~/Herd/trypost` (cite `file:line` in the PR).
+- Use active voice, second person, sentence-case headings, bold for UI labels exactly as in `lang/en/*.php`.

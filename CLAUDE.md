@@ -60,7 +60,7 @@ If one of these must move, add a redirect and change the app in the same release
 
 ### Cloud-first
 - Default instructions assume the user is on **TryPost Cloud**
-- Self-hosted specifics go in `<Accordion>`, `<Note>`, or the Self-Hosting anchor
+- Self-hosted specifics go in `<Accordion>`, `<Note>`, or the Self-Hosting tab
 - Example: Platform pages say "click Connect" for cloud, API credentials in `<Accordion>` for self-hosted
 - This includes `api-reference/` — those endpoints are documented against `https://app.trypost.it/api`, so describe the Cloud response
 
@@ -101,158 +101,25 @@ The same applies to anything a self-hoster can switch off or raise: platform ava
 - **MCP server**: OAuth 2.1 with Dynamic Client Registration (PKCE S256, scope `mcp:use`). Clients discover endpoints via `/.well-known/oauth-authorization-server` and `/.well-known/oauth-protected-resource`, register at `/oauth/register`, then walk the user through `/oauth/authorize` → `/oauth/token` in a browser. Personal Access Tokens are **not** accepted on `/mcp/trypost` — use the REST API for scripts/CI that cannot complete OAuth.
 - Issued via `POST /api/api-keys` or **Settings > API Keys** in the dashboard.
 
-### Endpoints
-| Group | Endpoints |
-|-------|-----------|
-| Posts | `GET /posts`, `POST /posts`, `GET /posts/{post}`, `PUT /posts/{post}`, `DELETE /posts/{post}`, `POST /posts/{post}/media`, `POST /posts/{post}/media/from-url`, `POST /posts/{post}/media/from-asset`, `GET /posts/{post}/metrics`, `GET /posts/{post}/preview` |
-| Platforms | `GET /content-types` |
-| Workspace | `GET /workspace` |
-| Assets | `GET /assets`, `GET /assets/{media}` |
-| Signatures | `GET /signatures`, `POST /signatures`, `PUT /signatures/{id}`, `DELETE /signatures/{id}` |
-| Labels | `GET /labels`, `POST /labels`, `PUT /labels/{id}`, `DELETE /labels/{id}` |
-| Social Accounts | `GET /social-accounts`, `PUT /social-accounts/{account}/toggle`, `GET /social-accounts/{account}/boards` (Pinterest), `GET /social-accounts/{account}/channels` (Discord) |
-| API Keys | `GET /api-keys`, `POST /api-keys`, `DELETE /api-keys/{apiToken}` |
-| Repurpose | `GET /repurposes`, `POST /repurposes`, `GET /repurposes/{repurpose}`, `PUT /repurposes/{repurpose}`, `GET /repurposes/{repurpose}/items`, `POST /repurposes/{repurpose}/activate`, `POST /repurposes/{repurpose}/pause`, `POST /repurposes/{repurpose}/resume`, `POST /repurposes/{repurpose}/disable`, `DELETE /repurposes/{repurpose}`, `GET /repurpose-source-formats` |
-| Webhooks | `GET /webhooks`, `POST /webhooks`, `GET /webhooks/{webhook}`, `PUT /webhooks/{webhook}`, `DELETE /webhooks/{webhook}`, `POST /webhooks/{webhook}/send-test`, `POST /webhooks/{webhook}/rotate-secret`, `GET /webhooks/{webhook}/logs`, `POST /webhooks/{webhook}/logs/{webhookLog}/replay` |
+### Endpoints, shapes and pagination
 
-`PUT /posts/{post}` accepts a `status` of `publishing` to publish immediately (no separate publish endpoint at the REST level).
+`openapi.json` is the source of truth for every operation, request field, response shape and error (hand-written from the app's `routes/api.php`, `app/Http/Requests/Api/**`, `app/Http/Resources/**`, `app/Http/Controllers/Api/**`). Public API = routes whose URI starts with `api/` (83 today: `php artisan route:list --path=api`). Edit the spec, not generated pages. `api-reference/introduction.mdx` covers auth, errors, pagination, rate limits and timestamps; `api-reference/guides/posting.mdx` covers `platforms[].meta` per network, scheduling modes and thread replies; `api-reference/guides/media-uploads.mdx` covers media. Update those, not this file. Facts to keep in mind:
 
-### `platforms[].meta` (PostPlatform)
-
-Single validation contract in the app (`PostPlatformMetaRules`). Documented for humans/LLMs at `api-reference/endpoint/update-post.mdx` → **Per-platform meta**. Unknown keys are dropped. Merge on update; `null` clears a key.
-
-| Platform | Keys | Required to publish |
-|----------|------|---------------------|
-| Instagram / Facebook | `aspect_ratio` | — |
-| LinkedIn / LinkedIn Page | `document_title` | — |
-| TikTok | `privacy_level`, `allow_comments`, `allow_duet`, `allow_stitch`, `auto_add_music`, `is_aigc`, `disclose`, `brand_content_toggle`, `brand_organic_toggle` | `privacy_level` |
-| Pinterest | `board_id`, `title`, `link` | `board_id` |
-| Discord | `channel_id`, `channel_name`, `mentions`, `embeds` | `channel_id` |
-
-Enum-like values are **JSON strings** (exact literals):
-- `aspect_ratio`: `"1:1"`, `"4:5"`, `"16:9"`, `"original"`
-- `privacy_level`: `"PUBLIC_TO_EVERYONE"`, `"MUTUAL_FOLLOW_FRIENDS"`, `"FOLLOWER_OF_CREATOR"`, `"SELF_ONLY"`
-
-Do not confuse with `media[].meta.alt_text` (media accessibility, max 2000). Pin description = post `content`, not meta.
-
-### Response shape
-- Resources are returned **unwrapped** (`JsonResource::withoutWrapping()` is set globally). A single resource looks like `{ "id": ..., ... }` — no `data:` envelope.
-- Non-paginated collections return a plain JSON array (`[ {...}, {...} ]`).
-- `GET /posts`, `GET /assets`, `GET /repurposes`, `GET /repurposes/{id}/items`, and `GET /webhooks/{id}/logs` return the Laravel pagination envelope (`{ data, links, meta }`). Posts and webhook logs are **15** per page (API contract). Assets and both repurpose lists are **25** per page (`config('app.pagination.default')`). `GET /webhooks` is a plain array. `GET /repurpose-source-formats` wraps in `{ data: [...] }` but is not paginated.
-- `attach-media-from-url`, `metrics`, and `preview` are bespoke — not Resource-shaped (no `data:` wrapper, just the documented fields at top level). The multipart `/media` upload and `POST /posts/{post}/media/from-asset` return a regular Post resource.
-- `POST /api-keys` returns `{ "token": {...}, "plain_token": "..." }`. The plain token is shown ONCE.
-
-### Pagination
-`GET /posts` paginates at **15** per page. `GET /assets`, `GET /repurposes`, and `GET /repurposes/{id}/items` paginate at **25** per page. `GET /webhooks/{id}/logs` paginates at **15** per page. All other list endpoints return full results as a plain array.
-
-### Asset Library (API & MCP)
-
-- List/show only the workspace `assets` collection (not logos/avatars). Other workspaces and non-library media → API `404` on show, omitted from list; MCP get → `Asset not found.`
-- Asset JSON (`AssetResource`): `id`, `original_filename`, `type`, `mime_type`, `size`, `url`, `meta`, `created_at`. **No `path`.** `url` is the stored public file URL, not a signed preview.
-- Attach (`POST /posts/{post}/media/from-asset` / `attach-existing-asset-tool`): `{ asset_id, alt? }`. Draft/scheduled only. Foreign post → API `404` / MCP `Post not found.` Foreign/missing/non-library asset → `Asset not found.` Type not allowed by enabled platforms → `This file type is not supported by the platforms enabled on the post.` Repeat same post+asset → no duplicate and **does not change alt**. **Omit `alt`** → keep library `alt_text`. Set `alt` → override on images only.
-- MCP list: `limit` 1–100 (default **50**), `{ assets, has_more }`. No cursor/offset — cannot page past the first `limit` items.
-- Auth: list/get require `createPost`, which every workspace member has. Attach requires `update` on the post.
+- Resources are unwrapped (`JsonResource::withoutWrapping()`); lists use the Laravel envelope `{ data, links, meta }` with the page size from `config('app.pagination.default')` (25 today). Always tell readers to read `meta.per_page`.
+- `PUT /posts/{post}` with `status: publishing` publishes now; there is no separate publish endpoint.
+- `platforms[].meta` rules live only in the app's `App\Support\PostPlatformMetaRules`; document them from there. Unknown keys are dropped; on update `meta` is merged and `null` clears a key.
+- There is no asset-library endpoint and no account toggle in the REST API.
+- Enum values (statuses, content types, webhook events, platforms) are documented in `openapi.json` schemas; copy them from the app enums under `app/Enums/**`, never from memory.
 
 ## MCP Server
 
-- Tool names are auto-derived from class basenames as kebab-case + `-tool` suffix (Laravel MCP convention — no `#[Name]` overrides in `TryPostServer`).
-- Post tools: `list-posts-tool`, `get-post-tool`, `create-post-tool`, `update-post-tool`, `publish-post-tool`, `preview-post-tool`, `delete-post-tool`, `attach-media-from-url-tool`, `request-media-upload-tool`, `attach-media-from-upload-tool`, `attach-existing-asset-tool`, `get-post-metrics-tool`.
-- Asset tools: `list-assets-tool`, `get-asset-tool`, `attach-existing-asset-tool`.
-- Plus: `list-content-types-tool` (Platforms), `list-signatures-tool` / `create-signature-tool` / `update-signature-tool` / `delete-signature-tool`, `list-labels-tool` / `create-label-tool` / `update-label-tool` / `delete-label-tool`, `list-social-accounts-tool` / `list-pinterest-boards-tool` / `list-discord-channels-tool` / `toggle-social-account-tool`, `get-workspace-tool`, `list-api-keys-tool` / `create-api-key-tool` / `delete-api-key-tool`, `list-repurpose-source-formats-tool` / `list-repurposes-tool` / `get-repurpose-tool` / `create-repurpose-tool` / `update-repurpose-tool` / `list-repurpose-items-tool` / `activate-repurpose-tool` / `pause-repurpose-tool` / `resume-repurpose-tool` / `disable-repurpose-tool` / `delete-repurpose-tool`, `list-webhooks-tool` / `get-webhook-tool` / `create-webhook-tool` / `update-webhook-tool` / `delete-webhook-tool` / `send-webhook-test-tool` / `rotate-webhook-secret-tool` / `list-webhook-logs-tool` / `replay-webhook-log-tool`.
-- `create-post-tool` accepts `platforms[]` (each with `social_account_id`, `content_type`, optional `meta`), `scheduled_at`, `label_ids` — same fields as REST `POST /posts` **except** MCP does **not** accept inline `media[]` (use attach tools). `update-post-tool` uses `platforms[].id` (post_platform UUID), not `social_account_id`.
-- `create-api-key-tool` returns plain secret as `token` (REST create returns `plain_token`).
-- Before publishing Pinterest/Discord, resolve IDs via `list-pinterest-boards-tool` / `list-discord-channels-tool` (REST: `GET /social-accounts/{account}/boards|channels`). Those MCP tools authorize with `createPost`, which every workspace member has (there are no roles).
-- `publish-post-tool` is a separate, destructive tool (annotated `IsDestructive`); REST clients use `PUT /posts/{id}` with `status=publishing` instead.
-- Server route: `Mcp::web('/mcp/trypost', TryPostServer::class)->middleware(['auth:api', 'workspace.token:mcp'])`. The `workspace.token:mcp` middleware (`LoadWorkspaceFromToken`) requires an OAuth grant with `mcp:use` (not a Personal Access Token) and returns `402 Active subscription required` on Cloud accounts without app access.
+- The tool list is exactly `TryPostServer::$tools` (`app/Mcp/Servers/TryPostServer.php`), 81 tools today; `ai/tools-reference.mdx` documents every one and `check_coverage.py mcp` enforces it. Names are the class basename in kebab-case plus `-tool`, except `get-tiktok-creator-info-tool` (`#[Name]`).
+- `create-post-tool` / `create-posts-tool` / `update-post-tool` accept inline `media[]` (`url`, `upload_token` or `id`); `update-post-tool` cannot change the channel. `create-api-key-tool` returns `{token, plain_token}` like REST.
+- Gates mirror the web: any member (`createPost`) for posts, notes, ideas, labels, signatures, analytics and channel reads; `publishDirectly` for approve/reject, set recurrence, reorder queue, move to slot and every repurpose tool; admins (`manageAccounts`, `manageWebhooks`, `manageTeam`) for posting-schedule writes, webhooks and API keys.
+- Server route: `Mcp::web('/mcp/trypost', TryPostServer::class)->middleware(['auth:api', 'workspace.token:mcp'])`. `LoadWorkspaceFromToken` requires an active OAuth grant with `mcp:use` (`403 MCP OAuth authorization required.` otherwise), binds the token's workspace (`401 No workspace selected.`, `403 Workspace access denied.`), and returns `402 Active subscription required.` on Cloud without app access.
+- AI is web-only: no API endpoint or MCP tool calls an AI agent.
 
-## Enum Values
-
-These are the exact string values used in API responses. Never use alternatives.
-
-### Post status
-`draft`, `scheduled`, `publishing`, `published`, `partially_published`, `failed`
-
-### PostPlatform status
-`pending`, `publishing`, `published`, `failed`
-
-### Social account status
-`connected`, `disconnected`, `token_expired`
-
-**NOT `active`/`inactive` — those are for `is_active` boolean field.**
-
-### Social account platforms (15 values)
-`linkedin`, `linkedin-page`, `x`, `tiktok`, `youtube`, `facebook`, `instagram`, `instagram-facebook`, `threads`, `pinterest`, `bluesky`, `mastodon`, `telegram`, `discord`, `google_business`
-
-`instagram` is Instagram Login for professional (Business/Creator) accounts; `instagram-facebook` is the same kind of account connected through a Facebook Page. `google_business` uses an underscore (its page slug and OAuth callback use `google-business`).
-
-### Repurpose status
-`draft`, `active`, `paused`, `disabled`
-
-### Repurpose source format
-`reel`, `video`, `story`
-
-### Repurpose publish mode
-`publish`, `draft`
-
-### Repurpose pause reason
-`source_removed`, `source_unavailable`, `no_destinations` — `null` on a user pause
-
-### Repurpose item status
-`pending`, `processing`, `published`, `drafted`, `skipped`, `failed`
-
-### Repurpose item reason
-`published_via_trypost`, `media_url_missing`, `download_failed`, `post_creation_failed`, `no_usable_destinations`
-
-Source platforms are only `instagram`, `instagram-facebook`, and `facebook`. Destination `content_type` must accept video.
-
-### Content types (20 values)
-| Platform | Content types |
-|----------|--------------|
-| LinkedIn | `linkedin_post` |
-| LinkedIn Page | `linkedin_page_post` |
-| X | `x_post` |
-| Facebook | `facebook_post`, `facebook_reel`, `facebook_story` |
-| Instagram | `instagram_feed`, `instagram_reel`, `instagram_story` |
-| TikTok | `tiktok_video`, `tiktok_photo` |
-| YouTube | `youtube_short` |
-| Threads | `threads_post` |
-| Pinterest | `pinterest_pin`, `pinterest_video_pin`, `pinterest_carousel` |
-| Bluesky | `bluesky_post` |
-| Mastodon | `mastodon_post` |
-| Telegram | `telegram_post` |
-| Discord | `discord_message` |
-
-There is **no** `linkedin_carousel`, `linkedin_page_carousel`, or persisted `instagram_carousel` content type. LinkedIn PDF posts use `linkedin_post` / `linkedin_page_post` + PDF + optional `meta.document_title`. Instagram multi-image posts use `instagram_feed`. (`instagram_carousel` remains an **AI Create wizard format only** — drafts are stored as `instagram_feed`.)
-
-Instagram content types work for both `instagram` and `instagram-facebook` accounts.
-
-**Never use generic values like `text`, `image`, `video`.**
-
-### `platforms[].meta` string enums (exact JSON string literals)
-
-**`aspect_ratio`:** `"1:1"`, `"4:5"`, `"16:9"`, `"original"`
-
-**TikTok `privacy_level`:** `"PUBLIC_TO_EVERYONE"`, `"MUTUAL_FOLLOW_FRIENDS"`, `"FOLLOWER_OF_CREATOR"`, `"SELF_ONLY"`
-
-Send these as strings in JSON — never as integers or renamed labels.
-
-### API token state
-There is no `status` enum on tokens. `AccessToken` exposes `revoked` (boolean) and `expires_at` (nullable timestamp). The `ApiKeyResource` derives `is_active` from `! revoked && (expires_at is null || expires_at > now)`.
-
-### Media types (3 values)
-`image`, `video`, `document`
-
-Allowed MIME types: images = `image/jpeg`, `image/png`, `image/gif`, `image/webp` (PNG/WebP stills are normalized to JPEG q100); videos = `video/mp4`, `video/quicktime`; documents = `application/pdf`. Default size caps: **10 MB** image, **1024 MB** video, **100 MB** document (env: `MEDIA_IMAGE_MAX_SIZE_MB` / `MEDIA_VIDEO_MAX_SIZE_MB` / `MEDIA_DOCUMENT_MAX_SIZE_MB`). Signed upload URL TTL defaults to **15 minutes** (`MEDIA_SIGNED_UPLOAD_URL_TTL_MINUTES`; legacy fallback `MCP_UPLOAD_URL_TTL_MINUTES`). There is **no** separate 50 MB MCP-only cap — MCP signed uploads use the same per-type caps as the REST API.
-
-### Webhook status
-`enabled`, `disabled`, `paused`
-
-`paused` is set by the platform after 5 consecutive failed deliveries — clients cannot PUT/update it.
-
-### Webhook events (7 values)
-`post.created`, `post.scheduled`, `post.unscheduled`, `post.published`, `post.partially_published`, `post.failed`, `post.deleted`
-
-No wildcard. Test ping type is `webhook.test` (not a subscribeable event).
+## Notifications and permissions
 
 ### Notification types (email only)
 `post_published`, `post_failed`, `account_disconnected`, `post_at_risk`, `post_note_added`, `collaboration` (approval requests and decisions). `post_ready` and `mentioned_in_comment` exist only so 1.x queued jobs finish; never document them. There is no in-app notification center and no notification channel setting: every notification is an email.
@@ -260,20 +127,13 @@ No wildcard. Test ping type is `webhook.test` (not a subscribeable event).
 ### Member permissions (no roles)
 A membership (`user_workspace`) and an invite carry two flags: `is_admin` (manages members, settings, channels) and `requires_approval` (the member's posts need approval; always false for admins). The Admin / Member / Viewer roles were removed in 2.0. The account owner is always an admin and publishes directly. Every member can create posts.
 
-## Emails Sent by TryPost
+## Emails
 
-| Email | Trigger |
-|-------|---------|
-| `PostPublished` | Post published successfully |
-| `PostPublishFailed` | Post failed to publish on one or more platforms |
-| `AccountDisconnected` | A single social account lost authorization |
-| `WebhookPausedMail` | A workspace webhook was paused after 5 consecutive delivery failures |
-| `WorkspaceConnectionsDisconnected` | Daily check found disconnected accounts in a workspace |
-| `WorkspaceInvite` | Team member invited to join a workspace |
-| Email verification | New user registration (Laravel built-in) |
-| Password reset | User requests password reset (Laravel built-in) |
+Every email the app sends is a Maizzle template in `maizzle/templates/` with a Mailable in `app/Mail/`; the self-hosting list is `self-hosting/configuration.mdx` → **Emails sent by TryPost**. Default mailer is SendKit (`config/mail.php:19`).
 
-Default mailer is **SendKit** (`MAIL_MAILER=sendkit`).
+## Coverage checker
+
+`python3 ~/Herd/trypost/docs/superpowers/audits/2026-10-07-docs-inventory/check_coverage.py all` must print `OK` (api, mcp, env, platforms, redirects).
 
 ## Scheduled Commands
 
@@ -281,7 +141,7 @@ The full table (17 entries, including analytics, retention and Google Business r
 
 ## Self-Hosted Requirements
 
-- PHP 8.3+ (the Docker image ships 8.4), Node.js 20.19+ or 22.12+, PostgreSQL or MySQL (MySQL from TryPost 2.0), Redis
+- PHP 8.4+ (the Docker image ships 8.4), Node.js 20.19+ or 22.12+, PostgreSQL or MySQL (MySQL from TryPost 2.0), Redis
 - Horizon (queues), Reverb (WebSockets) and the scheduler running continuously
 - Imagick with HEIC for iPhone photo conversion (in the Docker image)
 - Upload limits: `upload_max_filesize=1G`, `post_max_size=1G` (matches the Docker image)

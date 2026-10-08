@@ -4785,7 +4785,7 @@
                       "type": "string",
                       "format": "uuid"
                     },
-                    "description": "Media to attach, by id: the `id` of a media item of a post or idea of this workspace, or the `media_id` of a signed upload. The idea gets its own copy of each file."
+                    "description": "Media to attach, by id: the `id` of a media item of a post or idea of this workspace, or the `media_id` of a signed upload. A file taken from a post or idea is copied with a new id; an unclaimed signed upload is attached as is and keeps its id."
                   },
                   "label_ids": {
                     "type": "array",
@@ -4802,7 +4802,7 @@
                 "body": "Show the team, the whiteboard and the first sketch of the new composer.",
                 "idea_stage_id": "9e1a2b3c-4d5e-4f6a-8b7c-9d0e1f2a3b4c",
                 "media_ids": [
-                  "9e2b3c50-7a8b-4c9d-8e0f-1a2b3c4d5e6f"
+                  "9d3c1f31-9b0c-4d1e-8f2a-3b4c5d6e7f80"
                 ],
                 "label_ids": [
                   "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f"
@@ -5050,7 +5050,7 @@
                       "type": "string",
                       "format": "uuid"
                     },
-                    "description": "Media to attach, by id: the `id` of a media item of a post or idea of this workspace, or the `media_id` of a signed upload. The idea gets its own copy of each file."
+                    "description": "Media to attach, by id: the `id` of a media item of a post or idea of this workspace, or the `media_id` of a signed upload. A file taken from a post or idea is copied with a new id; an unclaimed signed upload is attached as is and keeps its id."
                   },
                   "label_ids": {
                     "type": "array",
@@ -5190,9 +5190,9 @@
                   "position": 1,
                   "media": [
                     {
-                      "id": "9e2b3c50-7a8b-4c9d-8e0f-1a2b3c4d5e6f",
-                      "path": "medias/9e2b3c50-7a8b-4c9d-8e0f-1a2b3c4d5e6f.jpg",
-                      "url": "https://media.trypost.it/medias/9e2b3c50-7a8b-4c9d-8e0f-1a2b3c4d5e6f.jpg",
+                      "id": "9e2b3c51-8b9c-4d0e-9f1a-2b3c4d5e6f70",
+                      "path": "medias/9e2b3c51-8b9c-4d0e-9f1a-2b3c4d5e6f70.jpg",
+                      "url": "https://media.trypost.it/medias/9e2b3c51-8b9c-4d0e-9f1a-2b3c4d5e6f70.jpg",
                       "type": "image",
                       "mime_type": "image/jpeg",
                       "original_filename": "whiteboard.jpg",
@@ -5212,8 +5212,8 @@
                       "updated_at": "2026-09-01 10:00:00"
                     }
                   ],
-                  "created_at": "2026-10-07 18:20:00",
-                  "updated_at": "2026-10-07 18:20:00"
+                  "created_at": "2026-10-08 09:30:00",
+                  "updated_at": "2026-10-08 09:30:00"
                 }
               }
             }

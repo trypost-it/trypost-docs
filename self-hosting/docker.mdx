@@ -67,7 +67,7 @@ No local PHP/Node install required. The published image (`ghcr.io/trypostit/tryp
 
 | You (once) | Entrypoint / Supervisor (automatic) |
 |------------|-------------------------------------|
-| Set `APP_KEY`, `APP_URL`, DB passwords, `REVERB_APP_SECRET`, **`PASSPORT_PRIVATE_KEY` / `PASSPORT_PUBLIC_KEY`** | Wait for the database, run migrations |
+| Set `APP_URL`, DB passwords and `REVERB_APP_SECRET` first, then `APP_KEY` and **`PASSPORT_PRIVATE_KEY` / `PASSPORT_PUBLIC_KEY`** | Wait for the database, run migrations |
 | `docker compose … up -d` | Use Passport keys from env, `storage:link` if missing, ensure Personal Access Client |
 | `db:seed` (plans) + `UserSeeder` | Cache config/routes/views/events |
 | Optional: Caddy TLS profile | Start nginx, php-fpm, **Horizon**, **Reverb**, **schedule:work** |
@@ -81,28 +81,47 @@ cd trypost
 
 You only need the repo for `compose.prod.yaml` (and optionally `Caddyfile`). The app image comes from GHCR.
 
-### 2. Generate an app key and edit the compose file
+### 2. Set secrets, then generate the app and Passport keys
 
-```bash
-docker compose -f compose.prod.yaml run --rm app php artisan key:generate --show
-```
-
-Paste the value into `APP_KEY` in `compose.prod.yaml`. Also set:
+Edit `compose.prod.yaml` **before you run any `docker compose` command** against it. The first command that starts PostgreSQL creates the `pgdata` volume with whatever `POSTGRES_PASSWORD` is set at that moment, and PostgreSQL ignores later changes to it. Set:
 
 - `APP_URL` — your public URL (e.g. `https://post.yourdomain.com`)
 - `DB_PASSWORD` / `POSTGRES_PASSWORD` (must match)
 - `REVERB_APP_SECRET`
-- `PASSPORT_PRIVATE_KEY` / `PASSPORT_PUBLIC_KEY` — **required in production** (file keys under `storage/` are not on a persisted volume). Generate once:
+
+Then generate an app key. `--no-deps` keeps this one-off command from starting PostgreSQL and Redis:
 
 ```bash
-docker compose -f compose.prod.yaml run --rm app php artisan passport:keys --show
+docker compose -f compose.prod.yaml run --rm --no-deps app php artisan key:generate --show
 ```
 
-Paste the PEM contents into the compose env vars (use `\n` for newlines). Do not regenerate after users have issued API or MCP tokens.
+Paste the value into `APP_KEY`.
+
+`PASSPORT_PRIVATE_KEY` / `PASSPORT_PUBLIC_KEY` are **required in production** (file keys under `storage/` are not on a persisted volume, and the container exits at boot without them). Generate them once and print both files:
+
+```bash
+docker compose -f compose.prod.yaml run --rm --no-deps app sh -c \
+  'php artisan passport:keys --force >/dev/null && cat storage/oauth-private.key storage/oauth-public.key'
+```
+
+Paste each PEM into its env var as a YAML block scalar (a single line with literal `\n` for newlines also works):
+
+```yaml
+PASSPORT_PRIVATE_KEY: |
+  -----BEGIN PRIVATE KEY-----
+  ...
+  -----END PRIVATE KEY-----
+PASSPORT_PUBLIC_KEY: |
+  -----BEGIN PUBLIC KEY-----
+  ...
+  -----END PUBLIC KEY-----
+```
+
+Do not regenerate them after users have issued API or MCP tokens.
 
 Leave `REVERB_APP_KEY` as `trypost-reverb-key` unless you rebuild the image — it must match the key baked into the published frontend bundle.
 
-Queues, cache, session, and broadcast are already set to Redis / Reverb / database in `compose.prod.yaml`, and `FILESYSTEM_DISK` to `public`. Configure **mail** (`MAIL_MAILER` defaults to `log`, which writes emails to the log instead of sending them) and optional social/AI credentials in the same file — see [Configuration](/self-hosting/configuration).
+Queues, cache, session, and broadcast are already set to Redis / Reverb / database in `compose.prod.yaml`, and `FILESYSTEM_DISK` to `public`. Configure **mail** (`MAIL_MAILER` defaults to `log`, which writes emails to the log instead of sending them; for SMTP use `MAIL_SCHEME=smtp` on port 587 or `smtps` on 465, not the `tls` the file's comment shows) and optional social/AI credentials in the same file — see [Configuration](/self-hosting/configuration).
 
 ### 3. Start the stack
 
@@ -125,8 +144,8 @@ It does **not** create the admin user or plan rows — next step.
 ### 4. Seed plans and admin user (one-time)
 
 ```bash
-docker compose -f compose.prod.yaml exec app php artisan db:seed
-docker compose -f compose.prod.yaml exec app php artisan db:seed --class=UserSeeder
+docker compose -f compose.prod.yaml exec app php artisan db:seed --force
+docker compose -f compose.prod.yaml exec app php artisan db:seed --class=UserSeeder --force
 ```
 
 | Seeder | Purpose |
@@ -201,6 +220,18 @@ docker compose -f compose.prod.yaml exec app php artisan release:trypost-2 --for
 docker compose -f compose.prod.yaml down
 ```
 
+### Update to a new version
+
+The new container runs `migrate --force` on boot, so back the database up **before** you recreate it:
+
+```bash
+docker compose -f compose.prod.yaml exec -T app sh -c 'PGPASSWORD="$DB_PASSWORD" pg_dump -h "$DB_HOST" -U "$DB_USERNAME" -d "$DB_DATABASE" -Fc' > trypost-$(date +%F).dump
+docker compose -f compose.prod.yaml pull app
+docker compose -f compose.prod.yaml up -d
+```
+
+`compose.prod.yaml` uses `ghcr.io/trypostit/trypost:latest`, which moves with every release. Pin the major tag (`ghcr.io/trypostit/trypost:2`) so an update never crosses a major version unannounced; exact versions (`2.0.0`) and `major.minor` tags are published too.
+
 <Note>
   Moving an existing instance to a newer version? Back the database up first and check [Upgrading](/self-hosting/upgrading) — some releases rewrite data as well as schema. The container runs `migrate --force` on boot; `release:trypost-2` is a one-off step for the move to TryPost 2.0 only.
 </Note>
@@ -219,7 +250,7 @@ cd trypost
 docker compose up -d
 ```
 
-On first boot the entrypoint can seed `.env` from `docker/.env.docker.example`, install Composer/npm deps if missing, generate `APP_KEY`, migrate, `storage:link`, and `passport:keys`. Horizon, Reverb, the scheduler, and Vite start via Supervisor.
+On first boot the entrypoint can seed `.env` from `docker/.env.docker.example`, install Composer/npm deps if missing, generate `APP_KEY`, migrate, `storage:link`, `passport:keys` and the Passport personal access client (so `db:seed` below is only needed for plans and the admin user). Horizon, Reverb, the scheduler, and Vite start via Supervisor.
 
 For local media URLs, set `FILESYSTEM_DISK=public` in `.env` and ensure `storage:link` ran. The Docker example ships with `local`, which is a private disk with no public URL, so uploaded media cannot be served until you change it.
 
@@ -290,6 +321,21 @@ docker compose ps
 docker compose -f compose.prod.yaml ps
 ```
 
+### `password authentication failed` after changing the DB password
+
+PostgreSQL keeps the password it was first started with; changing `POSTGRES_PASSWORD` later has no effect on an existing `pgdata` volume. On a fresh install with no data, remove the volume and start again:
+
+```bash
+docker compose -f compose.prod.yaml down -v
+docker compose -f compose.prod.yaml up -d
+```
+
+On an install with data, change the password inside PostgreSQL to match `DB_PASSWORD` instead:
+
+```bash
+docker compose -f compose.prod.yaml exec pgsql psql -U trypost -c "ALTER USER trypost PASSWORD 'your-new-password';"
+```
+
 ### `could not find driver` on MySQL
 
 The image predates the MySQL driver. Check and pull a newer one:
@@ -309,7 +355,7 @@ Expected. The readiness check is `pg_isready`, so it cannot confirm a MySQL serv
 Seed the Passport client:
 
 ```bash
-docker compose -f compose.prod.yaml exec app php artisan db:seed
+docker compose -f compose.prod.yaml exec app php artisan db:seed --force
 ```
 
 ### Horizon not processing jobs

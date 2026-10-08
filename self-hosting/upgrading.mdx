@@ -10,9 +10,9 @@ Pull the new version, then run the same steps you already run on a deploy:
 - Rebuild dependencies and assets, and re-run the [optimization commands](/self-hosting/production#optimizations)
 - Apply migrations with `php artisan migrate --force`
 - When you cross into TryPost 2.0, run `php artisan release:trypost-2` once, right after the migrations — see [below](#upgrading-to-trypost-20)
-- Restart the queue workers so they pick up the new code — `php artisan horizon:terminate` lets Supervisor bring them back
+- Restart the long-running processes so they pick up the new code — `php artisan horizon:terminate` and `php artisan reverb:restart` let Supervisor bring them back
 
-On Docker, [Common production commands](/self-hosting/docker#common-production-commands) has the container equivalents. The container runs `migrate --force` itself on every boot.
+On Docker, back the database up, then `docker compose -f compose.prod.yaml pull app` and `docker compose -f compose.prod.yaml up -d` — see [Update to a new version](/self-hosting/docker#update-to-a-new-version). The container runs `migrate --force` itself on every boot, so the backup has to come first.
 
 <Warning>
   **Back the database up before `migrate --force`.** Migrations run unattended and some of them rewrite data, not just schema. A dump you can restore is the only reliable way back.
@@ -40,7 +40,7 @@ TryPost 2.0 changes how posts, media and team permissions are stored. The schema
     </Warning>
   </Step>
   <Step title="Deploy the new version and migrate">
-    Pull the new image (it adds Imagick with HEIC support) or update your server, set any new environment variables from [Configuration](/self-hosting/configuration), and run `php artisan migrate --force`.
+    Pull the new image with `docker compose -f compose.prod.yaml pull app` and recreate it with `up -d` (it adds Imagick with HEIC support; the container migrates on boot), or update your server, set any new environment variables from [Configuration](/self-hosting/configuration), and run `php artisan migrate --force`.
 
     On **MySQL**, one migration widens `posts.content` to `MEDIUMTEXT`, which rebuilds the `posts` table and blocks writes to it while it copies; time it on your rehearsal copy. PostgreSQL does it instantly. Rolling that migration back fails once a post is longer than 64 KB.
   </Step>

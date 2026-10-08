@@ -10,8 +10,8 @@ Step-by-step install on a bare-metal server or VM. Prefer containers? Use [Docke
 
 ## Requirements
 
-- PHP 8.4+ (with the extensions listed in [Requirements](/self-hosting/requirements))
-- Node.js 20.19+ or 22.12+
+- PHP 8.4.1+ (8.4 or 8.5, with the extensions listed in [Requirements](/self-hosting/requirements))
+- Node.js 22.12+
 - PostgreSQL or MySQL (either works — see [choosing a database](/self-hosting/configuration#database))
 - Redis
 - Composer 2.x
@@ -62,8 +62,15 @@ CACHE_STORE=redis
 SESSION_DRIVER=database
 BROADCAST_CONNECTION=reverb
 
+REVERB_APP_SECRET=<random>
+REVERB_HOST=your-domain.com
+REVERB_PORT=443
+REVERB_SCHEME=https
+
 FILESYSTEM_DISK=public
 ```
+
+`VITE_REVERB_*` are compiled into the frontend — run `npm run build` again after changing any `REVERB_*` value.
 
 | Block | Why |
 |-------|-----|
@@ -123,8 +130,8 @@ Skip `storage:link` when using object storage (`s3`, `r2`, `spaces`) — those d
 Self-hosted installs close `/register`. Bootstrap the database once:
 
 ```bash
-php artisan db:seed
-php artisan db:seed --class=UserSeeder
+php artisan db:seed --force
+php artisan db:seed --class=UserSeeder --force
 ```
 
 | Seeder | What it creates |

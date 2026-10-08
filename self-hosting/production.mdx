@@ -36,7 +36,14 @@ CACHE_STORE=redis
 SESSION_DRIVER=database
 BROADCAST_CONNECTION=reverb
 FILESYSTEM_DISK=public
+
+REVERB_APP_SECRET=<random>
+REVERB_HOST=your-domain.com
+REVERB_PORT=443
+REVERB_SCHEME=https
 ```
+
+`VITE_REVERB_*` are compiled into the frontend — run `npm run build` again after changing any `REVERB_*` value.
 
 See [Configuration](/self-hosting/configuration) for mail, object storage, and social OAuth.
 
@@ -220,10 +227,10 @@ Two jobs also run on the scheduler to close each day's analytics (23:30 and 00:3
   `posts:prune-history` **deletes data every night.** Published posts older than `POST_HISTORY_RETENTION_DAYS` are removed together with their media. See [Post history retention](/self-hosting/configuration#post-history-retention).
 </Warning>
 
-Add the Laravel scheduler to cron:
+Add the Laravel scheduler to the cron of the user that runs PHP (usually `www-data`), so the files it creates stay writable by php-fpm and Horizon:
 
 ```bash
-crontab -e
+sudo crontab -u www-data -e
 ```
 
 Add this line:
@@ -245,7 +252,7 @@ Create `/etc/supervisor/conf.d/trypost-reverb.conf`:
 ```ini
 [program:trypost-reverb]
 process_name=%(program_name)s
-command=php /var/www/trypost/artisan reverb:start --host=0.0.0.0 --port=8080
+command=php /var/www/trypost/artisan reverb:start --host=127.0.0.1 --port=8080
 autostart=true
 autorestart=true
 stopasgroup=true

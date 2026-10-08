@@ -23,8 +23,8 @@ TryPost is a Laravel app with an Inertia.js + **Vue 3** front-end. Queues run on
 
 ### Prerequisites
 
-- PHP 8.4+
-- Node.js 20.19+ or 22.12+
+- PHP 8.4.1+ (8.4 or 8.5)
+- Node.js 22.12+
 - PostgreSQL or MySQL — the test suite runs against both, so run it on whichever you develop on
 - Redis
 - Composer
@@ -92,6 +92,12 @@ To run just the test suite:
 
 ```bash
 php artisan test
+```
+
+Create a `trypost_test` database first; the tests never touch your development database. The suite defaults to PostgreSQL (`phpunit.xml` sets `DB_CONNECTION=pgsql`, `DB_DATABASE=trypost_test` and `DB_PASSWORD=password`). For MySQL, override the connection and set the port explicitly:
+
+```bash
+DB_CONNECTION=mysql DB_PORT=3306 DB_USERNAME=root php artisan test
 ```
 
 ## Pull Request Process

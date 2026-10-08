@@ -20,11 +20,12 @@ WEBHOOK_URL=
 
 | Variable | Description |
 |----------|-------------|
-| `APP_NAME` | Your application name |
+| `APP_NAME` | Your application name. The Redis and Horizon key prefixes (`REDIS_PREFIX`, `HORIZON_PREFIX`) derive from it, so renaming the app later orphans jobs already queued; set both prefixes explicitly if you must rename |
 | `APP_ENV` | `production` on a server, `local` for development. Horizon starts queue workers only for these two values; any other value (for example `staging`) runs no workers, so nothing publishes |
 | `APP_DEBUG` | Enable debug mode (set to `false` in production) |
 | `APP_URL` | Your application URL |
 | `WEBHOOK_URL` | Optional public base URL for inbound webhooks (e.g. Telegram) when `APP_URL` is not reachable from the internet. Defaults to `APP_URL`. |
+| `APP_PREVIOUS_KEYS` | Comma-separated old `APP_KEY` values, so data encrypted with them still decrypts after you rotate the key |
 
 ## Self-Hosted Mode
 
@@ -57,7 +58,7 @@ TryPost runs on **PostgreSQL** or **MySQL**. Every change runs the full test sui
 |---|---|---|
 | Covered by the test suite | 16 | 8.4 |
 | Expected to work | 14+ | 8+ |
-| Shipped by the Compose files | Yes | No — [see below](/self-hosting/docker) |
+| Shipped by the Compose files | Yes | No — [see Docker](/self-hosting/docker#which-database-compose-gives-you) |
 | Runs TryPost Cloud | Yes | No |
 
 MariaDB is close enough to MySQL that it may well work, but it is not tested and not something support can help with.
@@ -88,6 +89,16 @@ DB_PASSWORD=your_password
 
 Create the database as `utf8mb4` (see [Installation](/self-hosting/installation)) so emoji in posts survive. MySQL 8 already defaults to it; this matters on older servers and on MariaDB.
 
+### Managed databases and TLS
+
+| Variable | Description |
+|----------|-------------|
+| `DB_URL` | One connection URL (`pgsql://user:pass@host:5432/trypost`) instead of the separate `DB_*` values |
+| `DB_SSLMODE` | PostgreSQL TLS mode (default `prefer`). Managed databases usually want `require` |
+| `MYSQL_ATTR_SSL_CA` | Path to the CA certificate for TLS to MySQL |
+| `DB_SOCKET` | MySQL Unix socket, instead of host and port |
+| `DB_CHARSET` / `DB_COLLATION` | MySQL character set and collation (default `utf8mb4` / `utf8mb4_unicode_ci`) |
+
 <Warning>
   **On MySQL you cannot schedule a post past 19 January 2038.**
 
@@ -105,6 +116,15 @@ REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
 REDIS_PORT=6379
 ```
+
+No PHP Redis extension is needed: TryPost talks to Redis through Predis, which ships with it. Set `REDIS_CLIENT=phpredis` to use the extension instead.
+
+| Variable | Description |
+|----------|-------------|
+| `REDIS_URL` | One connection URL. Use `rediss://` for a managed Redis over TLS |
+| `REDIS_USERNAME` | Redis ACL user, when your server uses one |
+| `REDIS_DB` / `REDIS_CACHE_DB` | Database numbers for queues and for the cache (default `0` and `1`) |
+| `REDIS_PREFIX` | Key prefix, derived from `APP_NAME` |
 
 ## Runtime drivers
 
@@ -158,12 +178,12 @@ MEDIA_SIGNED_UPLOAD_URL_TTL_MINUTES=15
 | `MEDIA_IMAGE_MAX_SIZE_MB` | `10` | Max image upload size, in MB. Applied to direct uploads and URL fetches. |
 | `MEDIA_VIDEO_MAX_SIZE_MB` | `1024` | Max video upload size, in MB. Applied to direct uploads and URL fetches. |
 | `MEDIA_DOCUMENT_MAX_SIZE_MB` | `100` | Max document (PDF) upload size, in MB. |
-| `MEDIA_SIGNED_UPLOAD_URL_TTL_MINUTES` | `15` | Lifetime of the signed upload URL returned by MCP / API media upload flows. (`MCP_UPLOAD_URL_TTL_MINUTES` remains as a legacy fallback.) |
+| `MEDIA_SIGNED_UPLOAD_URL_TTL_MINUTES` | `15` | Lifetime of the signed upload URL returned by the MCP `request-media-upload-tool`. (`MCP_UPLOAD_URL_TTL_MINUTES` remains as a legacy fallback.) |
 | `MEDIA_IMAGE_MAX_PIXELS` | `67108864` (8192 × 8192) | Largest image, in pixels, TryPost accepts |
 | `MEDIA_HEIC_CONVERSION` | `true` | Convert HEIC/HEIF uploads to JPEG. Needs Imagick built with HEIC (the Docker image has it); `false` rejects HEIC uploads with a clear message |
 | `MEDIA_UPLOAD_RETENTION_HOURS` | `24` | Uploads never attached to a post are deleted after this many hours (`media:prune-uploads`, hourly) |
 
-Signed uploads are rate-limited per workspace and per IP (`MEDIA_SIGNED_UPLOAD_PER_WORKSPACE_PER_MINUTE`, `MEDIA_SIGNED_UPLOAD_PER_IP_PER_MINUTE`). If you raise the video limit, also bump PHP's `upload_max_filesize` / `post_max_size` and any reverse-proxy body-size cap to match.
+Signed uploads are rate-limited per workspace and per IP (`MEDIA_SIGNED_UPLOAD_PER_WORKSPACE_PER_MINUTE`, default `60`; `MEDIA_SIGNED_UPLOAD_PER_IP_PER_MINUTE`, default `1200`). If you raise the video limit, also bump PHP's `upload_max_filesize` / `post_max_size` and any reverse-proxy body-size cap to match.
 
 These are the ceilings for any upload. Each network's own limits (for example 5 MB images on X, 20 MB videos on Telegram) still apply on top — see the [platform guides](/platforms/linkedin) and [Media](/knowledge-base/media).
 
@@ -181,7 +201,7 @@ POST_HISTORY_RETENTION_DAYS=730
 
 TryPost supports local public storage and S3-compatible cloud storage.
 
-The application default is **`public`** (`FILESYSTEM_DISK=public`). Use object storage (S3 / R2 / Spaces) when you outgrow local disk or run multiple app instances.
+The application default is **`public`** (`FILESYSTEM_DISK=public`). `.env.example` sets `local`, which has no public URL — change it. Use object storage (S3 / R2 / Spaces) when you outgrow local disk or run multiple app instances.
 
 ### Public Disk
 
@@ -212,6 +232,8 @@ AWS_BUCKET=your_bucket
 AWS_URL=https://your-bucket.s3.amazonaws.com
 ```
 
+S3 buckets are private by default. Allow anonymous `GetObject` with a bucket policy and turn off *Block public access* for that policy, or the networks cannot download your media.
+
 ### Cloudflare R2
 
 ```env
@@ -224,6 +246,8 @@ R2_BUCKET=your_bucket
 R2_URL=https://your-custom-domain.com
 ```
 
+Connect a public custom domain to the bucket and set it as `R2_URL`; that is the address the networks download media from.
+
 ### DigitalOcean Spaces
 
 ```env
@@ -234,6 +258,8 @@ SPACES_ENDPOINT=https://nyc3.digitaloceanspaces.com
 SPACES_REGION=nyc3
 SPACES_BUCKET=your_bucket
 ```
+
+Make the Space (or its CDN) publicly readable. The `spaces` disk has no URL setting of its own, so media URLs are built from the endpoint and bucket.
 
 ### Other S3-Compatible Storage
 
@@ -285,7 +311,7 @@ MAIL_FROM_ADDRESS="notifications@yourdomain.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-`MAIL_SCHEME` is `smtp` (STARTTLS on port 587) or `smtps` (implicit TLS on port 465). Other mailers available out of the box: `postmark`, `resend`, `ses` and `log`.
+`MAIL_SCHEME` is `smtp` (STARTTLS on port 587) or `smtps` (implicit TLS on port 465). Other mailers available out of the box: `postmark` (set `POSTMARK_API_KEY`), `resend` (set `RESEND_API_KEY`), `ses` (uses `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_DEFAULT_REGION`) and `log`. Do not use `tls` as a scheme: only `smtp` and `smtps` are accepted. `MAIL_URL` takes a whole SMTP DSN instead of the separate values, and `MAIL_EHLO_DOMAIN` overrides the EHLO name (default: the host of `APP_URL`).
 
 ### Emails sent by TryPost
 
@@ -341,8 +367,20 @@ VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 | `REVERB_SERVER_HOST` | Bind address the Reverb **server** listens on. Defaults to `0.0.0.0`. |
 | `REVERB_SERVER_PORT` | Port the Reverb server listens on. Defaults to `8080`. |
 
+| `REVERB_SERVER_PATH` | Serve Reverb under a sub-path. Empty by default |
+| `REVERB_SCALING_ENABLED` | `true` to run Reverb on several servers, sharing messages through Redis. Off by default |
+
 <Note>
-  In production, set `REVERB_SCHEME=https`, set `REVERB_HOST` to your real public domain (e.g. `app.example.com`), and use a reverse proxy to handle SSL termination for WebSocket connections. `REVERB_SERVER_HOST` stays `0.0.0.0` so the daemon listens on all interfaces inside the box.
+  In production the browser connects through your reverse proxy on port 443, not to Reverb's own port. Set:
+
+  ```env
+  REVERB_APP_SECRET=<random>
+  REVERB_HOST=your-domain.com
+  REVERB_PORT=443
+  REVERB_SCHEME=https
+  ```
+
+  and proxy `/app/` and `/apps/` to Reverb (see [Production](/self-hosting/production)). `VITE_REVERB_*` are compiled into the frontend: run `npm run build` again after changing any `REVERB_*` value. On a bare-metal server, bind Reverb to `127.0.0.1` so its plain-HTTP port is not exposed; inside Docker it stays `0.0.0.0`.
 </Note>
 
 ## Social Platforms
@@ -621,6 +659,8 @@ HORIZON_MEDIA_ADOPTION_PROCESSES=20
 |----------|-------------|
 | `HORIZON_ALLOWED_EMAILS` | Comma-separated list of emails allowed to access Horizon in production |
 | `HORIZON_PATH` | URL path of the dashboard (default `horizon`) |
+| `HORIZON_DOMAIN` | Serve the dashboard on a separate domain |
+| `HORIZON_PREFIX` | Redis key prefix of Horizon, derived from `APP_NAME` |
 | `HORIZON_MEDIA_ADOPTION_PROCESSES` | Maximum workers for the `media-adoption` queue, used once by the [2.0 upgrade](/self-hosting/upgrading#upgrading-to-trypost-20) (default 20). Lower it on a small server |
 
 If not set, Horizon dashboard will be inaccessible in non-local environments.
@@ -677,6 +717,7 @@ LOG_LEVEL=debug
 |----------|-------------|
 | `SESSION_LIFETIME` | Minutes a session stays valid without activity. `.env.example` sets `1440` (one day); without the variable Laravel uses `120` |
 | `SESSION_DOMAIN` | Cookie domain. Leave `null` unless the app must share its session with a parent domain |
+| `SESSION_SECURE_COOKIE` | `true` sends the session cookie over HTTPS only. Set it when the app is served over HTTPS |
 | `LOG_CHANNEL` / `LOG_STACK` | Where logs go. The default writes to `storage/logs/laravel.log`; in containers, `LOG_CHANNEL=stderr` sends them to the container output |
 | `LOG_LEVEL` | Lowest level written. Use `warning` in production; [upgrade notes](/self-hosting/upgrading) log what data migrations changed at that level |
 
@@ -707,7 +748,7 @@ LEGAL_PRIVACY_URL=https://trypost.it/privacy
 | `APP_MAINTENANCE_DRIVER`, `BCRYPT_ROUNDS`, `SESSION_ENCRYPT`, `SESSION_PATH`, `LOG_DEPRECATIONS_CHANNEL` | Laravel defaults |
 | `VITE_APP_NAME` | App name baked into the frontend build (defaults to `APP_NAME`) |
 | `TELESCOPE_ENABLED` | Debugging tool; only loads in the `local` environment |
-| `NIGHTWATCH_ENABLED`, `NIGHTWATCH_TOKEN` | Optional Laravel Nightwatch monitoring; off by default |
+| `NIGHTWATCH_ENABLED`, `NIGHTWATCH_TOKEN` | Optional Laravel Nightwatch monitoring. Off in `.env.example`; the package itself defaults to on and `compose.prod.yaml` sets neither, so set `NIGHTWATCH_ENABLED=false` explicitly in Compose |
 | `STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SOCIALS_MONTHLY`, `STRIPE_SOCIALS_YEARLY`, `STRIPE_WORKSPACES_MONTHLY`, `STRIPE_WORKSPACES_YEARLY`, `STRIPE_WORKSPACE_MONTHLY`, `STRIPE_WORKSPACE_YEARLY`, `STRIPE_SOCIALS_FIRST_MONTH_COUPON_ID`, `STRIPE_WORKSPACES_FIRST_MONTH_COUPON_ID`, `REQUIRE_CARD_FOR_TRIAL`, `CASHIER_ALLOW_PROMOTION_CODES` | TryPost Cloud billing. Ignored when `SELF_HOSTED=true`; leave them empty |
 | `AI_AUDIO_PROVIDER`, `ELEVENLABS_API_KEY`, `ELEVENLABS_AUDIO_MODEL`, `OPENAI_AUDIO_MODEL`, `GEMINI_AUDIO_MODEL`, `OPENROUTER_AUDIO_MODEL` | Audio settings of the AI SDK. No TryPost feature uses audio, so they do nothing |
 | `UNSPLASH_SECRET_KEY` | Not read. Unsplash only needs `UNSPLASH_ACCESS_KEY` |
@@ -721,6 +762,8 @@ LEGAL_PRIVACY_URL=https://trypost.it/privacy
 | `RSS_FEEDS_FETCH_BUDGET_SECONDS`, `RSS_FEEDS_MAX_BACKOFF_MINUTES`, `RSS_FEEDS_MAX_RESPONSE_BYTES`, `RSS_FEEDS_OG_IMAGE_MAX_AGE_DAYS`, `RSS_FEEDS_OG_IMAGE_MAX_ITEMS`, `RSS_FEEDS_OG_IMAGE_MAX_PAGE_BYTES`, `RSS_FEEDS_REFRESH_COOLDOWN_MINUTES` | RSS fetch and back-off tuning |
 | `FAVICON_API` | Host of the icons shown in the feed directory |
 | `TELEGRAM_DEEP_LINK` | Base of the **Open in Telegram** link (default `https://t.me`) |
+| `LINKEDIN_API`, `LINKEDIN_OAUTH_API`, `LINKEDIN_PAGE_API`, `X_API`, `FACEBOOK_GRAPH_API`, `FACEBOOK_RUPLOAD_HOST`, `INSTAGRAM_GRAPH_API`, `INSTAGRAM_AUTH_API`, `INSTAGRAM_OAUTH_URL`, `INSTAGRAM_OAUTH_API`, `INSTAGRAM_FACEBOOK_GRAPH_API`, `THREADS_GRAPH_API`, `THREADS_AUTH_API`, `THREADS_OAUTH_URL`, `TIKTOK_API`, `YOUTUBE_DATA_API`, `YOUTUBE_ANALYTICS_API`, `YOUTUBE_OAUTH_API`, `PINTEREST_API`, `TELEGRAM_API`, `DISCORD_API`, `DISCORD_OAUTH_API`, `GOOGLE_BUSINESS_ACCOUNT_MANAGEMENT_API`, `GOOGLE_BUSINESS_BUSINESS_INFORMATION_API`, `GOOGLE_BUSINESS_LOCAL_POSTS_API`, `GOOGLE_BUSINESS_OAUTH_API`, `GOOGLE_BUSINESS_DASHBOARD` | API host (and, for the Graph APIs, version) overrides for each network. Leave them unset |
+| `BLUESKY_VIDEO_MAX_BYTES` (`300000000`), `BLUESKY_VIDEO_POLL_SECONDS` (`2`), `BLUESKY_VIDEO_POLL_MAX_SECONDS` (`30`), `BLUESKY_VIDEO_SERVICE`, `BLUESKY_VIDEO_SERVICE_DID`, `BLUESKY_PUBLIC_APPVIEW`, `BLUESKY_WEB_APP`, `BLUESKY_PLC_DIRECTORY` | Bluesky video upload limits and polling, and the Bluesky service hosts |
 
 ## Next Steps
 

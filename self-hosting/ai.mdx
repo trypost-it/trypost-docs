@@ -26,6 +26,8 @@ OPENAI_API_KEY=sk-...
 |----------|-------------|
 | `AI_TEXT_PROVIDER` | `openai` (default), `anthropic`, `gemini`, `azure`, `bedrock`, `groq`, `xai`, `deepseek`, `mistral`, `ollama`, `openrouter`, or `openai-compatible`. |
 | Provider API keys | Each provider reads its own env: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `AZURE_OPENAI_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `OPENROUTER_API_KEY`, `OPENAI_COMPATIBLE_API_KEY`. Ollama reads `OLLAMA_URL` (defaults to `http://localhost:11434`) and `OLLAMA_API_KEY`. Bedrock reads `AWS_BEDROCK_REGION` and either `AWS_BEARER_TOKEN_BEDROCK` or AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). `openai-compatible` needs `OPENAI_COMPATIBLE_URL` plus a pinned model (see below). |
+| Azure OpenAI | Azure reads `AZURE_OPENAI_API_KEY` and **`AZURE_OPENAI_URL`** (your resource endpoint, e.g. `https://<resource>.openai.azure.com`; there is no default). `AZURE_OPENAI_API_VERSION` defaults to `2025-04-01-preview`, and `AZURE_OPENAI_DEPLOYMENT` defaults to `gpt-4o`, so set it unless your deployment has that name. |
+| Base URL overrides | `OPENAI_URL`, `ANTHROPIC_URL` and `GEMINI_URL` point those providers at a proxy or gateway. Leave them unset to use the provider's own API. |
 
 <Warning>
   **The AI buttons turn on only when the selected provider's key variable is set.** TryPost checks the provider's key, not whether the provider could answer without one. For Ollama, set `OLLAMA_API_KEY` to any value; for Bedrock, use `AWS_BEARER_TOKEN_BEDROCK`; for `openai-compatible`, set `OPENAI_COMPATIBLE_API_KEY` (any value if your endpoint does not check it).
@@ -40,7 +42,7 @@ Each provider ships with a sensible default text model, so setting `AI_TEXT_PROV
 | `openai` | `OPENAI_TEXT_MODEL` |
 | `anthropic` | `ANTHROPIC_TEXT_MODEL` |
 | `gemini` | `GEMINI_TEXT_MODEL` |
-| `azure` | `AZURE_OPENAI_DEPLOYMENT` |
+| `azure` | `AZURE_OPENAI_DEPLOYMENT` (default `gpt-4o`) |
 | `bedrock` | `AWS_BEDROCK_TEXT_MODEL` |
 | `groq` | `GROQ_TEXT_MODEL` |
 | `xai` | `XAI_TEXT_MODEL` |

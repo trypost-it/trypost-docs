@@ -20,7 +20,7 @@ WEBHOOK_URL=
 
 | Variable | Description |
 |----------|-------------|
-| `APP_NAME` | Your application name. The Redis and Horizon key prefixes (`REDIS_PREFIX`, `HORIZON_PREFIX`) derive from it, so renaming the app later orphans jobs already queued; set both prefixes explicitly if you must rename |
+| `APP_NAME` | Your application name. The Redis key prefix (`REDIS_PREFIX`) and Horizon's key prefix derive from it, so renaming the app later orphans jobs already queued. Let the queues drain before you rename it |
 | `APP_ENV` | `production` on a server, `local` for development. Horizon starts queue workers only for these two values; any other value (for example `staging`) runs no workers, so nothing publishes |
 | `APP_DEBUG` | Enable debug mode (set to `false` in production) |
 | `APP_URL` | Your application URL |
@@ -660,7 +660,6 @@ HORIZON_MEDIA_ADOPTION_PROCESSES=20
 | `HORIZON_ALLOWED_EMAILS` | Comma-separated list of emails allowed to access Horizon in production |
 | `HORIZON_PATH` | URL path of the dashboard (default `horizon`) |
 | `HORIZON_DOMAIN` | Serve the dashboard on a separate domain |
-| `HORIZON_PREFIX` | Redis key prefix of Horizon, derived from `APP_NAME` |
 | `HORIZON_MEDIA_ADOPTION_PROCESSES` | Maximum workers for the `media-adoption` queue, used once by the [2.0 upgrade](/self-hosting/upgrading#upgrading-to-trypost-20) (default 20). Lower it on a small server |
 
 If not set, Horizon dashboard will be inaccessible in non-local environments.

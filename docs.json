@@ -45,127 +45,199 @@
               "platforms/bluesky",
               "platforms/mastodon",
               "platforms/telegram",
-              "platforms/discord"
+              "platforms/discord",
+              "platforms/google-business"
             ]
           },
-              {
-                "group": "Community",
-                "pages": [
-                  "contributing",
-                  "discussions",
-                  "support"
-                ]
-              }
+          {
+            "group": "Community",
+            "pages": [
+              "contributing",
+              "discussions",
+              "support"
+            ]
+          }
         ]
       },
       {
         "tab": "API Reference",
         "icon": "code",
+        "openapi": "openapi.json",
         "groups": [
           {
             "group": "Overview",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/introduction",
+              "api-reference/guides/posting",
+              "api-reference/guides/media-uploads"
             ]
           },
           {
             "group": "Posts",
             "pages": [
-              "api-reference/endpoint/list-posts",
-              "api-reference/endpoint/get-post",
-              "api-reference/endpoint/create-post",
-              "api-reference/endpoint/update-post",
-              "api-reference/endpoint/delete-post",
-              "api-reference/endpoint/upload-media",
-              "api-reference/endpoint/attach-media-from-url",
-              "api-reference/endpoint/attach-existing-asset",
-              "api-reference/endpoint/request-media-upload",
-              "api-reference/endpoint/get-post-metrics",
-              "api-reference/endpoint/get-post-preview"
+              "GET /posts",
+              "POST /posts",
+              "POST /posts/batch",
+              "GET /posts/{post}",
+              "PUT /posts/{post}",
+              "DELETE /posts/{post}",
+              "GET /posts/{post}/metrics",
+              "GET /posts/{post}/preview"
             ]
           },
           {
-            "group": "Platforms",
+            "group": "Post notes",
             "pages": [
-              "api-reference/endpoint/list-content-types"
+              "GET /posts/{post}/notes",
+              "POST /posts/{post}/notes",
+              "PUT /posts/{post}/notes/{note}",
+              "DELETE /posts/{post}/notes/{note}"
             ]
           },
           {
-            "group": "Workspace",
+            "group": "Approvals",
             "pages": [
-              "api-reference/endpoint/get-workspace"
+              "POST /posts/{post}/approve",
+              "POST /posts/{post}/reject"
             ]
           },
           {
-            "group": "Assets",
+            "group": "Recurrence",
             "pages": [
-              "api-reference/endpoint/list-assets",
-              "api-reference/endpoint/get-asset"
+              "PATCH /posts/{post}/recurrence",
+              "DELETE /posts/{post}/recurrence"
             ]
           },
           {
-            "group": "Signatures",
+            "group": "Media and uploads",
             "pages": [
-              "api-reference/endpoint/list-signatures",
-              "api-reference/endpoint/create-signature",
-              "api-reference/endpoint/update-signature",
-              "api-reference/endpoint/delete-signature"
+              "POST /posts/{post}/media",
+              "POST /posts/{post}/media/from-upload",
+              "POST /posts/{post}/media/from-url",
+              "POST /uploads",
+              "POST /uploads/{token}"
+            ]
+          },
+          {
+            "group": "Social accounts",
+            "pages": [
+              "GET /social-accounts",
+              "GET /social-accounts/{account}/boards",
+              "POST /social-accounts/{account}/boards",
+              "GET /social-accounts/{account}/channels",
+              "GET /social-accounts/{account}/tiktok-creator-info"
+            ]
+          },
+          {
+            "group": "Channels",
+            "pages": [
+              "GET /channels/{account}/posting-schedule",
+              "PUT /channels/{account}/posting-schedule",
+              "POST /channels/{account}/posting-schedule/generate",
+              "POST /channels/{account}/posting-schedule/copy",
+              "GET /channels/{account}/queue/slots",
+              "PUT /channels/{account}/queue/order",
+              "PUT /channels/{account}/queue/slot"
+            ]
+          },
+          {
+            "group": "Ideas",
+            "pages": [
+              "GET /ideas",
+              "POST /ideas",
+              "DELETE /ideas",
+              "GET /ideas/{idea}",
+              "PUT /ideas/{idea}",
+              "DELETE /ideas/{idea}",
+              "POST /ideas/{idea}/duplicate",
+              "PUT /ideas/{idea}/move"
+            ]
+          },
+          {
+            "group": "Idea stages",
+            "pages": [
+              "GET /idea-stages",
+              "POST /idea-stages",
+              "PUT /idea-stages/order",
+              "PUT /idea-stages/{ideaStage}",
+              "DELETE /idea-stages/{ideaStage}"
+            ]
+          },
+          {
+            "group": "Analytics",
+            "pages": [
+              "GET /analytics",
+              "GET /analytics/publications/{publication}",
+              "GET /channels/{account}/insights",
+              "GET /channels/{account}/insights/publications"
             ]
           },
           {
             "group": "Labels",
             "pages": [
-              "api-reference/endpoint/list-labels",
-              "api-reference/endpoint/create-label",
-              "api-reference/endpoint/update-label",
-              "api-reference/endpoint/delete-label"
+              "GET /labels",
+              "POST /labels",
+              "PUT /labels/{label}",
+              "DELETE /labels/{label}"
             ]
           },
           {
-            "group": "Social Accounts",
+            "group": "Signatures",
             "pages": [
-              "api-reference/endpoint/list-social-accounts",
-              "api-reference/endpoint/toggle-social-account",
-              "api-reference/endpoint/list-pinterest-boards",
-              "api-reference/endpoint/list-discord-channels"
+              "GET /signatures",
+              "POST /signatures",
+              "PUT /signatures/{signature}",
+              "DELETE /signatures/{signature}"
             ]
           },
           {
-            "group": "API Keys",
+            "group": "Workspace",
             "pages": [
-              "api-reference/endpoint/list-api-keys",
-              "api-reference/endpoint/create-api-key",
-              "api-reference/endpoint/delete-api-key"
+              "GET /workspace"
             ]
           },
           {
-            "group": "Repurpose",
+            "group": "API keys",
             "pages": [
-              "api-reference/endpoint/list-repurposes",
-              "api-reference/endpoint/create-repurpose",
-              "api-reference/endpoint/get-repurpose",
-              "api-reference/endpoint/update-repurpose",
-              "api-reference/endpoint/list-repurpose-items",
-              "api-reference/endpoint/activate-repurpose",
-              "api-reference/endpoint/pause-repurpose",
-              "api-reference/endpoint/resume-repurpose",
-              "api-reference/endpoint/disable-repurpose",
-              "api-reference/endpoint/delete-repurpose",
-              "api-reference/endpoint/list-repurpose-source-formats"
+              "GET /api-keys",
+              "POST /api-keys",
+              "DELETE /api-keys/{apiToken}"
             ]
           },
           {
             "group": "Webhooks",
             "pages": [
-              "api-reference/endpoint/list-webhooks",
-              "api-reference/endpoint/get-webhook",
-              "api-reference/endpoint/create-webhook",
-              "api-reference/endpoint/update-webhook",
-              "api-reference/endpoint/delete-webhook",
-              "api-reference/endpoint/send-webhook-test",
-              "api-reference/endpoint/rotate-webhook-secret",
-              "api-reference/endpoint/list-webhook-logs",
-              "api-reference/endpoint/replay-webhook-log"
+              "GET /webhooks",
+              "POST /webhooks",
+              "GET /webhooks/{webhook}",
+              "PUT /webhooks/{webhook}",
+              "DELETE /webhooks/{webhook}",
+              "GET /webhooks/{webhook}/logs",
+              "POST /webhooks/{webhook}/logs/{webhookLog}/replay",
+              "POST /webhooks/{webhook}/rotate-secret",
+              "POST /webhooks/{webhook}/send-test"
+            ]
+          },
+          {
+            "group": "Repurposes",
+            "pages": [
+              "GET /repurpose-source-formats",
+              "GET /repurposes",
+              "POST /repurposes",
+              "GET /repurposes/{repurpose}",
+              "PUT /repurposes/{repurpose}",
+              "DELETE /repurposes/{repurpose}",
+              "POST /repurposes/{repurpose}/activate",
+              "POST /repurposes/{repurpose}/disable",
+              "GET /repurposes/{repurpose}/items",
+              "POST /repurposes/{repurpose}/pause",
+              "POST /repurposes/{repurpose}/resume"
+            ]
+          },
+          {
+            "group": "Platform",
+            "pages": [
+              "GET /content-types"
             ]
           }
         ]
@@ -211,47 +283,91 @@
         "icon": "book",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Getting started",
             "pages": [
               "knowledge-base/introduction"
             ]
           },
           {
-            "group": "Content",
+            "group": "Create",
             "pages": [
-              "knowledge-base/posts",
-              "knowledge-base/repurposes",
+              "knowledge-base/create/ideas",
+              "knowledge-base/create/templates",
+              "knowledge-base/create/feeds"
+            ]
+          },
+          {
+            "group": "Publish",
+            "pages": [
+              "knowledge-base/publish/overview",
+              "knowledge-base/publish/composer",
               "knowledge-base/media",
-              "knowledge-base/assets",
-              "knowledge-base/signatures",
-              "knowledge-base/labels",
-              "knowledge-base/templates"
+              "knowledge-base/publish/queue",
+              "knowledge-base/publish/approvals",
+              "knowledge-base/publish/recurring-posts"
             ]
           },
           {
-            "group": "AI",
+            "group": "Insights",
             "pages": [
-              "knowledge-base/ai-features",
-              "knowledge-base/brand-profile",
-              "knowledge-base/analytics"
+              "knowledge-base/insights/overview",
+              "knowledge-base/insights/channel-insights"
             ]
           },
           {
-            "group": "Accounts",
+            "group": "Repurpose",
             "pages": [
-              "knowledge-base/social-accounts",
-              "knowledge-base/workspaces",
-              "knowledge-base/team"
+              "knowledge-base/repurpose"
             ]
           },
           {
-            "group": "Account & billing",
+            "group": "Channels",
             "pages": [
-              "knowledge-base/account-and-security",
-              "knowledge-base/plans-and-billing",
-              "knowledge-base/api-keys",
-              "knowledge-base/webhooks",
-              "knowledge-base/notifications"
+              "knowledge-base/channels/connecting",
+              "knowledge-base/channels/settings",
+              "knowledge-base/channels/disconnecting"
+            ]
+          },
+          {
+            "group": "Settings",
+            "pages": [
+              {
+                "group": "Personal",
+                "pages": [
+                  "knowledge-base/settings/profile",
+                  "knowledge-base/settings/preferences",
+                  "knowledge-base/settings/authentication",
+                  "knowledge-base/settings/notifications"
+                ]
+              },
+              {
+                "group": "Workspace",
+                "pages": [
+                  "knowledge-base/settings/workspaces",
+                  "knowledge-base/settings/members-and-permissions"
+                ]
+              },
+              {
+                "group": "Features",
+                "pages": [
+                  "knowledge-base/settings/signatures",
+                  "knowledge-base/settings/labels",
+                  "knowledge-base/settings/webhooks"
+                ]
+              },
+              {
+                "group": "Developers",
+                "pages": [
+                  "knowledge-base/settings/api-keys",
+                  "knowledge-base/settings/mcp"
+                ]
+              },
+              {
+                "group": "Account",
+                "pages": [
+                  "knowledge-base/settings/plans-and-billing"
+                ]
+              }
             ]
           }
         ]
@@ -306,6 +422,276 @@
       ]
     }
   },
+  "redirects": [
+    {
+      "source": "/knowledge-base/account-and-security",
+      "destination": "/knowledge-base/settings/authentication"
+    },
+    {
+      "source": "/knowledge-base/ai-features",
+      "destination": "/knowledge-base/publish/composer"
+    },
+    {
+      "source": "/knowledge-base/analytics",
+      "destination": "/knowledge-base/insights/overview"
+    },
+    {
+      "source": "/knowledge-base/api-keys",
+      "destination": "/knowledge-base/settings/api-keys"
+    },
+    {
+      "source": "/knowledge-base/assets",
+      "destination": "/knowledge-base/media"
+    },
+    {
+      "source": "/knowledge-base/brand-profile",
+      "destination": "/knowledge-base/settings/workspaces"
+    },
+    {
+      "source": "/knowledge-base/labels",
+      "destination": "/knowledge-base/settings/labels"
+    },
+    {
+      "source": "/knowledge-base/notifications",
+      "destination": "/knowledge-base/settings/notifications"
+    },
+    {
+      "source": "/knowledge-base/plans-and-billing",
+      "destination": "/knowledge-base/settings/plans-and-billing"
+    },
+    {
+      "source": "/knowledge-base/posts",
+      "destination": "/knowledge-base/publish/overview"
+    },
+    {
+      "source": "/knowledge-base/repurposes",
+      "destination": "/knowledge-base/repurpose"
+    },
+    {
+      "source": "/knowledge-base/signatures",
+      "destination": "/knowledge-base/settings/signatures"
+    },
+    {
+      "source": "/knowledge-base/social-accounts",
+      "destination": "/knowledge-base/channels/connecting"
+    },
+    {
+      "source": "/knowledge-base/team",
+      "destination": "/knowledge-base/settings/members-and-permissions"
+    },
+    {
+      "source": "/knowledge-base/templates",
+      "destination": "/knowledge-base/create/templates"
+    },
+    {
+      "source": "/knowledge-base/webhooks",
+      "destination": "/knowledge-base/settings/webhooks"
+    },
+    {
+      "source": "/knowledge-base/workspaces",
+      "destination": "/knowledge-base/settings/workspaces"
+    },
+    {
+      "source": "/api-reference/endpoint/list-assets",
+      "destination": "/api-reference/guides/media-uploads"
+    },
+    {
+      "source": "/api-reference/endpoint/get-asset",
+      "destination": "/api-reference/guides/media-uploads"
+    },
+    {
+      "source": "/api-reference/endpoint/attach-existing-asset",
+      "destination": "/api-reference/guides/media-uploads"
+    },
+    {
+      "source": "/api-reference/endpoint/activate-repurpose",
+      "destination": "/api-reference/repurposes/activate-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/attach-media-from-url",
+      "destination": "/api-reference/media-and-uploads/attach-media-from-url"
+    },
+    {
+      "source": "/api-reference/endpoint/create-api-key",
+      "destination": "/api-reference/api-keys/create-api-key"
+    },
+    {
+      "source": "/api-reference/endpoint/create-label",
+      "destination": "/api-reference/labels/create-label"
+    },
+    {
+      "source": "/api-reference/endpoint/create-post",
+      "destination": "/api-reference/posts/create-post"
+    },
+    {
+      "source": "/api-reference/endpoint/create-repurpose",
+      "destination": "/api-reference/repurposes/create-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/create-signature",
+      "destination": "/api-reference/signatures/create-signature"
+    },
+    {
+      "source": "/api-reference/endpoint/create-webhook",
+      "destination": "/api-reference/webhooks/create-webhook"
+    },
+    {
+      "source": "/api-reference/endpoint/delete-api-key",
+      "destination": "/api-reference/api-keys/delete-api-key"
+    },
+    {
+      "source": "/api-reference/endpoint/delete-label",
+      "destination": "/api-reference/labels/delete-label"
+    },
+    {
+      "source": "/api-reference/endpoint/delete-post",
+      "destination": "/api-reference/posts/delete-post"
+    },
+    {
+      "source": "/api-reference/endpoint/delete-repurpose",
+      "destination": "/api-reference/repurposes/delete-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/delete-signature",
+      "destination": "/api-reference/signatures/delete-signature"
+    },
+    {
+      "source": "/api-reference/endpoint/delete-webhook",
+      "destination": "/api-reference/webhooks/delete-webhook"
+    },
+    {
+      "source": "/api-reference/endpoint/disable-repurpose",
+      "destination": "/api-reference/repurposes/disable-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/get-post",
+      "destination": "/api-reference/posts/get-post"
+    },
+    {
+      "source": "/api-reference/endpoint/get-post-metrics",
+      "destination": "/api-reference/posts/get-post-metrics"
+    },
+    {
+      "source": "/api-reference/endpoint/get-post-preview",
+      "destination": "/api-reference/posts/get-post-preview"
+    },
+    {
+      "source": "/api-reference/endpoint/get-repurpose",
+      "destination": "/api-reference/repurposes/get-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/get-webhook",
+      "destination": "/api-reference/webhooks/get-webhook"
+    },
+    {
+      "source": "/api-reference/endpoint/get-workspace",
+      "destination": "/api-reference/workspace/get-workspace"
+    },
+    {
+      "source": "/api-reference/endpoint/list-api-keys",
+      "destination": "/api-reference/api-keys/list-api-keys"
+    },
+    {
+      "source": "/api-reference/endpoint/list-content-types",
+      "destination": "/api-reference/platform/list-content-types"
+    },
+    {
+      "source": "/api-reference/endpoint/list-discord-channels",
+      "destination": "/api-reference/social-accounts/list-discord-channels"
+    },
+    {
+      "source": "/api-reference/endpoint/list-labels",
+      "destination": "/api-reference/labels/list-labels"
+    },
+    {
+      "source": "/api-reference/endpoint/list-pinterest-boards",
+      "destination": "/api-reference/social-accounts/list-pinterest-boards"
+    },
+    {
+      "source": "/api-reference/endpoint/list-posts",
+      "destination": "/api-reference/posts/list-posts"
+    },
+    {
+      "source": "/api-reference/endpoint/list-repurpose-items",
+      "destination": "/api-reference/repurposes/list-repurpose-items"
+    },
+    {
+      "source": "/api-reference/endpoint/list-repurpose-source-formats",
+      "destination": "/api-reference/repurposes/list-repurpose-source-formats"
+    },
+    {
+      "source": "/api-reference/endpoint/list-repurposes",
+      "destination": "/api-reference/repurposes/list-repurposes"
+    },
+    {
+      "source": "/api-reference/endpoint/list-signatures",
+      "destination": "/api-reference/signatures/list-signatures"
+    },
+    {
+      "source": "/api-reference/endpoint/list-social-accounts",
+      "destination": "/api-reference/social-accounts/list-social-accounts"
+    },
+    {
+      "source": "/api-reference/endpoint/list-webhook-logs",
+      "destination": "/api-reference/webhooks/list-webhook-logs"
+    },
+    {
+      "source": "/api-reference/endpoint/list-webhooks",
+      "destination": "/api-reference/webhooks/list-webhooks"
+    },
+    {
+      "source": "/api-reference/endpoint/pause-repurpose",
+      "destination": "/api-reference/repurposes/pause-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/replay-webhook-log",
+      "destination": "/api-reference/webhooks/replay-webhook-log"
+    },
+    {
+      "source": "/api-reference/endpoint/request-media-upload",
+      "destination": "/api-reference/media-and-uploads/upload-to-signed-url"
+    },
+    {
+      "source": "/api-reference/endpoint/resume-repurpose",
+      "destination": "/api-reference/repurposes/resume-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/rotate-webhook-secret",
+      "destination": "/api-reference/webhooks/rotate-webhook-secret"
+    },
+    {
+      "source": "/api-reference/endpoint/send-webhook-test",
+      "destination": "/api-reference/webhooks/send-webhook-test"
+    },
+    {
+      "source": "/api-reference/endpoint/toggle-social-account",
+      "destination": "/api-reference/social-accounts/list-social-accounts"
+    },
+    {
+      "source": "/api-reference/endpoint/update-label",
+      "destination": "/api-reference/labels/update-label"
+    },
+    {
+      "source": "/api-reference/endpoint/update-post",
+      "destination": "/api-reference/posts/update-post"
+    },
+    {
+      "source": "/api-reference/endpoint/update-repurpose",
+      "destination": "/api-reference/repurposes/update-repurpose"
+    },
+    {
+      "source": "/api-reference/endpoint/update-signature",
+      "destination": "/api-reference/signatures/update-signature"
+    },
+    {
+      "source": "/api-reference/endpoint/update-webhook",
+      "destination": "/api-reference/webhooks/update-webhook"
+    },
+    {
+      "source": "/api-reference/endpoint/upload-media",
+      "destination": "/api-reference/media-and-uploads/upload-media"
+    }
+  ],
   "logo": {
     "light": "/logo/light.png",
     "dark": "/logo/dark.png"

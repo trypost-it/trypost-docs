@@ -1,0 +1,289 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TryPost API",
+    "version": "2.0.0",
+    "description": "REST API for TryPost. Authenticate with a workspace API key as a Bearer token."
+  },
+  "servers": [
+    {
+      "url": "https://app.trypost.it/api",
+      "description": "TryPost Cloud"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Posts",
+      "description": "Create, read, update, delete and preview posts."
+    },
+    {
+      "name": "Post notes",
+      "description": "Internal notes on a post, visible to workspace members."
+    },
+    {
+      "name": "Approvals",
+      "description": "Approve or reject posts waiting for approval."
+    },
+    {
+      "name": "Recurrence",
+      "description": "Make a post repeat on a schedule."
+    },
+    {
+      "name": "Media and uploads",
+      "description": "Upload files and attach media to posts."
+    },
+    {
+      "name": "Social accounts",
+      "description": "Connected social accounts and their network-specific options."
+    },
+    {
+      "name": "Channels",
+      "description": "A channel's posting schedule and queue."
+    },
+    {
+      "name": "Ideas",
+      "description": "Ideas on the Create board."
+    },
+    {
+      "name": "Idea stages",
+      "description": "The groups (columns) of the ideas board."
+    },
+    {
+      "name": "Analytics",
+      "description": "Workspace and channel insights."
+    },
+    {
+      "name": "Labels",
+      "description": "Labels to organize posts and ideas."
+    },
+    {
+      "name": "Signatures",
+      "description": "Reusable text to append to posts."
+    },
+    {
+      "name": "Workspace",
+      "description": "The workspace the API key belongs to."
+    },
+    {
+      "name": "API keys",
+      "description": "Personal API keys for this workspace."
+    },
+    {
+      "name": "Webhooks",
+      "description": "Outgoing webhooks and their delivery logs."
+    },
+    {
+      "name": "Repurposes",
+      "description": "Automations that republish videos posted outside TryPost."
+    },
+    {
+      "name": "Platform",
+      "description": "Platform capabilities and content types."
+    }
+  ],
+  "paths": {},
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Workspace API key from Settings → API keys."
+      }
+    },
+    "schemas": {
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "current_page": {
+            "type": "integer"
+          },
+          "from": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "last_page": {
+            "type": "integer"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "active": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "path": {
+            "type": "string"
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "Page size set by the server. Read it; do not assume a value."
+          },
+          "to": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
+      },
+      "PaginationLinks": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prev": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "ErrorBody": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ValidationErrorBody": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "RateLimitErrorBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "const": "rate_limit_exceeded"
+          },
+          "message": {
+            "type": "string",
+            "examples": [
+              "Rate limit exceeded. Please retry after 30 seconds."
+            ]
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid API key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "The key's workspace or user may not perform this action.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The resource does not exist in this workspace.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorBody"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation failed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationErrorBody"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Rate limit exceeded. Limits: 60 requests per minute per workspace.",
+        "headers": {
+          "Retry-After": {
+            "description": "Seconds to wait before retrying.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RateLimitErrorBody"
+            }
+          }
+        }
+      }
+    }
+  }
+}

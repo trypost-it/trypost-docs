@@ -146,7 +146,7 @@ The full table (17 entries, including analytics, retention and Google Business r
 - Imagick with HEIC for iPhone photo conversion (in the Docker image)
 - Upload limits: `upload_max_filesize=1G`, `post_max_size=1G` (matches the Docker image)
 - Bluesky and Mastodon work without API credentials; every other network needs developer app credentials (Google Business Profile has its own Google client, separate from YouTube)
-- Upgrading an existing install to 2.0 needs `php artisan release:trypost-2` after `migrate --force`
+- Upgrading an existing install to 2.0 needs `php artisan release:trypost-2 --force --include-unsubscribed` after `migrate --force` (self-hosted has no Stripe subscription)
 
 ## Supported Languages
 

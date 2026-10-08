@@ -1,6 +1,273 @@
 ---
 title: "Posting"
-description: "Create, schedule and publish posts through the API: destinations, per-platform meta, thread replies and scheduling modes."
+description: "Create, schedule and publish posts through the API: destinations, per-network settings, scheduling modes, thread replies and content limits."
+icon: "paper-plane"
 ---
 
-Content in progress.
+This guide walks through a post from start to finish: find the channel, check what its network needs, create the post, then schedule it, queue it or publish it now. Every example runs against `https://app.trypost.it/api` with a [workspace API key](/api-reference/introduction#authentication).
+
+<Steps>
+  <Step title="List the social accounts">
+    Find the channel to post to and read its limits.
+  </Step>
+  <Step title="Check the content types">
+    Pick a format and fill the settings the network requires.
+  </Step>
+  <Step title="Create the post">
+    One post per channel, or one call for several channels.
+  </Step>
+  <Step title="Schedule, queue or publish">
+    At a set time, in the channel's queue, or right now.
+  </Step>
+</Steps>
+
+## 1. List the social accounts
+
+[List social accounts](/api-reference/social-accounts/list-social-accounts) returns the channels connected to the workspace. Channels are connected and removed in the app; the API only reads them.
+
+```bash
+curl https://app.trypost.it/api/social-accounts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json"
+```
+
+```json
+{
+  "data": [
+    {
+      "id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+      "platform": "x",
+      "display_name": "TryPost",
+      "username": "trypostit",
+      "status": "connected",
+      "has_posting_schedule": true,
+      "timezone": "America/Sao_Paulo",
+      "posting_goal": 5,
+      "max_content_length": 280,
+      "long_posts": false,
+      "verified_badge": null
+    }
+  ],
+  "links": { "...": "..." },
+  "meta": { "...": "..." }
+}
+```
+
+The fields you need for posting:
+
+| Field | Use |
+|---|---|
+| `id` | The `social_account_id` of the post's destination |
+| `platform` | The network, which decides the content types and settings below |
+| `status` | Only `connected` accounts publish. `disconnected` and `token_expired` accounts need to be reconnected in the app |
+| `max_content_length` | The text limit of this account. X accounts with long posts (`long_posts: true`) get 25000 instead of 280 |
+| `has_posting_schedule` | Whether the channel has posting times, which the queue needs |
+| `timezone` | The channel's time zone. Queue slots and recurrences follow it |
+
+## 2. Check the content types
+
+[List content types](/api-reference/platform/list-content-types) describes every network: its content types, text and hashtag limits, the settings it requires and the media each format takes.
+
+```bash
+curl https://app.trypost.it/api/content-types \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json"
+```
+
+Read these fields before you build a post:
+
+| Field | Meaning |
+|---|---|
+| `default_content_type` | The format used when you omit `content_type` |
+| `content_types[].value` | The value to send as `content_type`, for example `instagram_reel` |
+| `required_meta` | Settings that must be in `meta` before the post can be scheduled or published |
+| `max_content_length` | The network's text limit. The account's own limit (`max_content_length` on the social account) is what counts |
+| `max_hashtags` | Hashtag cap, `5` on Instagram, `null` elsewhere |
+| `content_types[].captionless` | `true` when the format sends no text (Instagram and Facebook Stories) |
+| `content_types[].supports_thread_replies` | `true` when the format takes thread replies (X, Bluesky, Mastodon), with `max_thread_replies` |
+| `content_types[].requires_media`, `min_media_count`, `max_media_count` | Media the format needs |
+
+When you omit `content_type`, it is picked like the app does: on Pinterest a video makes `pinterest_video_pin` and several images `pinterest_carousel`, on TikTok images only make `tiktok_photo`, and every other network takes its default format.
+
+### Required settings
+
+Each destination carries its network's settings in `meta`. A draft can be saved without them; scheduling or publishing needs them:
+
+| Network | Required in `meta` | Where to get the value |
+|---|---|---|
+| TikTok | `privacy_level`: `PUBLIC_TO_EVERYONE`, `MUTUAL_FOLLOW_FRIENDS`, `FOLLOWER_OF_CREATOR` or `SELF_ONLY` | [Get TikTok creator info](/api-reference/social-accounts/get-tiktok-creator-info) lists the levels the account allows |
+| Pinterest | `board_id` | [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards) or [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board) |
+| Discord | `channel_id` | [List Discord channels](/api-reference/social-accounts/list-discord-channels) |
+| YouTube | A title: `title`, or the first line of the text | Up to 100 characters, without `<` or `>` |
+| Google Business | `event` with `title`, `start_date` and `end_date` when `topic_type` is `EVENT` or `OFFER`; a `call_to_action` needs a `url` unless its `action_type` is `NONE` or `CALL` | — |
+
+Every other setting is optional: link previews, AI labels, YouTube privacy and category, Mastodon content warnings, Threads topics, and more. The full list per network is under `platforms[].meta` on [Create post](/api-reference/posts/create-post). Keys a network does not know are dropped.
+
+## 3. Create the post
+
+[Create post](/api-reference/posts/create-post) creates one post on **one** channel: `platforms` takes exactly one entry. Without `status`, the post is saved as a draft.
+
+```bash
+curl -X POST https://app.trypost.it/api/posts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Our autumn collection is live.",
+    "media": [
+      { "url": "https://example.com/autumn.jpg", "alt": "Three jackets on a rail" }
+    ],
+    "platforms": [
+      {
+        "social_account_id": "2b7e4c19-8f3a-4d6b-9c1e-5a0f7d2b8e63",
+        "content_type": "pinterest_pin",
+        "meta": {
+          "board_id": "1084231546543210987",
+          "link": "https://example.com/autumn"
+        }
+      }
+    ]
+  }'
+```
+
+The response is the post (`201`), with `status: "draft"` and its destination under `platforms[]`. Media can come from a URL, an earlier upload or another post; see [Media uploads](/api-reference/guides/media-uploads).
+
+### Several channels at once
+
+To send the same post to several channels, use [Create posts in batch](/api-reference/posts/create-posts-in-batch). It creates one independent post per destination, all sharing a `post_group_id`, the same as selecting several channels in the app. Each destination can override the shared `content`, `media`, `content_type` and `meta`. `status` is required here.
+
+```bash
+curl -X POST https://app.trypost.it/api/posts/batch \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "scheduled",
+    "scheduled_at": "2026-10-12T14:00:00Z",
+    "content": "Our autumn collection is live.",
+    "media": [{ "url": "https://example.com/autumn.jpg" }],
+    "destinations": [
+      { "social_account_id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54" },
+      {
+        "social_account_id": "5d1f8a27-3c6e-4b9d-a2f0-7e4c1b8d6a35",
+        "content_type": "tiktok_photo",
+        "meta": { "privacy_level": "PUBLIC_TO_EVERYONE" }
+      }
+    ]
+  }'
+```
+
+The response is `{ "posts": [...] }`, one post per destination. A validation error stops the whole call; errors name the destination, for example `destinations.1.meta.privacy_level`.
+
+## 4. Schedule, queue or publish
+
+`status` decides what happens to a post. Send it on create, or later with [Update post](/api-reference/posts/update-post):
+
+| `status` | Result |
+|---|---|
+| `draft` | Saved and editable. On an update, unschedules a scheduled post |
+| `scheduled` | Published at `scheduled_at`, or in the channel's queue with `queue` / `queue_slot` |
+| `publishing` | Published now |
+
+### At a set time
+
+Send `status: scheduled` with `scheduled_at`, an instant in the future and before `2038-01-19`. Give it in UTC (`Z`) or with an offset.
+
+```json
+{
+  "status": "scheduled",
+  "scheduled_at": "2026-10-12T14:00:00Z"
+}
+```
+
+### In the channel's queue
+
+When the channel has posting times (`has_posting_schedule: true`), send `queue` instead of `scheduled_at`:
+
+- `next` takes the channel's first free slot.
+- `top` takes the first slot not held by a post with a set time, and moves the queued posts behind it to the next free slot.
+
+```json
+{
+  "status": "scheduled",
+  "queue": "next"
+}
+```
+
+To take one exact slot, send `queue_slot` with an instant from [List free queue slots](/api-reference/channels/list-free-queue-slots). It works on [Create post](/api-reference/posts/create-post) only, and fails with `422` when the slot has been taken in the meantime. `queue` and `queue_slot` cannot be combined with `scheduled_at`.
+
+A queued post keeps its slot. To change the order, use [Reorder queue](/api-reference/channels/reorder-queue) or [Move post to queue slot](/api-reference/channels/move-post-to-queue-slot); to change the times, [Update posting schedule](/api-reference/channels/update-posting-schedule) (it replaces the whole schedule: send the current `posting_goal` and `posting_schedule` to keep them, since omitted values are cleared). To repeat a scheduled post, see [Set post recurrence](/api-reference/recurrence/set-post-recurrence).
+
+<Note>
+  Another change to the same channel queue can be running when you call. The API then answers `409`; retry the request.
+</Note>
+
+### Now
+
+Send `status: publishing`, on create or on an existing draft or scheduled post:
+
+```bash
+curl -X PUT https://app.trypost.it/api/posts/9d3c1f2a-6b4e-4c8a-9f1e-2a7b5c8d0e41 \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{ "status": "publishing" }'
+```
+
+The response comes back with `status: "publishing"` while the network receives the post. It then becomes `published` or `failed`; `platforms[].platform_url` links to the live post and `platforms[].error_message` says what went wrong. Poll [Get post](/api-reference/posts/get-post), or subscribe a [webhook](/api-reference/webhooks/create-webhook) to `post.published` and `post.failed`.
+
+Posts created through the API publish directly: API keys belong to workspace admins, so no approval step applies (see [Approvals](/api-reference/introduction#approvals)).
+
+## Thread replies
+
+X, Bluesky and Mastodon posts can carry up to **24** replies, published one under the other below the first post. Send them in `meta.thread_replies`, each as `{ "text", "media" }`:
+
+```json
+{
+  "content": "1/ We rebuilt scheduling from scratch. Here is what changed.",
+  "status": "scheduled",
+  "queue": "next",
+  "platforms": [
+    {
+      "social_account_id": "9c8b7a65-4d3e-4f2a-8b1c-0d9e8f7a6b54",
+      "content_type": "x_post",
+      "meta": {
+        "thread_replies": [
+          { "text": "2/ Every channel now has its own posting times." },
+          {
+            "text": "3/ Full changelog below.",
+            "media": [{ "url": "https://example.com/changelog.png" }]
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+- A reply needs text or media.
+- Each reply's text must fit the account limit: 280 on X (25000 with long posts), 300 on Bluesky, 500 on Mastodon. On Mastodon the content warning (`spoiler_text`) is repeated on every reply and counts toward it.
+- A reply's media belongs to that reply only: up to 4 items, given by `url`, `id` or `upload_token`, following that network's media rules.
+- On [Update post](/api-reference/posts/update-post), `thread_replies` replaces the whole list.
+
+If publishing stops halfway, replies already live are kept, and a retry continues from the next one instead of posting them again.
+
+## Content limits
+
+Limits are checked when a post is scheduled or published. Drafts can go over them.
+
+- **Text per account.** The text must fit the destination account's `max_content_length`, measured on the text the network receives. An X account with long posts takes 25000 characters; other X accounts take 280. Every post has a hard ceiling of 25000 characters. An emoji counts as one character.
+- **Instagram hashtags.** Instagram takes at most **5** hashtags per post.
+- **Stories are captionless.** `instagram_story` and `facebook_story` send no text, so their text is neither published nor measured, and the hashtag cap does not apply.
+- **Media.** Each content type has its own media count, size, duration and aspect ratio rules, listed by [List content types](/api-reference/platform/list-content-types) and on each network's page, for example [Instagram](/platforms/instagram), [X](/platforms/x-twitter) or [TikTok](/platforms/tiktok).
+
+<Tip>
+  [Get post preview](/api-reference/posts/get-post-preview) returns the text each destination will receive (`sanitized_content`), its length and the account's limit. On X, TryPost Cloud writes links as `example(.)com` to keep the post out of X's link pricing (see [Links in posts](/platforms/x-twitter#links-in-posts)), and the preview shows that text.
+</Tip>
+
+## Editing, deleting and errors
+
+- [Update post](/api-reference/posts/update-post) changes only the fields you send. The channel is fixed; to post elsewhere, create a new post. Send the destination's settings as top-level `content_type` and `meta`, or as `platforms[]` with the destination `id`. `meta` is merged with the stored settings; send `null` for a key to clear it.
+- Posts that are `publishing`, `published`, `partially_published` or `failed` cannot be edited or deleted: the API answers `422`.
+- [Delete post](/api-reference/posts/delete-post) removes the post from TryPost only. It never deletes anything already published on a network.
+- Validation errors are keyed by field. Errors on a destination's settings, text, or media fit may be reported under `destinations.0.…` (for example `destinations.0.meta.board_id`) even when you sent `platforms`.

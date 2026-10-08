@@ -30,7 +30,7 @@ TryPost 2.0 changes how posts, media and team permissions are stored. The schema
     Restore the dump somewhere disposable, run the migrations, then:
 
     ```bash
-    php artisan release:trypost-2 --dry-run
+    php artisan release:trypost-2 --dry-run --include-unsubscribed
     ```
 
     The dry run changes nothing and prints what each step would do.
@@ -46,10 +46,10 @@ TryPost 2.0 changes how posts, media and team permissions are stored. The schema
   </Step>
   <Step title="Run the release command">
     ```bash
-    php artisan release:trypost-2 --force
+    php artisan release:trypost-2 --force --include-unsubscribed
     ```
 
-    On Docker: `docker compose -f compose.prod.yaml exec app php artisan release:trypost-2 --force`. Without `--force`, the command asks for confirmation in production. It refuses to start while migrations are pending.
+    On Docker: `docker compose -f compose.prod.yaml exec app php artisan release:trypost-2 --force --include-unsubscribed`. **Self-hosted installs need `--include-unsubscribed`**: without it the analytics backfill only covers workspaces with a Stripe subscription, which a self-hosted install never has. Without `--force`, the command asks for confirmation in production. It refuses to start while migrations are pending.
 
     It runs eight steps, in order:
 
@@ -62,7 +62,7 @@ TryPost 2.0 changes how posts, media and team permissions are stored. The schema
     7. Queues a discovery of Instagram stories
     8. Audits the media (read-only) and compares it with the state before the release
 
-    Every step is safe to run again, and a finished step does nothing the second time. If a step fails, the command exits with an error and a summary table; fix the cause and run it again. Use `--rerun-backfill` to queue the analytics backfill again, and `--adoption-timeout=<seconds>` (default 21600) to change how long it waits for the adoption.
+    Every step is safe to run again, and a finished step does nothing the second time. If a step fails, the command exits with an error and a summary table; fix the cause and run it again. Use `--rerun-backfill` to queue the analytics backfill again, and `--adoption-timeout=<seconds>` (default 21600) to change how long it waits for the adoption. Already ran it without `--include-unsubscribed`? Run it again with `--include-unsubscribed --rerun-backfill`.
   </Step>
   <Step title="Let the queues drain">
     Keep Horizon running and watch it until the `media-adoption`, `analytics` and `media-imports` queues are empty. The backfill and the import of posts made outside TryPost run there. `HORIZON_MEDIA_ADOPTION_PROCESSES` caps the adoption workers (default 20).

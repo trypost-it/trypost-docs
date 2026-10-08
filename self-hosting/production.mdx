@@ -62,7 +62,8 @@ TryPost uses queues for critical background processing:
 - **Verifying channel connections** and refreshing tokens
 - **Collecting analytics** for [Insights](/knowledge-base/insights/overview) (`analytics` queue)
 - **Importing posts** made outside TryPost and media from Google Drive, Google Photos, Canva or Unsplash (`media-imports` queue)
-- **Polling RSS feeds** (`rss-feeds` queue) and [repurpose](/knowledge-base/repurpose) sources
+- **Polling RSS feeds** (`rss-feeds` queue); [repurpose](/knowledge-base/repurpose) sources are polled on their network's `social-<platform>` queue
+- **Adopting the media library** once during the [2.0 upgrade](/self-hosting/upgrading#upgrading-to-trypost-20) (`media-adoption` queue)
 - **Delivering [webhooks](/knowledge-base/settings/webhooks)** and their retries (`webhooks` queue)
 - **Live updates** to the browser (`broadcasts` queue)
 
@@ -167,7 +168,7 @@ server {
     error_page 404 /index.php;
 
     location ~ \.php$ {
-        # Replace with the FPM socket for the PHP version you installed (e.g. php8.3-fpm.sock, php8.4-fpm.sock).
+        # Replace with the FPM socket for the PHP version you installed (e.g. php8.4-fpm.sock, php8.5-fpm.sock).
         fastcgi_pass unix:/var/run/php/php-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
@@ -316,9 +317,7 @@ Regularly backup:
 - Passport keys (`storage/oauth-*.key` or `PASSPORT_*` env) — losing them invalidates API keys and MCP OAuth grants
 - Uploaded media (if using local storage)
 
-[Upgrading](/self-hosting/upgrading) asks for a database dump before every `migrate --force`, so it is worth having the command to hand:
-
-Both read the credentials from the app's own environment, so they work as written wherever `.env` is loaded — no need to remember whether this install calls the user `postgres`, `root` or `trypost`.
+[Upgrading](/self-hosting/upgrading) asks for a database dump before every `migrate --force`. The commands below read the database credentials from environment variables. On bare metal, load them from `.env` first, from the app directory: `set -a; . ./.env; set +a`. Inside the bundled Compose stack the `app` container already has them.
 
 **PostgreSQL**
 

@@ -21,7 +21,7 @@ WEBHOOK_URL=
 | Variable | Description |
 |----------|-------------|
 | `APP_NAME` | Your application name |
-| `APP_ENV` | Environment: `local`, `staging`, `production` |
+| `APP_ENV` | `production` on a server, `local` for development. Horizon starts queue workers only for these two values; any other value (for example `staging`) runs no workers, so nothing publishes |
 | `APP_DEBUG` | Enable debug mode (set to `false` in production) |
 | `APP_URL` | Your application URL |
 | `WEBHOOK_URL` | Optional public base URL for inbound webhooks (e.g. Telegram) when `APP_URL` is not reachable from the internet. Defaults to `APP_URL`. |

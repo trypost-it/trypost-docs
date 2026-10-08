@@ -23,8 +23,8 @@ TryPost is a Laravel app with an Inertia.js + **Vue 3** front-end. Queues run on
 
 ### Prerequisites
 
-- PHP 8.2+
-- Node.js 20+
+- PHP 8.4+
+- Node.js 20.19+ or 22.12+
 - PostgreSQL or MySQL — the test suite runs against both, so run it on whichever you develop on
 - Redis
 - Composer
@@ -52,7 +52,7 @@ This runs `composer install`, copies `.env`, generates an app key, migrates the 
 composer dev
 ```
 
-That runs `php artisan serve`, `php artisan queue:listen`, `php artisan pail` (logs), and `npm run dev` concurrently. For SSR development use `composer dev:ssr` instead.
+That runs `php artisan serve`, `php artisan queue:listen` (the `default`, `analytics`, `rss-feeds` and `media-imports` queues — run `php artisan horizon` instead to test publishing), `php artisan pail` (logs), and `npm run dev` concurrently.
 
 ## Code Style
 

@@ -67,7 +67,7 @@ Using the wrong field name (`url` vs `serverUrl`) makes Devin **silently ignore*
   <Step title="Save, then start a session">
     Click **Save**.
 
-    **Test listing tools** may fail until OAuth completes. That flow runs on the **first Devin session**, not at save time. Start a new Cloud session (or tag Devin in Slack / Teams) and ask it to use TryPost. Devin opens a browser window. Sign in, review permissions, click **Allow**.
+    **Test listing tools** may fail until OAuth completes. That flow runs on the **first Devin session**, not at save time. Start a new Cloud session (or tag Devin in Slack / Teams) and ask it to use TryPost. Devin opens a browser window. Sign in, pick the **Workspace** this connection may use and click **Authorize**. To use another workspace, connect again and pick it.
   </Step>
   <Step title="Verify the connection">
     In that session, ask:
@@ -76,7 +76,7 @@ Using the wrong field name (`url` vs `serverUrl`) makes Devin **silently ignore*
     List all my scheduled posts
     ```
 
-    Devin should call TryPost tools. If it answers without tools, tell it to use the **TryPost** MCP server. See the [Tools reference](/ai/tools-reference) for every tool and the create → attach media → publish workflow.
+    Devin should call TryPost tools. If it answers without tools, tell it to use the **TryPost** MCP server. See the [Tools reference](/ai/tools-reference) for every tool and the recommended workflow (pick channel and content type, create with media, preview, publish).
   </Step>
 </Steps>
 
@@ -101,7 +101,7 @@ Once authorized, Devin can:
 | Task | Examples |
 |------|----------|
 | **Posts** | List, create, update, schedule, queue, publish, preview, delete, approve, fetch metrics |
-| **Media** | Attach from a public URL, upload a local file, reuse a file already on another post |
+| **Media** | Attach from a public URL, upload a local file (you run the upload command; CLI agents can run it themselves), reuse a file already on another post |
 | **Accounts** | List connected social accounts, set posting times, manage the queue, resolve Pinterest boards and Discord channels |
 | **Workspace** | Read the current workspace, manage ideas, signatures, labels, webhooks, repurposes, and API keys; read analytics |
 
@@ -142,7 +142,7 @@ Unlike Cascade, Devin Local and the CLI **prompt before every MCP tool** until y
     devin mcp login trypost
     ```
 
-    Complete the TryPost browser sign-in (**Allow**). First use can also open this flow. Do **not** pass `--scopes` — TryPost needs the `mcp:use` scope that Devin discovers from the server. A custom scope list will fail.
+    Complete the TryPost browser sign-in: pick the **Workspace** this connection may use and click **Authorize**. First use can also open this flow. Do **not** pass `--scopes` — TryPost needs the `mcp:use` scope that Devin discovers from the server. A custom scope list will fail.
 
     To sign in again later:
 
@@ -211,7 +211,7 @@ The legacy **Cascade** agent still uses a separate file and `"serverUrl"`. Enter
     No `headers`. No TryPost API key. After saving, refresh MCP / reload the window.
   </Step>
   <Step title="Sign in and verify">
-    Trigger a TryPost tool call. Cascade opens a browser window. Click **Allow**, then ask:
+    Trigger a TryPost tool call. Cascade opens a browser window. Pick the **Workspace** this connection may use and click **Authorize**, then ask:
 
     ```
     List all my TryPost social accounts
@@ -251,7 +251,7 @@ Example: `https://trypost.yourdomain.com/mcp/trypost`.
     You need **Manage MCP Servers**. Ask an org admin, or use **Suggest MCP Integration**. The same permission is required to finish OAuth on Cloud.
   </Accordion>
   <Accordion title="Test listing tools fails right after Save">
-    Expected for OAuth. Devin authenticates on the first session, not at save time. Start a Cloud session, complete the browser **Allow** step, then try again.
+    Expected for OAuth. Devin authenticates on the first session, not at save time. Start a Cloud session, complete the browser **Authorize** step, then try again.
   </Accordion>
   <Accordion title="The server is added but Devin does not call TryPost tools">
     Finish OAuth in the surface you are using (Cloud session, `devin mcp login`, or Cascade). Tokens are not shared across surfaces. Start a **new** session and say you want the **TryPost** MCP server.
@@ -259,7 +259,7 @@ Example: `https://trypost.yourdomain.com/mcp/trypost`.
     On Devin Local / CLI, also approve the MCP permission prompt (or allow `mcp__trypost__*`). Cascade does not prompt the same way. Check the session logs for MCP errors.
   </Accordion>
   <Accordion title="Auth required, AuthRequired, or Needs auth">
-    Official Devin CLI/Local wording when OAuth is missing or expired. Run `devin mcp login trypost`, or click **Authenticate** on the Devin Local MCP card. Cloud: start a new session and complete **Allow**.
+    Official Devin CLI/Local wording when OAuth is missing or expired. Run `devin mcp login trypost`, or click **Authenticate** on the Devin Local MCP card. Cloud: start a new session and complete **Authorize**.
   </Accordion>
   <Accordion title="I passed --scopes on devin mcp login">
     Remove the flag and log in again. `--scopes read,write` (or any custom list) skips TryPost's `mcp:use` scope and the tools never authorize.
@@ -283,7 +283,7 @@ Example: `https://trypost.yourdomain.com/mcp/trypost`.
     Cloud TryPost is already public. A self-hosted URL must be reachable from the internet over HTTPS. `localhost` works only for CLI and Desktop.
   </Accordion>
   <Accordion title="Browser does not open during CLI sign-in">
-    Over SSH or inside a container, `devin mcp login` prints the authorize URL instead of opening a browser. Copy it into a local browser, complete **Allow**, and the CLI picks up the callback. If the loopback port is blocked, finish OAuth on a machine that can receive the callback, or use the [REST API](/api-reference/introduction) with an API key (workspace admins only).
+    Over SSH or inside a container, `devin mcp login` prints the authorize URL instead of opening a browser. Copy it into a local browser, pick the workspace, click **Authorize**, and the CLI picks up the callback. If the loopback port is blocked, finish OAuth on a machine that can receive the callback, or use the [REST API](/api-reference/introduction) with an API key (workspace admins only).
   </Accordion>
   <Accordion title="Enterprise team blocked the server">
     A Devin admin can disable MCP, require it to be turned on in team settings, or allowlist only certain servers. Cascade on Enterprise is off until an admin enables it. If TryPost never connects on a Teams / Enterprise plan, ask an admin to allow a custom HTTP server at `https://app.trypost.it/mcp/trypost` (or your `{APP_URL}/mcp/trypost`).
@@ -297,7 +297,7 @@ Show me all my connected social media accounts
 ```
 
 ```
-Create a draft LinkedIn post for tomorrow at 9am
+Create a draft LinkedIn post for tomorrow at 9am New York time
 ```
 
 ```
@@ -305,7 +305,7 @@ What posts do I have scheduled for this week?
 ```
 
 ```
-Attach https://example.com/photo.jpg to my draft, then preview it before publishing
+Attach the image at <a public image URL> to my draft, then show me the exact text each network will get
 ```
 
 ```

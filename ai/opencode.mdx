@@ -31,14 +31,14 @@ icon: "/images/ai/opencode.svg"
 
     No `Authorization` header — OpenCode discovers OAuth from the URL.
   </Step>
-  <Step title="Sign in via mcp login">
+  <Step title="Sign in with `mcp auth`">
     Run the OAuth flow explicitly so OpenCode caches the token:
 
     ```bash
-    opencode mcp login trypost
+    opencode mcp auth trypost
     ```
 
-    OpenCode opens your browser to TryPost; approve the request and return to the terminal.
+    OpenCode opens your browser to TryPost. Sign in, pick the **Workspace** this connection may use and click **Authorize**, then return to the terminal. To use another workspace, connect again and pick it.
   </Step>
   <Step title="Verify the connection">
     Inside OpenCode, ask:
@@ -57,7 +57,7 @@ icon: "/images/ai/opencode.svg"
 ## Example prompts
 
 ```
-Create a post for tomorrow at 9am
+Create a post for tomorrow at 9am São Paulo time
 ```
 
 ```

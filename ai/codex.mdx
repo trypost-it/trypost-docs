@@ -19,11 +19,10 @@ icon: "/images/ai/codex.svg"
 
     ```toml
     [mcp_servers.trypost]
-    type = "http"
     url = "https://app.trypost.it/mcp/trypost"
     ```
 
-    No `Authorization` header — Codex discovers OAuth from the URL.
+    No `Authorization` header — Codex discovers OAuth from the URL. Or add it in one line: `codex mcp add trypost --url https://app.trypost.it/mcp/trypost`.
   </Step>
   <Step title="Sign in via codex mcp login">
     Run the OAuth flow so Codex caches the token:
@@ -32,7 +31,7 @@ icon: "/images/ai/codex.svg"
     codex mcp login trypost
     ```
 
-    Codex opens your browser to TryPost; approve the request and return to the terminal.
+    Codex opens your browser to TryPost. Sign in, pick the **Workspace** this connection may use and click **Authorize**, then return to the terminal. To use another workspace, connect again and pick it.
   </Step>
   <Step title="Verify the connection">
     Start Codex and ask:

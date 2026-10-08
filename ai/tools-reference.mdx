@@ -9,7 +9,7 @@ The TryPost MCP server exposes **81 tools**. This page lists all of them, groupe
 Tool names are exactly what your assistant sees (kebab-case with a `-tool` suffix). Every tool acts on the one workspace you picked when you authorized the connection. Times in arguments are ISO 8601 (without an offset they are read as UTC). In responses, post, idea, label, signature, note and workspace times are UTC `Y-m-d H:i:s`; webhooks, API keys, repurposes, free slots and the upload `expires_at` are ISO 8601 with an offset.
 
 <Note>
-  The MCP server does not generate content with AI. There is no tool that writes a caption, an image or a video for you; AI features run only in the TryPost web app. Your assistant writes the text itself and sends it with `create-post-tool`.
+  There is no MCP tool that writes a caption, an image or a video for you. Your assistant writes the text itself and sends it with `create-post-tool`; the built-in AI writing assistant is available in the web app. Repurpose may shorten captions with AI in the background, including for rules created through MCP.
 </Note>
 
 ## Recommended workflow

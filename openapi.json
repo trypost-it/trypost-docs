@@ -209,14 +209,7 @@
                           "id": "9d3c1f2b-1a2b-4c3d-8e4f-5a6b7c8d9e10",
                           "platform": "x",
                           "content_type": "x_post",
-                          "meta": {
-                            "thread_replies": [
-                              {
-                                "text": "2/ Replies publish under the first post.",
-                                "media": []
-                              }
-                            ]
-                          },
+                          "meta": [],
                           "status": "pending",
                           "enabled": true,
                           "platform_url": null,
@@ -10715,9 +10708,11 @@
           "meta": {
             "type": [
               "object",
+              "array",
               "null"
             ],
-            "description": "Stored per-network settings (see `PlatformMeta`)."
+            "maxItems": 0,
+            "description": "Stored per-network settings (see `PlatformMeta`). Empty settings may serialize as an empty array."
           },
           "status": {
             "type": [

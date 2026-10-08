@@ -20,7 +20,7 @@ WEBHOOK_URL=
 
 | Variable | Description |
 |----------|-------------|
-| `APP_NAME` | Your application name. The Redis key prefix (`REDIS_PREFIX`) and Horizon's key prefix derive from it, so renaming the app later orphans jobs already queued. Let the queues drain before you rename it |
+| `APP_NAME` | Your application name. The defaults for `REDIS_PREFIX` and `HORIZON_PREFIX` derive from it. Changing those prefixes makes existing queued jobs and Horizon metadata inaccessible under the new keys. Before renaming the app, drain the queues or explicitly keep the existing prefixes |
 | `APP_ENV` | `production` on a server, `local` for development. Horizon starts queue workers only for these two values; any other value (for example `staging`) runs no workers, so nothing publishes |
 | `APP_DEBUG` | Enable debug mode (set to `false` in production) |
 | `APP_URL` | Your application URL |
@@ -100,11 +100,9 @@ Create the database as `utf8mb4` (see [Installation](/self-hosting/installation)
 | `DB_CHARSET` / `DB_COLLATION` | MySQL character set and collation (default `utf8mb4` / `utf8mb4_unicode_ci`) |
 
 <Warning>
-  **On MySQL you cannot schedule a post past 19 January 2038.**
+  **Schedule posts before 19 January 2038.**
 
-  TryPost's schema stores dates in MySQL's `TIMESTAMP` columns, and that type ends on 19 January 2038 — a post scheduled beyond it is rejected outright. PostgreSQL's equivalent has no such ceiling, which is why the same schedule saves there.
-
-  This only bites if you schedule more than a decade ahead. If that is part of how you work, choose PostgreSQL.
+  TryPost validates scheduled dates against this limit on both PostgreSQL and MySQL. MySQL's `TIMESTAMP` range is the reason for the shared limit; choosing PostgreSQL does not remove it.
 </Warning>
 
 ## Redis
@@ -366,7 +364,6 @@ VITE_REVERB_SCHEME="${REVERB_SCHEME}"
 | `REVERB_SCHEME` | Protocol: `http` or `https` |
 | `REVERB_SERVER_HOST` | Bind address the Reverb **server** listens on. Defaults to `0.0.0.0`. |
 | `REVERB_SERVER_PORT` | Port the Reverb server listens on. Defaults to `8080`. |
-
 | `REVERB_SERVER_PATH` | Serve Reverb under a sub-path. Empty by default |
 | `REVERB_SCALING_ENABLED` | `true` to run Reverb on several servers, sharing messages through Redis. Off by default |
 
@@ -660,6 +657,7 @@ HORIZON_MEDIA_ADOPTION_PROCESSES=20
 | `HORIZON_ALLOWED_EMAILS` | Comma-separated list of emails allowed to access Horizon in production |
 | `HORIZON_PATH` | URL path of the dashboard (default `horizon`) |
 | `HORIZON_DOMAIN` | Serve the dashboard on a separate domain |
+| `HORIZON_PREFIX` | Redis key prefix for Horizon metadata. Defaults to the slug of `APP_NAME` with underscores, followed by `_horizon:` (for example, `trypost_horizon:`). Use a distinct prefix for each installation sharing Redis |
 | `HORIZON_MEDIA_ADOPTION_PROCESSES` | Maximum workers for the `media-adoption` queue, used once by the [2.0 upgrade](/self-hosting/upgrading#upgrading-to-trypost-20) (default 20). Lower it on a small server |
 
 If not set, Horizon dashboard will be inaccessible in non-local environments.

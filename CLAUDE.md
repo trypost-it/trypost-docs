@@ -107,7 +107,7 @@ The same applies to anything a self-hoster can switch off or raise: platform ava
 
 - Resources are unwrapped (`JsonResource::withoutWrapping()`); lists use the Laravel envelope `{ data, links, meta }` with the page size from `config('app.pagination.default')` (25 today). Always tell readers to read `meta.per_page`.
 - `PUT /posts/{post}` with `status: publishing` publishes now; there is no separate publish endpoint.
-- `platforms[].meta` rules live only in the app's `App\Support\PostPlatformMetaRules`; document them from there. Unknown keys are dropped; on update `meta` is merged and `null` clears a key.
+- `platforms[].meta` rules live only in the app's `App\Support\PostPlatformMetaRules`; document them from there. Unknown keys are dropped; on update `meta` is merged and `null` clears a nullable key. Boolean meta keys do not accept `null`; send `true` or `false`.
 - There is no asset-library endpoint and no account toggle in the REST API.
 - Enum values (statuses, content types, webhook events, platforms) are documented in `openapi.json` schemas; copy them from the app enums under `app/Enums/**`, never from memory.
 
@@ -117,7 +117,7 @@ The same applies to anything a self-hoster can switch off or raise: platform ava
 - `create-post-tool` / `create-posts-tool` / `update-post-tool` accept inline `media[]` (`url`, `upload_token` or `id`); `update-post-tool` cannot change the channel. `create-api-key-tool` returns `{token, plain_token}` like REST.
 - Gates mirror the web: any member (`createPost`) for posts, notes, ideas, labels, signatures, analytics and channel reads; `publishDirectly` for approve/reject, set recurrence, reorder queue, move to slot and every repurpose tool; admins (`manageAccounts`, `manageWebhooks`, `manageTeam`) for posting-schedule writes, webhooks and API keys.
 - Server route: `Mcp::web('/mcp/trypost', TryPostServer::class)->middleware(['auth:api', 'workspace.token:mcp'])`. `LoadWorkspaceFromToken` requires an active OAuth grant with `mcp:use` (`403 MCP OAuth authorization required.` otherwise), binds the token's workspace (`401 No workspace selected.`, `403 Workspace access denied.`), and returns `402 Active subscription required.` on Cloud without app access.
-- AI is web-only: no API endpoint or MCP tool calls an AI agent.
+- There is no REST endpoint or MCP tool for generating or rewriting content with AI. Repurpose can shorten captions with AI in the background, including for repurposes created through REST or MCP (`app/Services/Repurpose/CaptionAdapter.php`).
 
 ## Notifications and permissions
 
@@ -141,7 +141,7 @@ The full table (17 entries, including analytics, retention and Google Business r
 
 ## Self-Hosted Requirements
 
-- PHP 8.4+ (the Docker image ships 8.4), Node.js 20.19+ or 22.12+, PostgreSQL or MySQL (MySQL from TryPost 2.0), Redis
+- PHP 8.4.1+ (the Docker image ships 8.4), Node.js 22.12+, PostgreSQL or MySQL (MySQL from TryPost 2.0), Redis
 - Horizon (queues), Reverb (WebSockets) and the scheduler running continuously
 - Imagick with HEIC for iPhone photo conversion (in the Docker image)
 - Upload limits: `upload_max_filesize=1G`, `post_max_size=1G` (matches the Docker image)

@@ -129,7 +129,7 @@ For every event except `post.deleted`, `data` is the post at the moment of the e
 | `status` | `draft`, `pending_approval`, `scheduled`, `publishing`, `published` or `failed` |
 | `created_via` | `web`, `api`, `mcp`, `repurpose`, or `null` |
 | `content` | Post text. May contain HTML from the editor, or be empty |
-| `scheduled_at`, `published_at`, `created_at`, `updated_at` | ISO 8601, or `null` |
+| `scheduled_at`, `published_at`, `created_at`, `updated_at` | ISO 8601, or `null`. `published_at` is when the network published the post; `updated_at` moves only when the post itself is edited, not when it publishes |
 | `author` | `{ id, name }`, or `null` |
 | `workspace` | `{ id, name }` |
 | `labels` | `{ id, name, color }[]` |

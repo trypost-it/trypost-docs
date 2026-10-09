@@ -21,7 +21,7 @@ TryPost opens the new channel's **Publish** page and asks how many times a week 
 
 Pinterest requires every pin to belong to a **board**. When you post to a Pinterest channel, its settings in the editor show **Pinning to** with a searchable board list. Pick a board, or type a name and click **Create** to make a new one.
 
-A post without a board cannot be scheduled or published — the editor, the [REST API](/api-reference/introduction) and MCP all reject it with *Select a Pinterest board to publish this post.* On the API, send the board as `platforms[].meta.board_id`; list boards with [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards) (`GET /social-accounts/{account}/boards`) and create one with [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board) (`POST /social-accounts/{account}/boards`).
+A post without a board cannot be scheduled or published — the editor, the [REST API](/api-reference/introduction) and MCP all reject it with *Select a Pinterest board to publish this post.* On the API, send the board as `meta.board_id`; list boards with [List Pinterest boards](/api-reference/social-accounts/list-pinterest-boards) (`GET /social-accounts/{account}/boards`) and create one with [Create Pinterest board](/api-reference/social-accounts/create-pinterest-board) (`POST /social-accounts/{account}/boards`).
 
 ## Supported content types
 
@@ -46,8 +46,8 @@ Official specs: [Creating boards and pins](https://developers.pinterest.com/docs
 ## Text and per-post options
 
 - **Description** — the post text, up to **800 characters**.
-- **Title** — optional pin title (`platforms[].meta.title`, up to 100 characters).
-- **Destination link** — where the pin leads (`platforms[].meta.link`, http or https, up to 2,048 characters).
+- **Title** — optional pin title (`meta.title`, up to 100 characters).
+- **Destination link** — where the pin leads (`meta.link`, http or https, up to 2,048 characters).
 - **Video cover** — pick the cover frame of a video pin in **Edit Media** > **Thumbnail**.
 - **Alt text** — up to 500 characters per image.
 

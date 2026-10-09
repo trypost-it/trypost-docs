@@ -25,7 +25,7 @@ Connect as many servers as you like — each one becomes its own channel in TryP
 
 ## Choosing a Discord channel
 
-A Discord connection is the whole server, so every Discord post must target a **channel**. In the post editor's Discord settings, pick the channel from the searchable list. A post without a channel cannot be scheduled or published (`platforms[].meta.channel_id` on the API; list channels with [List Discord channels](/api-reference/social-accounts/list-discord-channels), `GET /social-accounts/{account}/channels`).
+A Discord connection is the whole server, so every Discord post must target a **channel**. In the post editor's Discord settings, pick the channel from the searchable list. A post without a channel cannot be scheduled or published (`meta.channel_id` on the API; list channels with [List Discord channels](/api-reference/social-accounts/list-discord-channels), `GET /social-accounts/{account}/channels`).
 
 Only channels the bot can actually post in are shown — **text** and **announcement** channels where the bot has *View Channel* + *Send Messages*. Forum, voice, stage, and category channels are excluded (they don't accept a direct message), as are channels the bot has no access to.
 

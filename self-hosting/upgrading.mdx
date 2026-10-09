@@ -9,7 +9,7 @@ Pull the new version, then run the same steps you already run on a deploy:
 
 - Rebuild dependencies and assets, and re-run the [optimization commands](/self-hosting/production#optimizations)
 - Apply migrations with `php artisan migrate --force`
-- When you cross into TryPost 2.0, run `php artisan release:trypost-2` once, right after the migrations — see [below](#upgrading-to-trypost-20)
+- When you cross into TryPost 2.0, run `php artisan release:trypost-2` once, right after the migrations — see [below](#upgrading-to-trypost-20). Still on v1.1.0? Stop at v2.0.0 first — see [Upgrading past TryPost 2.0](#upgrading-past-trypost-20)
 - Restart the long-running processes so they pick up the new code — `php artisan horizon:terminate` and `php artisan reverb:restart` let Supervisor bring them back
 
 On Docker, back the database up, then `docker compose -f compose.prod.yaml pull app` and `docker compose -f compose.prod.yaml up -d` — see [Update to a new version](/self-hosting/docker#update-to-a-new-version). The container runs `migrate --force` itself on every boot, so the backup has to come first.
@@ -18,7 +18,30 @@ On Docker, back the database up, then `docker compose -f compose.prod.yaml pull 
   **Back the database up before `migrate --force`.** Migrations run unattended and some of them rewrite data, not just schema. A dump you can restore is the only reliable way back.
 </Warning>
 
+## Upgrading past TryPost 2.0
+
+The release after 2.0 stores each post's channel on the post itself and removes the old per-post destinations table. It also removes `release:trypost-2` and the other 2.0 upgrade commands.
+
+**On v1.1.0? Upgrade in two steps.** First upgrade to **v2.0.0** and run its release command, as described in [Upgrading to TryPost 2.0](#upgrading-to-trypost-20):
+
+```bash
+php artisan migrate --force
+php artisan release:trypost-2 --force --include-unsubscribed
+```
+
+Only then upgrade to the newer version. Skipping v2.0.0 does not work: the first new migration stops and tells you how many posts still need the 2.0 release command (posts with more than one channel, for example). Nothing is changed when it stops; upgrade to v2.0.0, run the command, then migrate again.
+
+Already on 2.0 with the release command done? The routine above is enough. If the migration still stops, it names what is left; most of it settles once the posts in flight finish publishing.
+
+<Note>
+  This release also changes the REST API, MCP and webhook payloads: a post has `social_account_id`, `content_type` and `meta` at the top level instead of a `platforms` list, and the `post.partially_published` event is gone. See [Posting](/api-reference/guides/posting) and [Webhooks](/knowledge-base/settings/webhooks).
+</Note>
+
 ## Upgrading to TryPost 2.0
+
+<Note>
+  This section is for installs moving from 1.x to **v2.0.0**. The `release:trypost-2` command exists only in 2.0; versions after it no longer include it.
+</Note>
 
 TryPost 2.0 changes how posts, media and team permissions are stored. The schema changes run with the usual migrations; the data changes run in a separate one-off command, `release:trypost-2`.
 

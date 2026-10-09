@@ -106,14 +106,14 @@ Validation errors list the messages of each field under `errors`, with the field
 {
   "message": "Select a Pinterest board to publish this post.",
   "errors": {
-    "platforms.0.meta.board_id": [
+    "meta.board_id": [
       "Select a Pinterest board to publish this post."
     ]
   }
 }
 ```
 
-The key follows the request you sent. A destination's settings, text and media checks on [Create post](/api-reference/posts/create-post) and [Create posts in batch](/api-reference/posts/create-posts-in-batch) are reported under `destinations.N.…` (for example `destinations.0.meta.board_id`), even when you sent `platforms`.
+On [Create post](/api-reference/posts/create-post) and [Update post](/api-reference/posts/update-post) the key is the field itself: `meta.board_id`, `content_type`, `content`, `media`. On [Create posts in batch](/api-reference/posts/create-posts-in-batch) it names the destination, for example `destinations.0.meta.board_id`.
 
 Other errors carry only `message`:
 

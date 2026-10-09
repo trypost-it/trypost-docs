@@ -15,11 +15,11 @@ Each post belongs to one channel. When you save a post for several channels in t
 | **Queue** | Scheduled posts, and posts being published right now, in time order. |
 | **Approvals** | Posts waiting for approval. See [Approvals](/knowledge-base/publish/approvals). |
 | **Drafts** | Drafts. |
-| **Sent** | Published, partially published and failed posts. |
+| **Sent** | Published and failed posts. |
 
 Lists load more posts as you scroll.
 
-Published and partially published posts are kept for 2 years, then deleted from TryPost with their media. They stay on the network.
+Published posts are kept for 2 years, then deleted from TryPost with their media. They stay on the network.
 
 <Note>
   Self-hosting TryPost? Change this with `POST_HISTORY_RETENTION_DAYS`. See [Configuration](/self-hosting/configuration).
@@ -62,7 +62,7 @@ Each post card has buttons and a menu. What you see depends on the post's status
 | **See post insights** | Open the post's metrics. See [Channel insights](/knowledge-base/insights/channel-insights). |
 | **Post Details** | Show the full post, its channels, who created it and, once sent, its metrics. |
 
-Posts that are **Publishing**, **Published**, **Partially Published** or **Failed** cannot be edited or deleted. To try again, duplicate the post. Deleting a post never removes it from the network.
+Posts that are **Publishing**, **Published** or **Failed** cannot be edited or deleted. To try again, duplicate the post. Deleting a post never removes it from the network.
 
 ## Statuses
 
@@ -74,7 +74,6 @@ Posts that are **Publishing**, **Published**, **Partially Published** or **Faile
 | **Publishing** | Being sent to the network now. |
 | **Retrying** | The network had a temporary problem; TryPost tries again at the time shown. |
 | **Published** | Live on the network. |
-| **Partially Published** | Some parts went out and some failed. |
 | **Failed** | Could not be published. |
 
 ### Why a post failed

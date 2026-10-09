@@ -47,9 +47,8 @@ curl -X POST https://app.trypost.it/api/posts \
       { "upload_token": "4f6c2b1e-8d3a-4e5f-9a7b-1c2d3e4f5a6b" },
       { "id": "9d3c1f30-8a9b-4c0d-9e1f-2a3b4c5d6e7f" }
     ],
-    "platforms": [
-      { "social_account_id": "7a2e9c14-5b8d-4f3a-b6e1-0c9d8a7f6e52", "content_type": "instagram_feed" }
-    ]
+    "social_account_id": "7a2e9c14-5b8d-4f3a-b6e1-0c9d8a7f6e52",
+    "content_type": "instagram_feed"
   }'
 ```
 
@@ -186,4 +185,4 @@ Each media item takes optional settings:
 
 ## Which posts take media
 
-Media can be added and replaced until the post goes out. Posts that are `publishing`, `published`, `partially_published` or `failed` cannot take media: the API answers `422` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`
+Media can be added and replaced until the post goes out. Posts that are `publishing`, `published` or `failed` cannot take media: the API answers `422` with `This post has already been processed and cannot be re-published. Duplicate it to try again.`
